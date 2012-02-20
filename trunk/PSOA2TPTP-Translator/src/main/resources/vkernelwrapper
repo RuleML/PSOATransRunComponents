@@ -1,0 +1,3 @@
+#! /bin/bash
+echo "Reasoning over TPTP FOF sentences"
+vkernel <($1)

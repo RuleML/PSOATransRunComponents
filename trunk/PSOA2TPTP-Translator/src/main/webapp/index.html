@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>PSOA2TPTP Translator</title>
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"
+	type="text/javascript"></script>
+<script type="text/javascript">
+const DefaultPSOADoc=
+"Document(\n"+
+  "\tGroup (\n"+
+    "\t\tGroup (\n"+
+      "\t\t\t_Joe#_Male()\n"+
+      "\t\t\t_m1#_married(_Joe _Sue)\n"+
+      "\t\t\t_f1#_family(_husb->_Joe)\n"+
+      "\t\t\t_f1#_family(_child->_Pete)\n"+
+      
+      "\t\t\t_m2#_married(_John _Mary _child->_Tom)\n"+
+      "\t\t\t_f2#_family(_husb->_John _wife->_Mary _child->_Tom)\n"+
+   "\t\t)\n"+
+
+    "\t\t_m3#_married([_Tim _Jane1] [1980])\n"+
+    "\t\t_Tim#_Person([_Male 1960] _job->_Engineer _child->_Jack)\n"+
+    "\t\t_Jane1#_Person([_Female 1963] [_NRC] _job->_Secretary)\n"+
+    
+    "\t\t_f4#_family([_Mike _Jessie] [1991] _child->_Tomas _child->_Jane2)\n"+
+  "\t)\n"+
+")";
+
+const DefaultPSOAQuery="_m1#_married(_Joe _Sue)";
+const Host = "http://localhost:8081";
+const App = "psoa2tptp-trans";
+const Translate = "translate";
+const Slash = "/";
+const Equal = "=";
+const Amp = "&";
+const Qmark = "?";
+const Doc = "document";
+const Query = "query";
+const Execute = "execute";
+const nullf = function() {};
+
+var slash = function(s) {
+	return Slash+s;
+}
+var append = function(s1,s2) {
+	return s1 + s2;
+}
+const WS = append(Host,append(slash(App),slash("ws")));
+
+var service = function(service) {
+	return append(WS,slash(service));
+}
+
+var htmlEncode = function(data) {
+	return $('<div/>').text(data).html();
+}
+var htmlDecode = function(data) {
+	return $('<div/>').html(data).text();
+}
+var param = function(key,val) {
+	return append(key,append(Equal,val));
+}
+var amp = function(val) {
+	return append(Amp,val);
+}
+
+var encode = encodeURIComponent;
+
+var qs = function(url, params) {
+	query = append(url,Qmark);
+	query += params.shift();
+	for (p in params) {
+		query += amp(p);
+	}
+	return query;
+}
+
+var translateDoc = function(psoa,query,handler) {
+	$.ajax({
+		type:"POST",
+		url:service(Translate),
+		data:JSON.stringify(translateRequest(psoa,query)),
+		contentType:"application/json; charset=utf-8",
+		success:function(data) {
+			$("#tptpOutput").text(printTranslation(data));
+			handler(data);
+		}
+	});
+}
+
+var printTranslation = function(data) {
+	var str = "";
+	var sentences = data.sentences;
+	for (i in sentences) {
+		str += append(sentences[i],"\n");
+	}
+	return str;
+}
+
+var translateRequest = function(psoa,query) {
+	return (query)
+		?{document: psoa, query: query}
+		:{document:psoa, query:""};
+}
+
+var translateQuery = function(q,handler) {
+	$.ajax({
+		type:"POST",
+		url:append(service(Translate),slash(Query)),
+		data:param(Query,q),
+		success:function(data) {
+			handler(data);
+		}
+	});
+}
+
+var executeQuery = function(doc, q) {
+	translateDoc(doc, q, function(sentences) {
+		$.ajax({
+			type:"POST",
+			contentType:"application/json; charset=utf-8",
+			url:service(Execute),
+			data:JSON.stringify(sentences),
+			success:function(result) {
+				$("#vampireOutput").text(result);
+			}
+		});
+	})
+}
+
+var psoaDoc = function() {
+	return $("#psoaDoc").val();
+}
+
+var psoaQuery = function() {
+	return $("#psoaQuery").val();
+}
+
+$(document).ready(function() {
+	$("#psoaDoc").val(DefaultPSOADoc)
+	$("#psoaQuery").val(DefaultPSOAQuery);
+	$('#psoa2tptp').click(function() {
+		translateDoc(encode(psoaDoc()),encode(psoaQuery()),nullf);
+	});
+	$("#resetBtn").click(function() {
+		$("#psoaDoc").val("");
+	});
+	$("#psoaFactsPremises").click(function() {
+		$("#resetBtn").click();
+		$("#psoaDoc").val(DefaultPSOADoc);	
+	});
+	$('#vp').click(function() {
+		executeQuery(
+			encode(psoaDoc()),
+			encode(psoaQuery())
+		);
+	});
+});
+</script>
+</head>
+<body>
+	<h1>PSOA2TPTP Translator</h1>
+	<form id="translator">
+		<fieldset>
+			<legend>Translator</legend>
+			<h3>PSOA Rule Base</h3>
+			<textarea id="psoaDoc" rows="20" cols="80">
+			</textarea>
+			<br /> <input id="psoa2tptp" type="button" value="Translate" /> <input
+				id="psoaFactsPremises" type="button" value="PSOA Facts Test I" /> <input
+				id="resetBtn" type="button" value="Reset" />
+			<h3>TPTP Translation</h3>
+			<textarea id="tptpOutput" rows="20" cols="80" disabled="disabled">
+			</textarea>
+		</fieldset>
+		<fieldset id="vampirePrime">
+			<legend>Vampire Prime</legend>
+			<h3>PSOA Query</h3>
+			<textarea id="psoaQuery" rows="1" cols="80">
+			</textarea>
+			<br /> <input id="vp" type="button" value="Execute" />
+			<h3>Vampire Prime Output</h3>
+			<textarea id="vampireOutput" rows="20" cols="80" disabled="disabled">
+			</textarea>
+		</fieldset>
+	</form>
+</body>
+</html>
