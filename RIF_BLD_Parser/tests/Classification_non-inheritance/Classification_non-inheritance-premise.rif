@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Document [
+  <!ENTITY rif  "http://www.w3.org/2007/rif#">
+  <!ENTITY xs   "http://www.w3.org/2001/XMLSchema#">
+  <!ENTITY rdf  "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+]>
+
+<Document xmlns="&rif;">
+  <payload>
+    <Group>
+      <sentence>
+        <Member>
+          <instance>
+            <Const type="&rif;iri">http://example.com/people#john</Const>
+          </instance>
+          <class>
+            <Const type="&rif;iri">http://example.com/concepts#Person</Const>
+          </class>
+        </Member>
+      </sentence>
+      <sentence>
+        <Frame>
+          <object>
+            <Const type="&rif;iri">http://example.com/concepts#Person</Const>
+          </object>
+          <slot>
+              <Const type="&rif;iri">http://example.com/scientific-classification#phylum</Const>
+              <Const type="&rif;iri">http://example.com/scientific-classification#Chordata</Const>
+          </slot>
+        </Frame>
+      </sentence>
+    </Group>
+  </payload>
+</Document>
+<!--XML document generated on Sat Nov 01 12:33:43 EDT 2008-->

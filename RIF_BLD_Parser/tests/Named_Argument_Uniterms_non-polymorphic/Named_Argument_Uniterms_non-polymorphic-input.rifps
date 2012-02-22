@@ -1,0 +1,9 @@
+
+ Document(
+  Prefix(ex   http://example.com/example#)
+  
+  Group  (
+    ex:p(a->1 b->2)
+    ex:p(a->1)
+  ) 
+)

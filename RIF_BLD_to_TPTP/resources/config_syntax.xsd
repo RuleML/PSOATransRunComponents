@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+ <xs:schema  
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns="rif_bld_to_tptp_parameters"
+  targetNamespace="rif_bld_to_tptp_parameters"
+  elementFormDefault="qualified">
+  
+  <xs:annotation>
+    <xs:documentation> 
+    This is the XML schema for parameter files for RIF_BLD_to_TPTP.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="RIF_BLD_to_TPTP_Parameters">
+    <xs:complexType>
+      <xs:sequence>
+	<xs:group ref="TopLevelOption" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+    
+
+  <xs:group name="TopLevelOption">
+    <xs:choice>      
+      <xs:element ref="IRIToSymbols"/>
+      <xs:element ref="OtherReservedSymbols"/>
+
+      <xs:element name="DataDomainPredicate">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+
+      <xs:element name="EqualityPredicate">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+
+      <xs:element name="MemberPredicate">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+
+      <xs:element name="SubclassPredicate">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+
+      <xs:element name="MethodApplicationPredicate">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+
+      <xs:element name="EmptyListConstant">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+
+      <xs:element name="ListConsFunc">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+
+
+
+      <xs:element name="IntLitFunc">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+
+      <xs:element name="StringLitNoLangFunc">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+ 
+      <xs:element name="StringLitWithLangFunc">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+ 
+      <xs:element name="TypedLitFunc">
+	<xs:complexType>
+	  <xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+      </xs:element>
+ 
+      
+	
+    </xs:choice>
+  </xs:group>
+
+  <xs:element name="IRIToSymbols">
+    <xs:complexType>
+
+      <xs:sequence>
+	<xs:group ref="functor" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+
+      <xs:attribute name="IRI" type="xs:string" use="required"/>
+
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="OtherReservedSymbols">
+    <xs:complexType>
+
+      <xs:sequence>
+	<xs:group ref="functor" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+
+    </xs:complexType>
+  </xs:element>
+
+  <xs:group name="functor">
+    <xs:choice>
+       <xs:element ref="constant"/>
+       <xs:element ref="positional_functor"/>
+       <xs:element ref="slotted_functor"/>
+    </xs:choice>
+  </xs:group>
+
+  <!-- Nullary functors are not constants! -->
+
+  <xs:element name="constant">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="positional_functor">
+    <xs:complexType>
+      <xs:attribute name="predicate" type="xs:boolean" use="required"/>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+      <xs:attribute name="arity" type="xs:integer" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="slotted_functor">
+    <xs:complexType>
+      <xs:sequence>
+	<xs:element name="slot" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="predicate" type="xs:boolean" use="required"/>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  
+
+ </xs:schema>

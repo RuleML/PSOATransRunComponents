@@ -1,0 +1,5 @@
+#! /bin/bash
+echo "Reasoning over TPTP FOF sentences"
+#tptp=$(sed "s/^\([\"']\)\(.*\)\1\$/\2/g" <(echo $1))
+tptp=$(echo $1 | sed 's/^\"//g' | sed 's/\"$//g')
+vkernel <(echo $tptp)

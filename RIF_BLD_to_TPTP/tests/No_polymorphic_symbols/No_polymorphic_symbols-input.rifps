@@ -1,0 +1,13 @@
+
+ Document(
+
+   Prefix(cpt  http://example.com/example#)
+
+   Group
+   (
+     Forall ?Buyer ?Item ?Seller ?Price (
+        cpt:buy(?Buyer ?Item ?Seller ?Price) :- 
+                 And (cpt:buy(?Buyer ?Item ?Seller) cpt:cost(?Item ?Price))
+     )
+   )
+ )

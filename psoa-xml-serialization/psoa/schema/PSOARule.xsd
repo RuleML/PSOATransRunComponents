@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+ <xs:schema 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  xmlns:xml="http://www.w3.org/XML/1998/namespace"
+  xmlns="http://www.w3.org/2007/rif#"
+  targetNamespace="http://www.w3.org/2007/rif#"
+  elementFormDefault="qualified"
+  version="Id: PSOARule.xsd, v. 1.0, 2011-10-19, psoa/schema">
+ 
+  <xs:annotation>
+    <xs:documentation>
+    This is the tentative XML schema for the Rule Language as defined by
+    the PSOA RuleML.
+    
+    The schema is based on the following EBNF for the PSOA Rule Language:
+  
+  Document  ::= 'Document' '(' Base? Prefix* Import* Group? ')'
+  Base      ::= 'Base' '(' ANGLEBRACKIRI ')'
+  Prefix    ::= 'Prefix' '(' Name ANGLEBRACKIRI ')'
+  Import    ::= 'Import' '(' ANGLEBRACKIRI PROFILE? ')'
+  Group     ::= 'Group' '(' (RULE | Group)* ')'
+  RULE      ::= ('Forall' Var+ '(' CLAUSE ')') | CLAUSE
+  CLAUSE    ::= Implies | ATOMIC
+  Implies   ::= (HEAD | 'And' '(' HEAD* ')') ':-' FORMULA
+  HEAD      ::= ATOMIC | 'Exists' Var+ '(' ATOMIC ')'
+  PROFILE   ::= ANGLEBRACKIRI
+      
+    </xs:documentation>
+  </xs:annotation>
+ 
+  <!-- The Rule Language includes the Condition Language from the same directory -->
+  <xs:include schemaLocation="PSOACond.xsd"/>
+ 
+  <xs:element name="Document">
+    <!--
+  Document  ::= 'Document' '(' Base? Prefix* Import* Group? ')'
+    -->
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="directive" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="payload" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:element name="directive">
+    <!--
+  Base and Prefix represented directly in XML
+    -->
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Import"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:element name="payload">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Group"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="Import">
+    <!--
+  Import    ::= 'Import' '(' ANGLEBRACKIRI PROFILE? ')'
+  PROFILE   ::= ANGLEBRACKIRI
+    -->
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="location" type="xs:anyURI"/>            <!-- DO WE NEED location tag here? -->
+        <xs:element ref="profile" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:element name="profile" type="xs:anyURI"/>
+  
+  <xs:element name="Group">
+    <!--
+  Group     ::= 'Group' '(' (RULE | Group)* ')'
+    -->
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="groupelement" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:element name="groupelement">
+   <xs:complexType>
+     <xs:choice>
+       <xs:group ref="RULE"/>
+       <xs:element ref="Group"/>
+     </xs:choice>
+   </xs:complexType>
+ </xs:element>
+  
+  <xs:group name="RULE">
+    <!--
+  RULE      ::= ('Forall' Var+ '(' CLAUSE ')') | CLAUSE
+    -->
+    <xs:choice>
+      <xs:element ref="Forall"/>
+      <xs:group ref="CLAUSE"/>
+    </xs:choice>
+  </xs:group>
+ 
+  <xs:element name="Forall">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="declare" minOccurs="1" maxOccurs="unbounded"/>
+        <!-- different from formula in And, Or and Exists -->
+        <xs:element name="formula">
+          <xs:complexType>
+            <xs:group ref="CLAUSE"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:group name="CLAUSE">  
+    <!--
+  CLAUSE   ::= Implies | ATOMIC
+    -->
+    <xs:choice>
+      <xs:element ref="Implies"/>
+      <xs:group ref="ATOMIC"/>
+    </xs:choice>
+  </xs:group>
+  
+  <xs:element name="Implies">
+    <!--
+  Implies   ::= (HEAD | 'And' '(' HEAD* ')') ':-' FORMULA
+    -->
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="if"/>
+        <xs:element ref="then"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:element name="if">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="FORMULA"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="then">
+    <xs:complexType>
+     <xs:choice>
+       <xs:group ref="HEAD"/>
+       <xs:element name="And" type="And-then.type"/>
+     </xs:choice>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:complexType name="And-then.type">
+    <xs:sequence>
+      <xs:element name="formula" type="formula-and-then.type" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="formula-and-then.type">
+    <xs:sequence>
+      <xs:group ref="HEAD"/>
+    </xs:sequence>
+  </xs:complexType>
+   
+   
+  <xs:group name="HEAD">
+    <!--
+  HEAD      ::= ('Exists' Var+ '(' ATOMIC ')') | ATOMIC
+    -->
+    <xs:choice>
+      <xs:element name="Exists" TYPE="Exists-then.type"/>
+      <xs:group ref="ATOMIC"/>
+    </xs:choice>
+  </xs:group>
+ 
+   <xs:complexType name="Exists-then.type">
+    <xs:sequence>
+      <xs:element ref="declare" minOccurs="1" maxOccurs="unbounded"/>
+      <xs:element name="formula" type="formula-exists-then.type" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="formula-exists-then.type">
+    <xs:sequence>
+      <xs:group ref="ATOMIC"/>
+    </xs:sequence>
+  </xs:complexType>
+   
+ </xs:schema>

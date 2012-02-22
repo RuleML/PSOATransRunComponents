@@ -1,0 +1,6 @@
+
+  And (
+      ex:root("-1"^^xs:decimal)
+      ex:root("0"^^xs:decimal)
+      ex:root("1"^^xs:decimal)
+  )

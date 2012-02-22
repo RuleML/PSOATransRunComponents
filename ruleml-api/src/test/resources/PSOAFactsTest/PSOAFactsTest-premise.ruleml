@@ -1,0 +1,19 @@
+Document(
+	Group (
+		Group (
+			_Joe#_Male()
+			_m1#_married(_Joe _Sue)
+			_f1#_family(_husb->_Joe)
+			_f1#_family(_child->_Pete)
+			
+			_m2#_married(_John _Mary _child->_Tom)
+			_f2#_family(_husb->_John _wife->_Mary _child->_Tom)
+		)
+
+		_m3#_married([_Tim _Jane1] [1980])
+		_Tim#_Person([_Male 1960] _job->_Engineer _child->_Jack)
+		_Jane1#_Person([_Female 1963] [_NRC] _job->_Secretary)
+		
+		_f4#_family([_Mike _Jessie] [1991] _child->_Tomas _child->_Jane2)
+	)
+)
