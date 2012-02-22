@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<RIF_BLD_to_TPTP_Parameters xmlns="rif_bld_to_tptp_parameters">
+
+  <!-- Sample parameters for RIF-BLD-to-TPTP conversion. -->
+  
+  <IRIToSymbols IRI="http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#University">
+    <positional_functor predicate="true" name="abrakadabra" arity="1"/> 
+    <positional_functor predicate="true" name="abrakadabra" arity="3"/> 
+    <positional_functor predicate="false" name="abrakadabra" arity="0"/> 
+    
+    <slotted_functor predicate="true" name="abrakadabra">
+      <slot>b</slot>
+      <slot>c</slot>
+      <slot>a</slot>
+    </slotted_functor>
+    
+  </IRIToSymbols>
+
+  <OtherReservedSymbols>
+    <positional_functor predicate="true" name="p_mastersDegreeFrom" arity="2"/> 
+    <positional_functor predicate="true" name="p_Publication" arity="1"/> 
+    <positional_functor predicate="false" name="c_Publication0" arity="0"/> 
+
+    <slotted_functor predicate="true" name="p_mastersDegreeFrom">
+       <slot>graduate</slot>
+       <slot>university</slot>
+    </slotted_functor> 
+    
+  </OtherReservedSymbols>
+   
+  <DataDomainPredicate name="dataDomain"/> 
+  
+  <EqualityPredicate name="="/>
+  
+  <MemberPredicate name="member"/>
+
+  <SubclassPredicate name="subclass"/>
+
+  <MethodApplicationPredicate name="methodApplication"/>
+
+  <IntLitFunc name="intLit"/>
+
+  <StringLitNoLangFunc name="strLit"/>
+
+  <StringLitWithLangFunc name="strLitWLang"/>
+
+  <TypedLitFunc name="typedLit"/>
+
+  <EmptyListConstant name="emptyList"/>
+
+  <ListConsFunc name="listCons"/>
+
+  
+
+</RIF_BLD_to_TPTP_Parameters>

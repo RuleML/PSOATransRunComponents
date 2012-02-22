@@ -1,0 +1,31 @@
+Document(
+	Prefix(stores <http://example.org/stores#>)
+	Prefix(cpt <http://example.org/concepts#>)
+	Prefix(ord <http://example.org/orders#>)
+	Prefix(prd <http://example.org/products#>)
+	Prefix(func <http://www.w3.org/2007/rif-builtin-function#>)
+	Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>)
+	Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
+	Prefix(owl <http://www.w3.org/2002/07/owl#>)
+	Prefix(dc <http://purl.org/dc/elements/1.1/>)
+
+	Group (
+		Forall ?item ?store ?deliverydate ?scheduledate ?diffduration ?diffdays (
+			cpt:reject(?store ?item) :-
+				And(cpt:perishable(?item)
+					cpt:delivered(?item ?deliverydate ?store)
+					cpt:scheduled(?item ?scheduledate)
+					External(pred:is_literal_dateTime(?deliverydate))
+					External(pred:is_literal_dateTime(?scheduledate))
+					?diffduration = External(func:subtract_dateTimes(?deliverydate ?scheduledate))
+					?diffdays = External(func:days_from_duration(?diffduration))
+					External(pred:numeric_greater_than(?diffdays 10))
+				)
+		) 
+
+
+		cpt:perishable(prd:Product1)
+		cpt:delivered(prd:Product1 "2008-07-22Z"^^xs:date stores:Store9)
+		cpt:scheduled(prd:Product1 "2008-07-11Z"^^xs:date)
+	)
+)

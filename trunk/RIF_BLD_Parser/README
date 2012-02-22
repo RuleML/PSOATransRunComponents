@@ -1,0 +1,15 @@
+
+This is a preliminary implementation of a RIF BLD parser (XML syntax).
+
+No annotations are supported yet.
+
+
+
+"ant javadoc" to create API documentation (./docs/api/index.html).
+
+
+Validator usage example:
+
+java -enableassertions -cp lib/getopt.jar:./lib/RIF_BLD_AbstractSyntax.jar:./build/jar/RIF_BLD_Parser.jar rif.bld.validator.RIF_BLD_Validator tests/test1.rif
+
+

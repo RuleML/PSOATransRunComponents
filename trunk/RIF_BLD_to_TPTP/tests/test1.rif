@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Document [
+  <!ENTITY ppl  "http://example.com/people#">
+  <!ENTITY cpt  "http://example.com/concepts#">
+  <!ENTITY dc   "http://purl.org/dc/terms/">
+  <!ENTITY rif  "http://www.w3.org/2007/rif#">
+  <!ENTITY func "http://www.w3.org/2007/rif-builtin-function#">
+  <!ENTITY pred "http://www.w3.org/2007/rif-builtin-predicate#">
+  <!ENTITY xs   "http://www.w3.org/2001/XMLSchema#">
+]>
+
+<Document 
+    xmlns="http://www.w3.org/2007/rif#"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema#">
+  <payload>
+   <Group>
+    <id>
+      <Const type="&rif;iri">http://sample.org</Const>
+    </id>
+    <meta>
+      <Frame>
+        <object>
+          <Const type="&rif;local">pd</Const>
+        </object>
+        <slot ordered="yes">
+          <Const type="&rif;iri">&dc;publisher</Const>
+          <Const type="&rif;iri">http://www.w3.org/</Const>
+        </slot>
+        <slot ordered="yes">
+          <Const type="&rif;iri">&dc;date</Const>
+          <Const type="&xs;date">2008-04-04</Const>
+        </slot>
+      </Frame>
+    </meta>
+    <sentence>
+     <Forall>
+       <declare><Var>item</Var></declare>
+       <declare><Var>deliverydate</Var></declare>
+       <declare><Var>scheduledate</Var></declare>
+       <declare><Var>diffduration</Var></declare>
+       <declare><Var>diffdays</Var></declare>
+       <formula>
+         <Implies>
+           <if>
+             <And>
+               <formula>
+                 <Atom>
+                   <op><Const type="&rif;iri">&cpt;perishable</Const></op>
+                   <args ordered="yes"><Var>item</Var></args>
+                 </Atom>
+               </formula>
+               <formula>
+                 <Atom>
+                   <op><Const type="&rif;iri">&cpt;delivered</Const></op>
+                   <args ordered="yes">
+                     <Var>item</Var>
+                     <Var>deliverydate</Var>
+                     <Const type="&rif;iri">&ppl;John</Const>
+                   </args>
+                 </Atom>
+               </formula>
+               <formula>
+                 <Atom>
+                   <op><Const type="&rif;iri">&cpt;scheduled</Const></op>
+                   <args ordered="yes">
+                     <Var>item</Var>
+                     <Var>scheduledate</Var>
+                   </args>
+                 </Atom>
+               </formula>
+               <formula>
+                 <Equal>
+                   <left><Var>diffduration</Var></left>
+                   <right>
+                     <External>
+                       <content>
+                         <Expr>
+                           <op><Const type="&rif;iri">&func;subtract-dateTimes</Const></op>
+                           <args ordered="yes">
+                             <Var>deliverydate</Var>
+                             <Var>scheduledate</Var>
+                           </args>
+                         </Expr>
+                       </content>
+                     </External>
+                   </right>
+                 </Equal>
+               </formula>
+               <formula>
+                 <Equal>
+                   <left><Var>diffdays</Var></left>
+                   <right>
+                     <External>
+                       <content>
+                         <Expr>
+                           <op><Const type="&rif;iri">&func;days-from-duration</Const></op>
+                           <args ordered="yes">
+                             <Var>diffduration</Var>
+                           </args>
+                         </Expr>
+                       </content>
+                     </External>
+                   </right>
+                 </Equal>
+               </formula>
+               <formula>
+                 <External>
+                   <content>
+                     <Atom>
+                       <op><Const type="&rif;iri">&pred;numeric-greater-than</Const></op>
+                       <args ordered="yes">
+                         <Var>diffdays</Var>
+                         <Const type="&xs;integer">10</Const>
+                       </args>
+                     </Atom>
+                   </content>
+                 </External>
+               </formula>
+             </And>
+           </if>
+           <then>
+             <Atom>
+               <op><Const type="&rif;iri">&cpt;reject</Const></op>
+               <args ordered="yes">
+                 <Const type="&rif;iri">&ppl;John</Const>
+                 <Var>item</Var>
+               </args>
+             </Atom>
+           </then>
+         </Implies>
+       </formula>
+     </Forall>
+    </sentence>
+    <sentence>
+     <Forall>
+       <declare><Var>item</Var></declare>
+       <formula>
+         <Implies>
+           <if>
+             <Atom>
+               <op><Const type="&rif;iri">&cpt;unsolicited</Const></op>
+               <args ordered="yes"><Var>item</Var></args>
+             </Atom>
+           </if>
+           <then>
+             <Atom>
+               <op><Const type="&rif;iri">&cpt;reject</Const></op>
+               <args ordered="yes">
+                 <Const type="&rif;iri">&ppl;Fred</Const>
+                 <Var>item</Var>
+               </args>
+             </Atom>
+           </then>
+         </Implies>
+       </formula>
+     </Forall>
+    </sentence>
+   </Group>
+  </payload>
+ </Document>
