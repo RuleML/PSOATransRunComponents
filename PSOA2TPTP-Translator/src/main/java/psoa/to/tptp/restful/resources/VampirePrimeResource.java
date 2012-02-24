@@ -3,7 +3,6 @@ package psoa.to.tptp.restful.resources;
 import static psoa.to.tptp.restful.resources.ShellUtil.VKERNELWRAPPER;
 import static psoa.to.tptp.restful.resources.ShellUtil.cl;
 import static psoa.to.tptp.restful.resources.ShellUtil.execute;
-import static psoa.to.tptp.restful.resources.ShellUtil.quote;
 import static psoa.to.tptp.restful.resources.Util.out;
 import static psoa.to.tptp.restful.resources.Util.serialize;
 
