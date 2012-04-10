@@ -11,9 +11,13 @@ import static psoa.to.tptp.restful.resources.ShellUtil.rredirect;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
@@ -49,7 +53,30 @@ public enum Util {
 		}
 		return str;
 	}
+	
+	public static File tmpFile() {
+		try {
+			return File.createTempFile("tptp-", ".dat", file("/tmp"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
+	public static File file(String path) {
+		return new File(path);
+	}
+	
+	public static PrintWriter writer(File f) {
+		try {
+			return new PrintWriter(f);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static String redirectTPTP(String tptp) {
 		return padl(rredirect(parenthesize(echo(quote(tptp)))));
 	}
