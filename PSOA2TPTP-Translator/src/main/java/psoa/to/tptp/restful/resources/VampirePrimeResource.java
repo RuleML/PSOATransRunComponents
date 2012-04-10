@@ -1,13 +1,17 @@
 package psoa.to.tptp.restful.resources;
 
-import static psoa.to.tptp.restful.resources.ShellUtil.VKERNELWRAPPER;
+import static psoa.to.tptp.restful.resources.ShellUtil.VKERNEL;
 import static psoa.to.tptp.restful.resources.ShellUtil.cl;
 import static psoa.to.tptp.restful.resources.ShellUtil.execute;
 import static psoa.to.tptp.restful.resources.Util.out;
 import static psoa.to.tptp.restful.resources.Util.serialize;
+import static psoa.to.tptp.restful.resources.Util.tmpFile;
+import static psoa.to.tptp.restful.resources.Util.writer;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Encoded;
@@ -32,8 +36,12 @@ public class VampirePrimeResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Encoded
 	public String getVampirePrimeResults(TptpDocument doc) {
-		CommandLine cl = cl(VKERNELWRAPPER);
-		cl.addArgument(serialize(doc.getSentences()));
+		CommandLine cl = cl(VKERNEL);
+		File tmp = tmpFile();
+		PrintWriter w = writer(tmp);
+		w.print(serialize(doc.getSentences()));
+		w.close();
+		cl.addArgument(tmp.getAbsolutePath());
 		OutputStream out = out();
 		try {
 			execute(cl, out);
@@ -42,6 +50,7 @@ public class VampirePrimeResource {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		tmp.delete();
 		return out.toString();
 	}	
 }
