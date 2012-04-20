@@ -1,0 +1,157 @@
+
+
+
+/* Here we are assuming that haio:Diagnosis is a subclass of some class
+   for events. In particular, instances will have haio:event_has_time with 
+   an sto:Instant in the object. 
+
+   The following modelling is formalised:
+
+   :diagnosis a haio:Diagnosis
+   :diagnosis haio:is_diagnosis_for_patient :patient
+   :diagnosis haio:event_has_time :instant
+   :diagnosis haio:diagnosis_specifies_condition :condition
+   :condition a <http://purl.org/obo/owl/DOID#DOID_9351> # diabetes mellitus
+   :diagnosis haio:diagnosis_is_made_by :doctor
+
+   We assume that <http://purl.org/obo/owl/DOID#DOID_9351> was obtained
+   by mapping the ICD9 code 250 to the Disease Ontology. 
+
+
+   Test query:
+
+   SELECT ?Patient ?DiagTime
+   WHERE
+   {
+     ?Diagnosis haio:is_diagnosis_for_patient ?Patient .
+
+     ?Diagnosis haio:diagnosis_specifies_condition ?Condition .
+
+     ?Condition a <http://purl.org/obo/owl/DOID#DOID_9351> . # diabetes mellitus
+  
+     ?Diagnosis haio:event_has_time ?Instant .
+ 
+     ?Instant sto:instantHasValue ?DiagTime .  
+   }  
+
+
+*/
+
+
+
+Document
+(
+
+Prefix(modf <http://unbsj.biordf.net/haiku/dw/model/function#>)
+Prefix(modp <http://unbsj.biordf.net/haiku/dw/model/predicate#>)
+Prefix(modi <http://unbsj.biordf.net/haiku/dw/model/individual#>)
+
+Prefix(dwt <http://unbsj.biordf.net/haiku/dw/table#>)
+Prefix(dwa <http://unbsj.biordf.net/haiku/dw/attribute#>)
+Prefix(haio <http://www.semanticweb.org/ontologies/2010/7/HAI.owl#>)
+
+Prefix(func <http://www.w3.org/2007/rif-builtin-function#>)
+Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>)
+
+
+Prefix(sto <http://unbsj.biordf.net/ontologies/simple-time-ontology.owl#>)
+
+
+
+
+Group
+(
+
+  /* This rule generates instances of haio:Diagnosis based on records 
+     from the DW table NhrDiagnosis.
+   */
+
+  Forall ?Diagnosis ?DiagRow ?DiagWID
+  (
+    ?Diagnosis # haio:Diagnosis()
+     :-
+    And
+    (
+      ?DiagRow # dtw:NhrDiagnosis
+       (     
+         dwa:hdgWID->?DiagWID
+       )
+
+      ?Diagnosis = External(modf:Diagnosis_by_hdgWID(?DiagWID))
+    )
+  )
+
+
+
+  /* This rule populates haio:is_diagnosis_for_patient by doing 
+     the relational join 
+          NhrDiagnosis.hdgHraEncWID = Nencounter.encWID
+   
+   */
+
+  Forall ?Diagnosis ?Patient ?DiagRow ?DiagWID ?EncounterWID ?EncounterRow
+         ?EncounterWID ?PatientWID 
+  (
+    haio:is_diagnosis_for_patient(?Diagnosis ?Patient)
+     :-
+    And
+    (
+      ?DiagRow # dtw:NhrDiagnosis
+       (     
+         dwa:hdgWID->?DiagWID
+         dwa:hdgHraEncWID->?EncounterWID
+       )
+
+      ?Diagnosis = External(modf:Diagnosis_by_hdgWID(?DiagWID))
+
+
+      ?EncounterRow # dtw:Nencounter
+       (
+         dwa:encWID->?EncounterWID
+         dwa:encPatWID->?PatientWID
+       )
+      
+      ?Patient = External(modf:Patient_by_patWID(?PatientWID))
+
+    )
+  )
+
+
+
+  /* This rule populates haio:diagnosis_specifies_condition by generating
+     instances of condition classes that are obtained by mapping ICD9 codes
+     from NhrDiagnosis.hdgCd to disease classes from some ontology.    
+   */
+
+  Forall ?Diagnosis ?Condition ?DiagRow ?DiagWID ?CondCode ?ConditionClass 
+  (
+    And
+    (
+      haio:diagnosis_specifies_condition(?Diagnosis ?Condition)
+      
+      ?Condition # ?ConditionClass()
+      
+    )
+     :-
+    And
+    (
+      ?DiagRow # dtw:NhrDiagnosis
+       (     
+         dwa:hdgWID->?DiagWID
+         dwa:hdgCd->?CondCode
+       )
+
+      ?Diagnosis = External(modf:Diagnosis_by_hdgWID(?DiagWID))
+
+      ?Condition = External(modf:Condition_by_diagnosis(?Diagnosis ?CondCode))
+
+      ?ConditionClass = External(modf:condition_class_by_ICD9_code(?CondCode))
+
+    )
+  )
+
+)
+)
+
+
+
