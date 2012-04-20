@@ -5,9 +5,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class TranslationRequest {
 
-	/*
-	 * Expects {document: ..., query: ...}
-	 */
 	private String document;
 	private String query;
 

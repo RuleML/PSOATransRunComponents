@@ -46,6 +46,7 @@ var slash = function(s) {
 var append = function(s1,s2) {
 	return s1 + s2;
 }
+//const WS = append(Host,append(slash(App),slash("ws")));
 const WS = "ws";
 
 var service = function(service) {
@@ -137,7 +138,6 @@ var psoaQuery = function() {
 	return $("#psoaQuery").val();
 }
 
-// Where the button handler functions are set
 $(document).ready(function() {
 	$("#psoaDoc").val(DefaultPSOADoc)
 	$("#psoaQuery").val(DefaultPSOAQuery);
@@ -168,10 +168,9 @@ $(document).ready(function() {
 			<h3>PSOA Rule Base</h3>
 			<textarea id="psoaDoc" rows="20" cols="80">
 			</textarea>
-			<br /> 
-			<input id="psoa2tptp" type="button" value="Translate" /> 
-			<input id="psoaFactsPremises" type="button" value="PSOA Fact Test I" /> 
-			<input id="resetBtn" type="button" value="Reset" />
+			<br /> <input id="psoa2tptp" type="button" value="Translate" /> <input
+				id="psoaFactsPremises" type="button" value="PSOA Facts Test I" /> <input
+				id="resetBtn" type="button" value="Reset" />
 			<h3>TPTP Translation</h3>
 			<textarea id="tptpOutput" rows="20" cols="80" disabled="disabled">
 			</textarea>

@@ -7,9 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class TptpDocument {
 
-	/*
-	 * expects: {sentences: [String]}
-	 */
 	private List<String> sentences;
 	
 	public List<String> getSentences() {

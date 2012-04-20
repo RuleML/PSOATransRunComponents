@@ -1,8 +1,0 @@
-
-Document(
-  Prefix(ex   http://example.com/example#)
-  
-  Group  (
-    ex:o[ex:a->1 ex:b->2]
-  ) 
-)
