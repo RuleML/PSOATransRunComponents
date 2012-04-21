@@ -6,6 +6,5 @@ Knowledge representation is at the foundation of Semantic Web applications, usin
 
 == Files ==
 
- * [http://dl.dropbox.com/u/46951970/Demo.zip Project Demo Source]
  * [http://www.ruleml.org:8081/psoa2tptp-trans/index.html Project Online Demo]
- * [http://psoa2tptp.googlecode.com/files/GenReubenCS6795Report.pdf Project Report]
+ * See "Downloads" for copy of the report.
