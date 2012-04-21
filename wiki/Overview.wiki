@@ -1,4 +1,3 @@
-#labels Featured
 = Welcome to PSOA2TPTP Translator =
 
 == Overview ==
