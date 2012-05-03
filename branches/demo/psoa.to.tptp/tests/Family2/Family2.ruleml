@@ -1,0 +1,13 @@
+Document (
+	Prefix(ex <http://example.com/eg#>)
+	
+	Group (
+		Forall ?Hu ?Wi ?Ch ?o ?1 ?2 (
+			?o#ex:family(ex:husb->?Hu ex:wife->?Wi ex:child->?Ch) :-
+			And(?o#ex:family(ex:husb->?Hu ex:wife->?Wi)
+				Or(?1#ex:kid(?Hu ?Ch) ?2#ex:kid(?Wi ?Ch)))
+		)
+		ex:inst4#ex:family(ex:husb->Joe ex:wife->Sue)
+		ex:kid(Sue Pete)
+	)
+)
