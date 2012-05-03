@@ -922,7 +922,7 @@ public class Converter {
 	TptpParserOutput.FofFormula result = convert(iter.next(),varRenaming);
 	
 	while (iter.hasNext())
-	    result = and(result,convert(iter.next(),varRenaming));
+	    result = or(result,convert(iter.next(),varRenaming));
 	
 	return result;
 	
