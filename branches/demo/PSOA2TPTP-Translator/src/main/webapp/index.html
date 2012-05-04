@@ -3,8 +3,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>PSOA2TPTP Translator</title>
-<script src="http://code.jquery.com/jquery-1.7.1.min.js"
-	type="text/javascript"></script>
+<link type="text/css" href="css/custom-theme/jquery-ui-1.8.20.custom.css" rel="Stylesheet" />	
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.20.custom.min.js"></script>
 <script type="text/javascript">
 const DefaultPSOADoc=
 "Document(\n"+
@@ -83,7 +84,9 @@ var translateDoc = function(psoa,query,handler) {
 		data:JSON.stringify(translateRequest(psoa,query)),
 		contentType:"application/json; charset=utf-8",
 		success:function(data) {
-			$("#tptpOutput").text(printTranslation(data));
+			$("#tptpOutput").val(printTranslation(data));
+			$("#tabs").tabs('enable', 1);
+			$("#tabs").tabs('enable', 2);
 			handler(data);
 		}
 	});
@@ -98,32 +101,41 @@ var printTranslation = function(data) {
 	return str;
 }
 
+var readTptpRuleBase = function() {
+	return tptpDoc().split("\n");
+}
+
 var translateRequest = function(psoa,query) {
-	return (query)
-		?{document: psoa, query: query}
-		:{document:psoa, query:""};
+	var d = (psoa) ? psoa : "";
+	var q = (query) ? query : "";
+	return {document: d, query: q};
 }
 
 var translateQuery = function(q,handler) {
 	$.ajax({
 		type:"POST",
-		url:append(service(Translate),slash(Query)),
-		data:param(Query,q),
+		url:service(Translate),
+		data:JSON.stringify(translateRequest(null,q)),
+		contentType:"application/json; charset=utf-8",
 		success:function(data) {
+			data.sentences.shift(); // no rule base
 			handler(data);
 		}
 	});
 }
 
-var executeQuery = function(doc, q) {
-	translateDoc(doc, q, function(sentences) {
+var executeQuery = function(base, q) {
+	translateQuery(q, function(data) {
+		var tptp = readTptpRuleBase();
+		tptp.push(data.sentences.shift());
+		data.sentences = tptp;
 		$.ajax({
 			type:"POST",
 			contentType:"application/json; charset=utf-8",
 			url:service(Execute),
-			data:JSON.stringify(sentences),
+			data:JSON.stringify(data),
 			success:function(result) {
-				$("#vampireOutput").text(result);
+				$("#vampireOutput").val(result);
 			}
 		});
 	})
@@ -131,6 +143,10 @@ var executeQuery = function(doc, q) {
 
 var psoaDoc = function() {
 	return $("#psoaDoc").val();
+}
+
+var tptpDoc = function() {
+	return $("#tptpOutput").val();
 }
 
 var psoaQuery = function() {
@@ -157,35 +173,39 @@ $(document).ready(function() {
 			encode(psoaQuery())
 		);
 	});
+	$("#tabs").tabs({disabled:[1,2]});
 });
 </script>
 </head>
 <body>
 	<h1>PSOA2TPTP Translator</h1>
-	<form id="translator">
-		<fieldset>
-			<legend>Translator</legend>
-			<h3>PSOA Rule Base</h3>
-			<textarea id="psoaDoc" rows="20" cols="80">
-			</textarea>
-			<br /> 
-			<input id="psoa2tptp" type="button" value="Translate" /> 
-			<input id="psoaFactsPremises" type="button" value="PSOA Fact Test I" /> 
-			<input id="resetBtn" type="button" value="Reset" />
-			<h3>TPTP Translation</h3>
-			<textarea id="tptpOutput" rows="20" cols="80" disabled="disabled">
-			</textarea>
-		</fieldset>
-		<fieldset id="vampirePrime">
-			<legend>Vampire Prime</legend>
-			<h3>PSOA Query</h3>
-			<textarea id="psoaQuery" rows="1" cols="80">
-			</textarea>
-			<br /> <input id="vp" type="button" value="Execute" />
-			<h3>Vampire Prime Output</h3>
-			<textarea id="vampireOutput" rows="20" cols="80" disabled="disabled">
-			</textarea>
-		</fieldset>
-	</form>
+		<div id="tabs">
+			<ul>
+				<li><a href="#tab-1">PSOA Rule Base</a></li>
+				<li><a href="#tab-2">TPTP Rule Base</a></li>
+				<li><a href="#tab-3">Vampire Prime Reasoner</a></li>
+			</ul>
+			<div id="tab-1">
+				<textarea id="psoaDoc" rows="20" cols="80">
+				</textarea>
+				<br /> 
+				<input id="psoa2tptp" type="button" value="Translate" /> 
+				<input id="psoaFactsPremises" type="button" value="PSOA Fact Test I" /> 
+				<input id="resetBtn" type="button" value="Reset" />
+			</div>
+			<div id="tab-2">
+				<textarea id="tptpOutput" rows="20" cols="80">
+				</textarea>
+			</div>
+			<div id="tab-3">
+				<h3>Query Rule Base (PSOA)</h3>
+				<textarea id="psoaQuery" rows="1" cols="80">
+				</textarea>
+				<br /> <input id="vp" type="button" value="Execute" />
+				<h3>Vampire Prime Output</h3>
+				<textarea id="vampireOutput" rows="20" cols="80" style="border: 0">
+				</textarea>
+			</div>
+		</div>
 </body>
 </html>
