@@ -1,0 +1,11 @@
+Document (
+	Group (
+		Forall ?Hu ?Wi ?Ch ?2 ?3 ?4 (
+		Exists ?1 (
+			?1#family(husb->?Hu wife->?Wi child->?Ch)) :-
+					And(?2#married(?Hu ?Wi)	Or(?3#kid(?Hu ?Ch) ?4#kid(?Wi ?Ch)))
+		)
+		_1#married(Joe Sue)
+		_2#kid(Sue Pete)
+	)
+)
