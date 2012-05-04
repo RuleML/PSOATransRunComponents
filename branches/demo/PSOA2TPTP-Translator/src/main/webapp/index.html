@@ -77,16 +77,13 @@ var qs = function(url, params) {
 	return query;
 }
 
-var translateDoc = function(psoa,query,handler) {
+var translateDoc = function(psoa,handler) {
 	$.ajax({
 		type:"POST",
 		url:service(Translate),
-		data:JSON.stringify(translateRequest(psoa,query)),
+		data:JSON.stringify(translateRequest(psoa)),
 		contentType:"application/json; charset=utf-8",
 		success:function(data) {
-			$("#tptpOutput").val(printTranslation(data));
-			$("#tabs").tabs('enable', 1);
-			$("#tabs").tabs('enable', 2);
 			handler(data);
 		}
 	});
@@ -124,21 +121,19 @@ var translateQuery = function(q,handler) {
 	});
 }
 
-var executeQuery = function(base, q) {
-	translateQuery(q, function(data) {
-		var tptp = readTptpRuleBase();
-		tptp.push(data.sentences.shift());
-		data.sentences = tptp;
-		$.ajax({
-			type:"POST",
-			contentType:"application/json; charset=utf-8",
-			url:service(Execute),
-			data:JSON.stringify(data),
-			success:function(result) {
-				$("#vampireOutput").val(result);
-			}
-		});
-	})
+var executeQuery = function(base, q, handler) {
+	$.ajax({
+     type:"POST",
+     contentType:"application/json; charset=utf-8",
+     url:service(Execute),
+     data:JSON.stringify({sentences: readTptpRuleBase()}),
+     success:handler
+   });
+}
+
+var cache = function() {
+	var cache = eval('('+$("#cache").val()+')');
+	return cache;
 }
 
 var psoaDoc = function() {
@@ -158,7 +153,20 @@ $(document).ready(function() {
 	$("#psoaDoc").val(DefaultPSOADoc)
 	$("#psoaQuery").val(DefaultPSOAQuery);
 	$('#psoa2tptp').click(function() {
-		translateDoc(encode(psoaDoc()),encode(psoaQuery()),nullf);
+		translateDoc(encode(psoaDoc()),function(data) {
+			$("#cache").val(JSON.stringify(data));
+			$("#tptpOutput").val(printTranslation(cache()));
+      $("#tabs").tabs('enable', 1);
+      $("#tabs").tabs('select', 1);
+		});
+	});
+	$("#psoaq2tptp").click(function() {
+		translateQuery(encode(psoaQuery()), function(data) {
+			var tptp = cache().sentences;
+	    tptp.push(data.sentences.shift());
+	    data.sentences = tptp;
+	    $("#tptpOutput").val(printTranslation(data));
+		});
 	});
 	$("#resetBtn").click(function() {
 		$("#psoaDoc").val("");
@@ -170,8 +178,12 @@ $(document).ready(function() {
 	$('#vp').click(function() {
 		executeQuery(
 			encode(psoaDoc()),
-			encode(psoaQuery())
-		);
+			encode(psoaQuery()),
+			function(result) {
+				$("#vampireOutput").val(result);
+				$("#tabs").tabs('enable', 2);
+	      $("#tabs").tabs('select', 2);
+			});
 	});
 	$("#tabs").tabs({disabled:[1,2]});
 });
@@ -180,6 +192,7 @@ $(document).ready(function() {
 <body>
 	<h1>PSOA2TPTP Translator</h1>
 		<div id="tabs">
+		  <input id="cache" type="hidden" value="" />
 			<ul>
 				<li><a href="#tab-1">PSOA Rule Base</a></li>
 				<li><a href="#tab-2">TPTP Rule Base</a></li>
@@ -196,12 +209,13 @@ $(document).ready(function() {
 			<div id="tab-2">
 				<textarea id="tptpOutput" rows="20" cols="80">
 				</textarea>
+				<h3>Query Rule Base</h3>
+        <textarea id="psoaQuery" rows="1" cols="80"></textarea>
+        <br/>
+        <input id="psoaq2tptp" type="button" value="Translate Query" /> 
+        <input id="vp" type="button" value="Execute" />
 			</div>
 			<div id="tab-3">
-				<h3>Query Rule Base (PSOA)</h3>
-				<textarea id="psoaQuery" rows="1" cols="80">
-				</textarea>
-				<br /> <input id="vp" type="button" value="Execute" />
 				<h3>Vampire Prime Output</h3>
 				<textarea id="vampireOutput" rows="20" cols="80" style="border: 0">
 				</textarea>
