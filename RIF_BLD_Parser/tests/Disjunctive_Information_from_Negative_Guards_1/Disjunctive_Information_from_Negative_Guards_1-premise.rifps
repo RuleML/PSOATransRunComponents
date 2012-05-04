@@ -1,9 +1,0 @@
-
- Document(
-  Prefix(ex  http://example.com/example#)
-  Prefix(pred http://www.w3.org/2007/rif-builtin-predicate#)
-  Group(
-   ex:p(ex:a)
-   Forall ?x (1=2 :- And (ex:p(?x) External(pred:isNotInteger(?x)) External(pred:isNotString(?x))))
-  )
- )
