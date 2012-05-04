@@ -1,0 +1,10 @@
+Document (
+	Group (
+		Forall ?Hu ?Wi ?Ch ?o ?1 ?2 (?o#family(husb->?Hu wife->?Wi child->?Ch) :-
+			And(?o#family(husb->?Hu wife->?Wi)
+				Or(?1#kid(?Hu ?Ch) ?2#kid(?Wi ?Ch)))
+		)
+		inst4#family(husb->Joe wife->Sue)
+		_1#kid(Sue Pete)
+	)
+)

@@ -1,0 +1,25 @@
+Document (
+	Prefix(cpt <http://eg.com/concepts#>)
+	Prefix(mus <http://eg.com/museums#>)
+	Prefix(func <http://www.w3.org/2007/rif-builtin-function#>)
+	Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
+
+	Group (
+		Forall ?cost ?cost1 ?cost2 ?A ?B (
+			cpt:reciship(?cost cpt:source->?A cpt:dest->?B) :-
+						And(cpt:shipment(? ?cost1 cpt:source->?A cpt:dest->?B)
+							cpt:shipment(? ?cost2 cpt:source->?B cpt:dest->?A)
+							?cost = External(func:numeric_add(?cost1 ?cost2)))
+		)
+		shipment("PC"^^xs:string "47.5"^^xs:float cpt:source->mus:BostonMoS cpt:dest->mus:LondonSciM)
+		shipment("PDA"^^xs:string "9.5"^^xs:float cpt:source->mus:LondonSciM cpt:dest->mus:BostonMoS)
+		
+		<!-- Tuptributed and slotributed version -->
+		Forall ?cost ?cost1 ?cost2 ?A ?B ?2 ?3 (
+			Exists ?1 (And(?1#cpt:reciship(?cost) ?1#cpt:reciship(cpt:source->?A) ?1#cpt:reciship(cpt:dest->?B))) :-
+					And(?2#cpt:shipment(? ?cost1) ?2#cpt:shipment(cpt:source->?A) ?2#cpt:shipment(cpt:dest->?B)
+						?3#cpt:shipment(? ?cost2) ?3#cpt:shipment(cpt:source->?B) ?3#cpt:shipment(cpt:dest->?A)
+						?cost = External(func:numeric_add(?cost1 ?cost2)))
+		)
+	)
+)
