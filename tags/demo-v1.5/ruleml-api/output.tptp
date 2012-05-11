@@ -1,0 +1,19 @@
+fof(fact1, hypothesis, member(joe, male)).
+fof(fact2, hypothesis, member(m1, married) & tupterm(m1, joe, sue)).
+fof(fact3, hypothesis, member(f1, family) & sloterm(f1, husb, joe)).
+fof(fact4, hypothesis, member(f1, family) & sloterm(f1, child, pete)).
+fof(fact5, hypothesis, member(m2, married) & tupterm(m2, john, mary) & sloterm(m2, child, tom)).
+fof(fact6, hypothesis, member(f2, family) & sloterm(f2, husb, john) & sloterm(f2, wife, mary) & sloterm(f2, child, tom)).
+fof(fact7, hypothesis, member(m3, married) & tupterm(m3, tim, jane1) & tupterm(m3, 1980)).
+fof(fact8, hypothesis, member(tim, person) & tupterm(tim, male, 1960) & sloterm(tim, job, engineer) & sloterm(tim, child, jack)).
+fof(fact9, hypothesis, member(jane1, person) & tupterm(jane1, female, 1963) & tupterm(jane1, nRC) & sloterm(jane1, job, secretary)).
+fof(fact10, hypothesis, member(f4, family) & tupterm(f4, mike, jessie) & tupterm(f4, 1991) & sloterm(f4, child, tomas) & sloterm(f4, child, jane2)).
+
+fof(conj1, conjecture, member(m1, married) & tupterm(m1, joe, sue)).
+fof(conj2, conjecture, member(f1, family) & sloterm(f1, husb, joe) & sloterm(f1, child, pete)).
+fof(conj3, conjecture, member(m2, married) & tupterm(m2, john, mary)).
+fof(conj4, conjecture, member(f2, family) & sloterm(f2, child, tom)).
+fof(conj5, conjecture, member(m3, married) & tupterm(m3, tim, jane1) & sloterm(m3, child, jack)).
+fof(conj6, conjecture, member(tim, person) & sloterm(tim, job, engineer) & sloterm(tim, child, jack)).
+fof(conj7, conjecture, member(jane1, person) & tupterm(jane1, nRC) & sloterm(jane1, job, secretary)).
+fof(conj8, conjecture, member(f4, family) & tupterm(f4, mike, jessie, 1991) & sloterm(f4, child, tomas)).
