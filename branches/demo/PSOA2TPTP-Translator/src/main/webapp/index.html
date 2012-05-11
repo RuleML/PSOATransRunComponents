@@ -115,7 +115,7 @@ var translateQuery = function(q,handler) {
 		data:JSON.stringify(translateRequest(null,q)),
 		contentType:"application/json; charset=utf-8",
 		success:function(data) {
-			data.sentences.shift(); // no rule base
+			data.sentences.shift(); // no rulebase
 			handler(data);
 		}
 	});
@@ -148,10 +148,29 @@ var psoaQuery = function() {
 	return $("#psoaQuery").val();
 }
 
+var filter = function(result) {
+	var filteredResult = "";
+	var startIndex, endIndex = 0;
+	
+	do
+	{
+		startIndex = result.lastIndexOf("%", result.indexOf("Proof ", endIndex));
+		endIndex = result.lastIndexOf("%", result.indexOf("Statistics", startIndex));
+		if (endIndex > 0)
+			filteredResult += result.substring(startIndex, endIndex);
+		else
+		{
+			filteredResult += result.substring(startIndex);
+			break;
+		}
+	} while (true);
+	return filteredResult;
+}
+
 // Where the button handler functions are set
 $(document).ready(function() {
 	$("#psoaDoc").val(DefaultPSOADoc)
-	$("#psoaQuery").val(DefaultPSOAQuery);
+	<!-- $("#psoaQuery").val(DefaultPSOAQuery); -->
 	$('#psoa2tptp').click(function() {
 		translateDoc(encode(psoaDoc()),function(data) {
 			$("#cache").val(JSON.stringify(data));
@@ -180,7 +199,7 @@ $(document).ready(function() {
 			encode(psoaDoc()),
 			encode(psoaQuery()),
 			function(result) {
-				$("#vampireOutput").val(result);
+				$("#vpOutput").val(filter(result));
 				$("#tabs").tabs('enable', 2);
 	      $("#tabs").tabs('select', 2);
 			});
@@ -194,14 +213,14 @@ $(document).ready(function() {
 		<div id="tabs">
 		  <input id="cache" type="hidden" value="" />
 			<ul>
-				<li><a href="#tab-1">PSOA Rule Base</a></li>
-				<li><a href="#tab-2">TPTP Rule Base</a></li>
-				<li><a href="#tab-3">Vampire Prime Reasoner</a></li>
+				<li><a href="#tab-1">PSOA Rulebase</a></li>
+				<li><a href="#tab-2">TPTP Rulebase</a></li>
+				<li><a href="#tab-3">VampirePrime Reasoner</a></li>
 			</ul>
 			<div id="tab-1">
 				<textarea id="psoaDoc" rows="20" cols="80">
 				</textarea>
-				<br /> 
+				<br />
 				<input id="psoa2tptp" type="button" value="Translate" /> 
 				<input id="psoaFactsPremises" type="button" value="PSOA Fact Test I" /> 
 				<input id="resetBtn" type="button" value="Reset" />
@@ -209,15 +228,18 @@ $(document).ready(function() {
 			<div id="tab-2">
 				<textarea id="tptpOutput" rows="20" cols="80">
 				</textarea>
-				<h3>Query Rule Base</h3>
-        <textarea id="psoaQuery" rows="1" cols="80"></textarea>
-        <br/>
-        <input id="psoaq2tptp" type="button" value="Translate Query" /> 
-        <input id="vp" type="button" value="Execute" />
+				<h3>Query</h3>
+		        <textarea id="psoaQuery" rows="1" cols="80"></textarea><br/>
+		        <input id="psoaq2tptp" type="button" value="Translate Query" /> 
+		        <input id="vp" type="button" value="Execute" />
 			</div>
 			<div id="tab-3">
-				<h3>Vampire Prime Output</h3>
-				<textarea id="vampireOutput" rows="20" cols="80" style="border: 0">
+				<h3>VampirePrime Output</h3>
+				<h5> Note: If the query is true, the result will say an answer is found
+				and the proof will be shown. Otherwise the result will say
+				"proof not found". </h5>
+				<!-- textarea id="vpOutput" rows="20" cols="80" style="border: 0"> -->
+				<textarea id="vpOutput" rows="20" cols="80">
 				</textarea>
 			</div>
 		</div>
