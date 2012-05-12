@@ -1,0 +1,11 @@
+
+ Document(
+  Prefix(ex  http://example.org/#)
+  Prefix(dc http://purl.org/dc/elements/1.1/)
+
+  Import(http://example.org/mygraph http://www.w3.org/2007/rif-import-profile#OWL-DL)
+
+  Group (
+   Forall ?x ?y ( ?x[ex:hasTitle -> ?y] :- ?x[dc:title -> ?y])
+  )
+ )

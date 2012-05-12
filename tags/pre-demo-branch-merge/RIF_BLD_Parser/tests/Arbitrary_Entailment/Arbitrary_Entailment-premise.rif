@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Document [
+  <!ENTITY rif  "http://www.w3.org/2007/rif#">
+  <!ENTITY xs   "http://www.w3.org/2001/XMLSchema#">
+  <!ENTITY rdf  "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+]>
+
+<Document xmlns="&rif;">
+  <payload>
+    <Group>
+      <sentence>
+        <Equal>
+          <left>
+            <Const type="&xs;string">a</Const>
+          </left>
+          <right>
+            <Const type="&xs;string">b</Const>
+          </right>
+        </Equal>
+      </sentence>
+    </Group>
+  </payload>
+</Document>
+<!--XML document generated on Sat Oct 25 18:02:29 EDT 2008-->

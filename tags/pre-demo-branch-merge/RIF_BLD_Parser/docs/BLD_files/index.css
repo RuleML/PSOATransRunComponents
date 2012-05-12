@@ -1,0 +1,120 @@
+/* Copied from http://www.webont.org/owl/1.1/css/owl.css to the OWL-WG
+wiki, and then to the RIF-WG wiki  <pre><nowiki> */
+
+.nonterminal {
+    font-weight: bold;
+    font-style: italic;
+    font-family: sans-serif;
+}
+.name {
+    font-family: monospace;
+}
+.grammar {
+    font-family: monospace; padding-left: 20px; 
+}
+.gexample {
+    font-family: monospace; padding-left: 20px; 
+}
+.image {
+    text-align: center;
+}
+.caption {
+    font-weight: bold;
+}
+table.complexity td {
+    text-align: center;
+}
+
+/* override mediawiki's beautiful DL styling... */
+dl {
+    background: white;
+    width: 100%;
+    border: none;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+div {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* let's try a class for a plain note; editor's notes might be
+different, relations to issues might be different, etc. */
+
+.note {
+    padding: 5px;
+    border: solid 1px black;
+    margin-left: 10%;
+    background-color: #FFA;
+    font-size: smaller;
+}
+
+.note_author {
+   font-size: smaller;
+   font-style: italic;
+}
+
+
+.ednote {
+   padding: 5px;
+   border: solid 1px black;
+   /* background-color: #FFA; */
+}
+
+.ednotehead {
+   font-weight: bold;
+}
+
+#fulltitle {
+  font-size: 140%; 
+  font-weight: bold;
+}
+
+.syntax-translation-table td {
+    vertical-align: top;
+}
+
+.syntax-translation-table table {
+       border-collapse: collapse;
+       background: #FFF;
+    }
+
+.syntax-translation-table th,td {
+       padding: 4px 1em;
+       background: #eee;
+       border: 1px black solid;
+    }
+
+.syntax-translation-table pre {
+   background-color: #eee;
+   border: none;
+   color:black;
+   line-height:1.1em;
+   padding: 0;
+}
+
+.atRiskNote {
+   padding: 5px;
+   border: solid 2px blue;
+   background-color: #FFA;
+}
+
+.atRiskRef {
+   font-style: italic;	
+}
+
+.atRiskNoteHead {
+   font-style: italic;	
+}
+
+.warning {
+   margin: 1em;
+   padding: 1em;
+   border: solid 2px blue;
+   background-color: #FFA;
+}
+
+/* </nowiki></pre> */

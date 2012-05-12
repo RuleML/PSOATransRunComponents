@@ -1,0 +1,11 @@
+
+Document(
+  Prefix(ex   http://example.org/example#)
+  
+  Group  (
+    Forall ?x ?y  ?z  ( ?y=?z   :-  And ( ex:p(?x ?y)  ex:p(?x ?z) ) )
+
+    ex:p(ex:a ex:b)
+    ex:p(ex:a ex:c)
+  ) 
+)

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Document [
+  <!ENTITY rif  "http://www.w3.org/2007/rif#">
+  <!ENTITY xs   "http://www.w3.org/2001/XMLSchema#">
+  <!ENTITY rdf  "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+]>
+
+  <Frame xmlns="&rif;">
+    <object>
+      <Const type="&rif;iri">http://example.org/#o</Const>
+    </object>
+    <slot>
+        <Const type="&rif;iri">http://example.org/#a</Const>
+        <Const type="&xs;integer">1</Const>
+    </slot>
+  </Frame>
+<!--XML document generated on Sat Nov 01 12:33:07 EDT 2008-->

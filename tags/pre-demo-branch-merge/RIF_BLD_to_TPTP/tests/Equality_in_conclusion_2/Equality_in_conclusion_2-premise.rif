@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Document [
+  <!ENTITY rif  "http://www.w3.org/2007/rif#">
+  <!ENTITY xs   "http://www.w3.org/2001/XMLSchema#">
+  <!ENTITY rdf  "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+]>
+
+<Document xmlns="&rif;">
+  <payload>
+    <Group>
+      <sentence>
+        <Forall>
+          <declare>
+            <Var>x</Var>
+          </declare>
+          <formula>
+            <Implies>
+              <if>
+                <Atom>
+                  <op>
+                    <Const type="&rif;iri">http://example.org/example#homeWorker</Const>
+                  </op>
+                  <args>
+                    <Var>x</Var>
+                  </args>
+                </Atom>
+              </if>
+              <then>
+                <Equal>
+                  <left>
+                    <Expr>
+                      <op>
+                        <Const type="&rif;iri">http://example.org/example#workZIPCode</Const>
+                      </op>
+                      <args>
+                        <Var>x</Var>
+                      </args>
+                    </Expr>
+                  </left>
+                  <right>
+                    <Expr>
+                      <op>
+                        <Const type="&rif;iri">http://example.org/example#homeZIPCode</Const>
+                      </op>
+                      <args>
+                        <Var>x</Var>
+                      </args>
+                    </Expr>
+                  </right>
+                </Equal>
+              </then>
+            </Implies>
+          </formula>
+        </Forall>
+      </sentence>
+      <sentence>
+        <Atom>
+          <op>
+            <Const type="&rif;iri">http://example.org/example#homeWorker</Const>
+          </op>
+          <args>
+            <Const type="&rif;iri">http://example.org/example#a</Const>
+          </args>
+        </Atom>
+      </sentence>
+    </Group>
+  </payload>
+</Document>
+<!--XML document generated on Sat Nov 01 12:33:43 EDT 2008-->

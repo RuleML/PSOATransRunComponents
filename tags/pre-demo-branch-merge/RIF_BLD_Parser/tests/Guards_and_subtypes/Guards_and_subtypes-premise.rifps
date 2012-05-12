@@ -1,0 +1,10 @@
+
+ Document(
+  Prefix(ex http://example.com/example#)
+  Prefix(pred http://www.w3.org/2007/rif-builtin-predicate#)
+  Prefix(xsd http://www.w3.org/2001/XMLSchema#)
+  Group(
+   ex:p("pass 1") :- External(pred:isDecimal("3"^^xs:integer))
+   ex:p("pass 2") :- External(pred:isInteger("3"^^xs:decimal))
+  )
+ )

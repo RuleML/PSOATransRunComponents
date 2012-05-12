@@ -1,0 +1,17 @@
+
+ Document(
+  Prefix(ex http://example.com/example#)
+  Prefix(func http://www.w3.org/2007/rif-builtin-function#)
+  Prefix(pred http://www.w3.org/2007/rif-builtin-predicate#)
+  Prefix(xs http://www.w3.org/2001/XMLSchema#)
+
+  Group(
+   Forall ?x ( 
+     ex:root(?x) :-
+       And (External(pred:isDecimal(?x))
+              External(func:numeric-subtract(External(func:numeric-multiply(?x External(func:numeric-multiply(?x ?x)))) ?x))
+                  = "0"^^xs:decimal
+       )
+   )
+  )
+ )

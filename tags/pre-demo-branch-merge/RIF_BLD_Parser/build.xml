@@ -1,0 +1,96 @@
+<!--
+    Build file for the RIF BLD parser (and validator as a sample application).
+-->
+
+
+
+<!--
+
+Validator usage example:
+
+java -enableassertions -cp lib/getopt.jar:./lib/RIF_BLD_AbstractSyntax.jar:./build/jar/RIF_BLD_Parser.jar rif.bld.validator.RIF_BLD_Validator tests/test1.rif
+
+-->
+
+
+<project name="RIF_BLD_Parser" basedir="." default="jar">
+
+    <property name="src.dir"     value="./src"/>
+    <property name="jaxb.src.dir"     value="${src.dir}/rif/bld/parser/jaxb"/>
+
+    <property name="build.dir"   value="./build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+    <property name="jar"         value="${jar.dir}/RIF_BLD_Parser.jar"/>
+    <property name="javadoc.dir" value="docs/api"/>
+    <property name="lib.dir"     value="lib"/>
+    <property name="jaxb-ri.dir" value="jaxb-ri"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${javadoc.dir}"/>
+        <delete file="${jar}"/>
+    </target>
+
+
+    <target name="tidy" depends="clean">
+      <delete dir="${jaxb.src.dir}"/>
+    </target>
+    
+
+    <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+      <classpath>
+	<fileset dir="${jaxb-ri.dir}/lib" includes="*.jar" />
+      </classpath>
+    </taskdef>
+
+
+    <target name="jaxb">
+      <xjc destdir="src" 
+	   schema="./BLDRule.xsd" 
+	   removeOldOutput="yes" 
+	   package="rif.bld.parser.jaxb"/> 
+    </target>
+
+
+    <target name="compile" depends="jaxb">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" 
+	       destdir="${classes.dir}" 
+	       classpathref="classpath"/>
+    </target>
+
+    <target name="jar" depends="compile,javadoc">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar}" basedir="${classes.dir}" update="false"/>
+        <jar destfile="${jar}" basedir="." includes="${javadoc.dir}/**" update="true"/>
+        <jar destfile="${jar}" basedir="." includes="COPYRIGHT" update="true"/>
+        <jar destfile="${jar}" basedir="." includes="LICENSE" update="true"/>
+        <jar destfile="${jar}" basedir="." includes="BLDRule.xsd" update="true"/>
+        <jar destfile="${jar}" basedir="." includes="BLDCond.xsd" update="true"/>
+        <jar destfile="${jar}" basedir="." includes="xml.xsd" update="true"/>
+    </target>
+
+    
+
+    <target name="javadoc" depends="jaxb">
+        <mkdir dir="${javadoc.dir}"/>
+        <javadoc destdir="${javadoc.dir}" 
+		 verbose="yes" 
+		 windowtitle="RIF BLD parser"
+                 classpathref="classpath">
+          <fileset dir="src/rif/bld" defaultexcludes="yes">
+            <include name="parser/*.java"/>
+            <include name="parser/jaxb/*.java"/>
+            <include name="validator/*.java"/>
+          </fileset>
+        </javadoc>
+    </target>
+
+</project>
+
