@@ -1,5 +1,0 @@
-
- Or (
-  External(pred:isInteger(ex:a))
-  External(pred:isString(ex:a))
- )
