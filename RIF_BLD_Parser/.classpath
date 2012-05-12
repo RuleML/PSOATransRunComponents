@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/getopt.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/RIF_BLD_AbstractSyntax"/>
+	<classpathentry kind="lib" path="jaxb-ri/lib/activation.jar"/>
+	<classpathentry kind="lib" path="jaxb-ri/lib/jaxb-api.jar"/>
+	<classpathentry kind="lib" path="jaxb-ri/lib/jaxb-impl.jar"/>
+	<classpathentry kind="lib" path="jaxb-ri/lib/jaxb-xjc.jar"/>
+	<classpathentry kind="lib" path="jaxb-ri/lib/jaxb1-impl.jar"/>
+	<classpathentry kind="lib" path="jaxb-ri/lib/jsr173_1.0_api.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

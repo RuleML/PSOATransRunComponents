@@ -1,0 +1,14 @@
+
+Document(
+  Prefix(ex  http://example.com/example#)
+  Prefix(func http://www.w3.org/2007/rif-builtin-function#)
+  Prefix(pred http://www.w3.org/2007/rif-builtin-predicate#)
+  
+  Group  (
+    Forall ?x ( ex:a(?x) :-
+                   And ( ex:a(External(func:numeric-add(?x 1)))  
+                         External(pred:numeric-greater-than(?x 0)))
+              )
+    ex:a(10)
+  ) 
+)

@@ -1,0 +1,11 @@
+
+ Document(
+  Prefix(ex  http://example.com/example#)
+  Prefix(pred http://www.w3.org/2007/rif-builtin-predicate#)
+  Prefix(func http://www.w3.org/2007/rif-builtin-function#)
+  Group(
+   ex:p(ex:a)
+   Forall ?x (1=2 :- And (ex:p(?x) External(pred:isNotInteger(?x))))
+   Forall ?x (1=2 :- And (ex:p(?x) External(func:numeric-less-than(?x 1)) External(func:numeric-greater-than(?x 3))))
+  )
+ )

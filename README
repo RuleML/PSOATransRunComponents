@@ -13,7 +13,7 @@ Prerequisites: Maven 2
 3. Change port number of jboss AS 7
 
     vim <jboss_as_home>/standalone/configuration/standalone.xml
-    # on line 282, change socket binding named http to 808x
+    # on line 259, change socket binding named http to 808x
 
 4. Run demo server
 

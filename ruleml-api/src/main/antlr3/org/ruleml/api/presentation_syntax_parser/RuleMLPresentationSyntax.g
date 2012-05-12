@@ -41,10 +41,12 @@ tokens
 }
 
 @lexer::members {
+    private DefaultAbstractSyntax factory = new DefaultAbstractSyntax();
 }
 
 @members
 {
+    private DefaultAbstractSyntax factory = new DefaultAbstractSyntax();
     
     private CommonTree getTupleTree(List list_terms, int length)
     {

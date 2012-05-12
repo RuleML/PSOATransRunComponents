@@ -1,0 +1,52 @@
+<!--
+    Build file for the RIF BLD abstract syntax API.
+-->
+
+
+<project name="RIF_BLD_AbstractSyntax" basedir="." default="jar">
+
+    <property name="src.dir"     value="./src"/>
+
+    <property name="build.dir"   value="./build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+    <property name="jar"         value="${jar.dir}/RIF_BLD_AbstractSyntax.jar"/>
+    <property name="javadoc.dir" value="docs/api"/>
+
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${javadoc.dir}"/>
+        <delete file="${jar}"/>
+        <delete>
+	  <fileset dir="." includes="*~"/>
+	</delete>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}"/>
+    </target>
+
+    <target name="jar" depends="compile,javadoc">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar}" basedir="${classes.dir}" update="false"/>
+        <jar destfile="${jar}" basedir="." includes="${javadoc.dir}/**" update="true"/>
+        <jar destfile="${jar}" basedir="." includes="COPYRIGHT" update="true"/>
+        <jar destfile="${jar}" basedir="." includes="LICENSE" update="true"/>
+    </target>
+
+    
+    <target name="javadoc">
+        <mkdir dir="${javadoc.dir}"/>
+        <javadoc destdir="${javadoc.dir}" 
+		 verbose="yes" 
+		 windowtitle="RIF BLD abstract syntax API">
+          <fileset dir="src/rif/bld" defaultexcludes="yes">
+            <include name="*.java"/>
+          </fileset>
+        </javadoc>
+    </target>
+
+</project>
+

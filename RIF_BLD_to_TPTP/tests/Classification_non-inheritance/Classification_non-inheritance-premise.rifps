@@ -1,0 +1,12 @@
+
+Document(
+
+  Prefix(tax http://example.com/scientific-classification#)
+  Prefix(ppl  http://example.com/people#)
+  Prefix(cpt  http://example.com/concepts#)
+
+  Group (
+    ppl:john#cpt:Person
+    cpt:Person[tax:phylum -> tax:Chordata]       
+  )
+)

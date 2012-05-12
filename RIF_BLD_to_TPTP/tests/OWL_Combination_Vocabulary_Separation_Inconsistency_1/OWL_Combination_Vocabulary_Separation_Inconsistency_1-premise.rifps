@@ -1,0 +1,12 @@
+
+ Document(
+  Prefix(ex  http://example.org/#)
+  Prefix(xs  http://www.w3.org/2001/XMLSchema#)
+  Prefix(rdf http://www.w3.org/1999/02/22-rdf-syntax-ns#)
+
+  Import(http://example.org/mygraph http://www.w3.org/2007/rif-import-profile#OWL-DL)
+
+  Group (
+   ex:myiri[rdf:type -> xs:string]
+  )
+ )

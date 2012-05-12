@@ -1,0 +1,10 @@
+
+ Document(
+  Prefix(ex  http://example.org/#)
+
+  Import(http://example.org/mygraph http://www.w3.org/2007/rif-import-profile#OWL-DL)
+
+  Group (
+   ex:myiri[ex:hasChild -> "John"]
+  )
+ )
