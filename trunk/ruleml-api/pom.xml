@@ -3,32 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ruleml-api</groupId>
 	<artifactId>ruleml-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>RuleML API</name>
-	<developers>
-		<developer>
-			<id>peter-paulr</id>
-			<name>Reuben Peter-Paul</name>
-			<email>reuben.peterpaul@gmail.com</email>
-			<url>http://reubenpeterpaul.git.com</url>
-			<organization>CS6795 Group 2</organization>
-			<organizationUrl>http://reubenpeterpaul.git.com</organizationUrl>
-			<roles>
-				<role>Programmer</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>zoug</id>
-			<name>Gen Zou</name>
-			<email>ZouGen04@gmail.com</email>
-			<organization>CS6795 Group 2</organization>
-		</developer>
-	</developers>
-	<scm>
-		<connection>scm:svn:http://psoa-to-tptp.googlecode.com/svn/</connection>
-		<developerConnection>scm:svn:https://psoa-to-tptp.googlecode.com/svn/</developerConnection>
-		<url>https://psoa-to-tptp.googlecode.com/svn/</url>
-	</scm>
 	<build>
 		<defaultGoal>install</defaultGoal>
 		<plugins>
@@ -48,11 +24,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>jsr14</target>
-					<sourceDirectory>src</sourceDirectory>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -101,11 +72,6 @@
 			<groupId>gnu.getopt</groupId>
 			<artifactId>java-getopt</artifactId>
 			<version>1.0.13</version>
-		</dependency>
-		<dependency>
-			<groupId>logic.is.power</groupId>
-			<artifactId>tptp-parser</artifactId>
-			<version>1.0</version>
 		</dependency>
 	</dependencies>
 	<properties>

@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>psoa.2.tptp</groupId>
-	<artifactId>psoa.2.tptp.ws</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>PSOA2TPTP</groupId>
+	<artifactId>PSOA2TPTP.webservice</artifactId>
+	<version>1.5</version>
 	<packaging>war</packaging>
 	<name>PSOA2TPTP Translator Web Service API</name>
 	<dependencies>
@@ -17,11 +17,6 @@
 			<artifactId>jsr311-api</artifactId>
 			<version>1.1.1</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>ruleml-api</groupId>
-			<artifactId>ruleml-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -50,10 +45,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
 			</plugin>
 		</plugins>
 		<finalName>psoa2tptp-trans</finalName>

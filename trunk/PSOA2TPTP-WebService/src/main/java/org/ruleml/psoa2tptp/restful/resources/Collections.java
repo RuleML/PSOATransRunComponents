@@ -1,4 +1,4 @@
-package psoa.to.tptp.restful.resources;
+package org.ruleml.psoa2tptp.restful.resources;
 
 import java.util.ArrayList;
 import java.util.Collection;

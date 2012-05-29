@@ -1,4 +1,4 @@
-package psoa.to.tptp.restful.models;
+package org.ruleml.psoa2tptp.restful.models;
 
 import java.util.List;
 
