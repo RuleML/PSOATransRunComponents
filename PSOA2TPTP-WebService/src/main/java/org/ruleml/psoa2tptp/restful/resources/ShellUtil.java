@@ -1,4 +1,4 @@
-package psoa.to.tptp.restful.resources;
+package org.ruleml.psoa2tptp.restful.resources;
 
 import java.io.IOException;
 import java.io.OutputStream;

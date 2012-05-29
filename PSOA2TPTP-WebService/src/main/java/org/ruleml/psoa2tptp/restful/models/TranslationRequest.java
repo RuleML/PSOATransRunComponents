@@ -1,4 +1,4 @@
-package psoa.to.tptp.restful.models;
+package org.ruleml.psoa2tptp.restful.models;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
