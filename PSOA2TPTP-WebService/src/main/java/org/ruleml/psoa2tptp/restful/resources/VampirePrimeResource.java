@@ -1,12 +1,7 @@
 package org.ruleml.psoa2tptp.restful.resources;
 
-import static psoa.to.tptp.restful.resources.ShellUtil.VKERNEL;
-import static psoa.to.tptp.restful.resources.ShellUtil.cl;
-import static psoa.to.tptp.restful.resources.ShellUtil.execute;
-import static psoa.to.tptp.restful.resources.Util.out;
-import static psoa.to.tptp.restful.resources.Util.serialize;
-import static psoa.to.tptp.restful.resources.Util.tmpFile;
-import static psoa.to.tptp.restful.resources.Util.writer;
+import static org.ruleml.psoa2tptp.restful.resources.ShellUtil.*;
+import static org.ruleml.psoa2tptp.restful.resources.Util.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,21 +20,22 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteException;
 
-import psoa.to.tptp.restful.models.TptpDocument;
+import org.ruleml.psoa2tptp.restful.models.TptpDocument;
 
 @Path("/execute")
 public class VampirePrimeResource {
 	@Context UriInfo info;
 	
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Encoded
-	public String getVampirePrimeResults(TptpDocument doc) {
+	public String getVampirePrimeResults(String doc) {
 		CommandLine cl = cl(VKERNEL);
 		File tmp = tmpFile();
-		PrintWriter w = writer(tmp);
-		w.print(serialize(doc.getSentences()));
+		PrintWriter w = writer(tmp);		
+//		w.print(serialize(doc.getSentences()));
+		w.print(doc);
 		w.close();
 		cl.addArgument(tmp.getAbsolutePath());
 		OutputStream out = out();

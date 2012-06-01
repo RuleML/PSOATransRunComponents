@@ -6,15 +6,9 @@ import gnu.getopt.LongOpt;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.ParserRuleReturnScope;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.*;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
-import org.ruleml.api.presentation_syntax_parser.BasicRuleMLPresentationASTGrammar;
-import org.ruleml.api.presentation_syntax_parser.RuleMLPresentationSyntaxLexer;
-import org.ruleml.api.presentation_syntax_parser.RuleMLPresentationSyntaxParser;
 
 /** Command line utility to validate the syntax of PSOA RuleML files. */
 public class Validator {
@@ -67,11 +61,11 @@ public class Validator {
 
 		try {
 			for (int i = 0; i < ruleBaseFileNames.length; ++i) {
-				createBasicTreeParser(ruleBaseFileNames[i], false).document();
+//				createBasicTreeParser(ruleBaseFileNames[i], false).document();
 			}
 			System.out.println();
 			if (hasQueryDoc) {
-				createBasicTreeParser(queryDoc, hasQueryDoc).queries();
+//				createBasicTreeParser(queryDoc, hasQueryDoc).queries();
 			}
 			
 			
@@ -84,28 +78,28 @@ public class Validator {
 
 	}
 
-	public static BasicRuleMLPresentationASTGrammar createBasicTreeParser(
-			String filepath, boolean isQuery) throws RecognitionException,
-			IOException {
-		ANTLRInputStream fileInput = new ANTLRInputStream(new FileInputStream(
-				filepath));
-		RuleMLPresentationSyntaxLexer lexer = new RuleMLPresentationSyntaxLexer(
-				fileInput);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		RuleMLPresentationSyntaxParser parser = new RuleMLPresentationSyntaxParser(
-				tokens);
-		ParserRuleReturnScope r;
-
-		if (isQuery)
-			r = parser.queries();
-		else
-			r = parser.top_level_item();
-
-		CommonTree t = (CommonTree) r.getTree(); // get tree from parser
-		// Create a tree node stream from resulting tree
-		CommonTreeNodeStream nodes = new CommonTreeNodeStream(t);
-		return new BasicRuleMLPresentationASTGrammar(nodes);
-	}
+//	public static BasicRuleMLPresentationASTGrammar createBasicTreeParser(
+//			String filepath, boolean isQuery) throws RecognitionException,
+//			IOException {
+//		ANTLRInputStream fileInput = new ANTLRInputStream(new FileInputStream(
+//				filepath));
+//		RuleMLPresentationSyntaxLexer lexer = new RuleMLPresentationSyntaxLexer(
+//				fileInput);
+//		CommonTokenStream tokens = new CommonTokenStream(lexer);
+//		RuleMLPresentationSyntaxParser parser = new RuleMLPresentationSyntaxParser(
+//				tokens);
+//		ParserRuleReturnScope r;
+//
+//		if (isQuery)
+//			r = parser.queries();
+//		else
+//			r = parser.top_level_item();
+//
+//		CommonTree t = (CommonTree) r.getTree(); // get tree from parser
+//		// Create a tree node stream from resulting tree
+//		CommonTreeNodeStream nodes = new CommonTreeNodeStream(t);
+//		return new BasicRuleMLPresentationASTGrammar(nodes);
+//	}
 
 	private static void printUsage() {
 

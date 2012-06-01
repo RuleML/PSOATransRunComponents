@@ -69,7 +69,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		}
 	}
 	
-	public ParserRuleReturnScope parse(CharStream input, boolean isQuery) throws RecognitionException
+	public static ParserRuleReturnScope parse(CharStream input, boolean isQuery) throws RecognitionException
 	{
 		PSOARuleMLPSLexer lexer = new PSOARuleMLPSLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);

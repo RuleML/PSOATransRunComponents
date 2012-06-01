@@ -3,13 +3,7 @@ package org.ruleml.psoa2tptp.restful.resources;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecuteResultHandler;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.Executor;
-import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.*;
 
 public enum ShellUtil {
 	;
@@ -21,7 +15,7 @@ public enum ShellUtil {
 	public static final String RPAREN = ")";
 	
 	public static String rredirect(String s) {
-		return RREDIRECT+s;
+		return RREDIRECT.concat(s);
 	}
 	
 	public static String subshell(String s) {
@@ -29,7 +23,7 @@ public enum ShellUtil {
 	}
 	
 	public static String wrap(String s, String head, String tail) {
-		return head+s+tail;
+		return head.concat(s).concat(tail);
 	}
 	
 	public static DefaultExecuteResultHandler resultHandler() {
@@ -48,7 +42,7 @@ public enum ShellUtil {
 	
 	public static int execute(CommandLine cl, OutputStream out) throws ExecuteException, IOException {
 		Executor e = executor(watchdog());
-		PumpStreamHandler psh = new PumpStreamHandler(out,out);
+		PumpStreamHandler psh = new PumpStreamHandler(out, out);
 		e.setStreamHandler(psh);
 		return e.execute(cl);
 	}
@@ -58,18 +52,18 @@ public enum ShellUtil {
 	}
 
 	public static String echo(String s) {
-		return ECHO+padl(s);
+		return ECHO.concat(padl(s));
 	}
 	
 	public static String padl(String s) {
-		return " "+s;
+		return " ".concat(s);
 	}
 	
 	public static String quote(String s) {
-		return "\""+s+"\"";
+		return "\"".concat(s).concat("\"");
 	}
 	
 	public static String parenthesize(String s) {
-		return LPAREN+s+RPAREN;
+		return LPAREN.concat(s).concat(RPAREN);
 	}
 }
