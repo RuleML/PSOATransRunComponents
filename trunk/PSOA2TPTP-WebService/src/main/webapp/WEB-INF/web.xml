@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
-    <display-name>RestEasy sample Web Application</display-name>
+    <display-name>PSOA2TPTP Web Application</display-name>
 
     <listener>
         <listener-class>
@@ -19,10 +19,10 @@
         <init-param>
             <param-name>resteasy.servlet.mapping.prefix</param-name>
             <param-value>/ws</param-value>
-      </init-param>
+		</init-param>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>psoa.to.tptp.restful.resources.Application</param-value>
+            <param-value>org.ruleml.psoa2tptp.restful.resources.Application</param-value>
         </init-param>
 		<load-on-startup>1</load-on-startup>
     </servlet>

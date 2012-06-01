@@ -1,6 +1,6 @@
 package org.ruleml.psoa2tptp.restful.resources;
 
-import static psoa.to.tptp.restful.resources.Collections.set;
+import static org.ruleml.psoa2tptp.restful.resources.Collections.set;
 
 import java.util.Set;
 

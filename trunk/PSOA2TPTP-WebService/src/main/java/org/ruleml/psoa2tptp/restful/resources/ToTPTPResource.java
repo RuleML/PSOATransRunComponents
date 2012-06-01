@@ -1,29 +1,16 @@
 package org.ruleml.psoa2tptp.restful.resources;
 
-import static psoa.to.tptp.restful.resources.Collections.list;
-import static psoa.to.tptp.restful.resources.Util.convertDocument;
-import static psoa.to.tptp.restful.resources.Util.convertQuery;
-import static psoa.to.tptp.restful.resources.Util.deserialize;
-import static psoa.to.tptp.restful.resources.Util.out;
+import static org.ruleml.psoa2tptp.restful.resources.Collections.list;
+import static org.ruleml.psoa2tptp.restful.resources.Util.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Encoded;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 
-import org.antlr.runtime.RecognitionException;
-
-import psoa.to.tptp.restful.models.TptpDocument;
-import psoa.to.tptp.restful.models.TranslationRequest;
+import org.ruleml.psoa2tptp.restful.models.*;
+import org.ruleml.psoa2tptp.translator.*;
 
 @Path("/translate")
 public class ToTPTPResource {
@@ -32,27 +19,33 @@ public class ToTPTPResource {
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	@Encoded
-	public TptpDocument translateSentences(TranslationRequest req) {
-		List<String> l = null;
-		OutputStream out = out();
-		OutputStream out2 = out();
-		String psoa = decode(req.getDocument());
+	public String translateSentences(TranslationRequest req) {
+		String kb = decode(req.getDocument());
 		String query = decode(req.getQuery());
 		try {
-			convertDocument(psoa, out);
-			convertQuery(query, out2);
-		} catch (RecognitionException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+			Translator translator = new DirectTranslator();
+			if (kb.isEmpty()) kb = null;
+			if (query.isEmpty()) query = null;
+			return translator.translate(kb, query);
+//			List<String> l = list();
+//			if (kb != null && !kb.isEmpty())
+//				l = deserialize(translator.translateKB(kb));
+//			
+//			if (query != null && !query.isEmpty())
+//				l.add(translator.translateQuery(query));
+		} catch (TranslatorException e) {
+			e.printStackTrace();
+			return null;
 		}
-		l = list(deserialize(out.toString()));
-		l.add(out2.toString());
-		TptpDocument doc = new TptpDocument();
-		doc.setSentences(l);
-		return doc;
+//		for (String str : l) {
+//			System.out.println(str);
+//		}
+		
+//		TptpDocument doc = new TptpDocument();
+//		doc.setSentences(l);
+//		return doc;
 	}
 	
 	
@@ -60,7 +53,6 @@ public class ToTPTPResource {
 	private static String decode(String s) {
 		return URLDecoder.decode(s.replace("&gt;", ">"));
 	}
-	
 }
 
 

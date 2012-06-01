@@ -7,7 +7,8 @@
 <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.20.custom.min.js"></script>
 <script type="text/javascript">
-const DefaultPSOADoc=
+
+const SamplePSOAKB=
 "Document(\n"+
   "\tGroup (\n"+
     "\t\tGroup (\n"+
@@ -19,17 +20,14 @@ const DefaultPSOADoc=
       "\t\t\t_m2#_married(_John _Mary _child->_Tom)\n"+
       "\t\t\t_f2#_family(_husb->_John _wife->_Mary _child->_Tom)\n"+
    "\t\t)\n"+
-
     "\t\t_m3#_married([_Tim _Jane1] [1980])\n"+
     "\t\t_Tim#_Person([_Male 1960] _job->_Engineer _child->_Jack)\n"+
-    "\t\t_Jane1#_Person([_Female 1963] [_NRC] _job->_Secretary)\n"+
+    "\t\t_Jane1#_Person([_Female 1963] [_unb] _job->_Secretary)\n"+
     
     "\t\t_f4#_family([_Mike _Jessie] [1991] _child->_Tomas _child->_Jane2)\n"+
   "\t)\n"+
 ")";
 
-const DefaultPSOAQuery="_m1#_married(_Joe _Sue)";
-const Host = "http://localhost:8081";
 const App = "psoa2tptp-trans";
 const Translate = "translate";
 const Slash = "/";
@@ -40,6 +38,8 @@ const Doc = "document";
 const Query = "query";
 const Execute = "execute";
 const nullf = function() {};
+
+var translatedKB;
 
 var slash = function(s) {
 	return Slash+s;
@@ -77,11 +77,11 @@ var qs = function(url, params) {
 	return query;
 }
 
-var translateDoc = function(psoa,handler) {
+var translate = function(kb, q, handler) {
 	$.ajax({
 		type:"POST",
 		url:service(Translate),
-		data:JSON.stringify(translateRequest(psoa)),
+		data:JSON.stringify(translateRequest(kb, q)),
 		contentType:"application/json; charset=utf-8",
 		success:function(data) {
 			handler(data);
@@ -89,55 +89,24 @@ var translateDoc = function(psoa,handler) {
 	});
 }
 
-var printTranslation = function(data) {
-	var str = "";
-	var sentences = data.sentences;
-	for (i in sentences) {
-		str += append(sentences[i],"\n");
-	}
-	return str;
-}
-
-var readTptpRuleBase = function() {
-	return tptpDoc().split("\n");
-}
-
-var translateRequest = function(psoa,query) {
+var translateRequest = function(psoa, query) {
 	var d = (psoa) ? psoa : "";
 	var q = (query) ? query : "";
 	return {document: d, query: q};
 }
 
-var translateQuery = function(q,handler) {
-	$.ajax({
-		type:"POST",
-		url:service(Translate),
-		data:JSON.stringify(translateRequest(null,q)),
-		contentType:"application/json; charset=utf-8",
-		success:function(data) {
-			data.sentences.shift(); // no rulebase
-			handler(data);
-		}
-	});
-}
-
-var executeQuery = function(base, q, handler) {
+var executeQuery = function(handler) {
 	$.ajax({
      type:"POST",
-     contentType:"application/json; charset=utf-8",
+     contentType:"text/plain; charset=utf-8",
      url:service(Execute),
-     data:JSON.stringify({sentences: readTptpRuleBase()}),
+     data:tptpDoc(),
      success:handler
    });
 }
 
-var cache = function() {
-	var cache = eval('('+$("#cache").val()+')');
-	return cache;
-}
-
-var psoaDoc = function() {
-	return $("#psoaDoc").val();
+var psoaKB = function() {
+	return $("#PSOAKB").val();
 }
 
 var tptpDoc = function() {
@@ -145,7 +114,7 @@ var tptpDoc = function() {
 }
 
 var psoaQuery = function() {
-	return $("#psoaQuery").val();
+	return $("#PSOAQuery").val();
 }
 
 var filter = function(result) {
@@ -167,42 +136,34 @@ var filter = function(result) {
 	return filteredResult;
 }
 
-// Where the button handler functions are set
+// Set the button handler functions
 $(document).ready(function() {
-	$("#psoaDoc").val(DefaultPSOADoc)
-	<!-- $("#psoaQuery").val(DefaultPSOAQuery); -->
-	$('#psoa2tptp').click(function() {
-		translateDoc(encode(psoaDoc()),function(data) {
-			$("#cache").val(JSON.stringify(data));
-			$("#tptpOutput").val(printTranslation(cache()));
-      $("#tabs").tabs('enable', 1);
-      $("#tabs").tabs('select', 1);
+	$("#PSOAKB").val(SamplePSOAKB);
+	$('#transKBBtn').click(function() {
+		translate(encode(psoaKB()), null, function(result) {
+			translatedKB = result;
+			$("#tptpOutput").val(translatedKB);
+			$("#tabs").tabs('enable', 1);
+			$("#tabs").tabs('select', 1);
 		});
 	});
-	$("#psoaq2tptp").click(function() {
-		translateQuery(encode(psoaQuery()), function(data) {
-			var tptp = cache().sentences;
-	    tptp.push(data.sentences.shift());
-	    data.sentences = tptp;
-	    $("#tptpOutput").val(printTranslation(data));
+	$("#transQueryBtn").click(function() {
+		translate(null, encode(psoaQuery()), function(result) {
+			$("#tptpOutput").val(translatedKB + "\n" + result);
 		});
 	});
-	$("#resetBtn").click(function() {
-		$("#psoaDoc").val("");
+	$("#resetKBBtn").click(function() {
+		$("#PSOAKB").val("");
 	});
-	$("#psoaFactsPremises").click(function() {
-		$("#resetBtn").click();
-		$("#psoaDoc").val(DefaultPSOADoc);	
+	$("#showSampleKBBtn").click(function() {
+		$("#PSOAKB").val(SamplePSOAKB);	
 	});
-	$('#vp').click(function() {
-		executeQuery(
-			encode(psoaDoc()),
-			encode(psoaQuery()),
-			function(result) {
-				$("#vpOutput").val(filter(result));
-				$("#tabs").tabs('enable', 2);
-	      $("#tabs").tabs('select', 2);
-			});
+	$('#runQueryBtn').click(function() {
+		executeQuery(function(result) {
+			$("#vpOutput").val(filter(result));
+			$("#tabs").tabs('enable', 2);
+      		$("#tabs").tabs('select', 2);
+		});
 	});
 	$("#tabs").tabs({disabled:[1,2]});
 });
@@ -210,36 +171,32 @@ $(document).ready(function() {
 </head>
 <body>
 	<h1>PSOA2TPTP Translator</h1>
-		<div id="tabs">
-		  <input id="cache" type="hidden" value="" />
-			<ul>
-				<li><a href="#tab-1">PSOA Rulebase</a></li>
-				<li><a href="#tab-2">TPTP Rulebase</a></li>
-				<li><a href="#tab-3">VampirePrime Reasoner</a></li>
-			</ul>
-			<div id="tab-1">
-				<textarea id="psoaDoc" rows="20" cols="80">
-				</textarea>
-				<br />
-				<input id="psoa2tptp" type="button" value="Translate" /> 
-				<input id="psoaFactsPremises" type="button" value="PSOA Fact Test I" /> 
-				<input id="resetBtn" type="button" value="Reset" />
-			</div>
-			<div id="tab-2">
-				<textarea id="tptpOutput" rows="20" cols="80">
-				</textarea>
-				<h3>Query</h3>
-		        <textarea id="psoaQuery" rows="1" cols="80"></textarea><br/>
-		        <input id="psoaq2tptp" type="button" value="Translate Query" /> 
-		        <input id="vp" type="button" value="Execute" />
-			</div>
-			<div id="tab-3">
-				<h3>VampirePrime Output</h3>
-				<h5> Note: If a query is successful, its proof will be shown. If a query fails, "proof not found" will be printed. </h5>
-				<!-- textarea id="vpOutput" rows="20" cols="80" style="border: 0"> -->
-				<textarea id="vpOutput" rows="20" cols="80">
-				</textarea>
-			</div>
+	<div id="tabs">
+		<ul>
+			<li><a href="#tab-1">PSOA Rulebase</a></li>
+			<li><a href="#tab-2">TPTP Rulebase</a></li>
+			<li><a href="#tab-3">VampirePrime Reasoner</a></li>
+		</ul>
+		<div id="tab-1">
+			<textarea id="PSOAKB" rows="20" cols="80"></textarea><br/>
+			<input id="transKBBtn" type="button" value="Translate Rulebase" /> 
+			<input id="showSampleKBBtn" type="button" value="Sample Rulebase" /> 
+			<input id="resetKBBtn" type="button" value="Reset" />
 		</div>
+		<div id="tab-2">
+			<textarea id="tptpOutput" rows="20" cols="80"></textarea>
+			<h3>Query</h3>
+	        <textarea id="PSOAQuery" rows="1" cols="80"></textarea><br/>
+	        <input id="transQueryBtn" type="button" value="Translate Query" /> 
+	        <input id="runQueryBtn" type="button" value="Execute" />
+		</div>
+		<div id="tab-3">
+			<h3>VampirePrime Output</h3>
+			<h5>Note: If a query is successful, its proof will be shown. If a query fails, "proof not found" will be printed.</h5>
+			<!-- textarea id="vpOutput" rows="20" cols="80" style="border: 0"> -->
+			<textarea id="vpOutput" rows="20" cols="80">
+			</textarea>
+		</div>
+	</div>
 </body>
 </html>
