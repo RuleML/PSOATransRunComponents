@@ -4,7 +4,6 @@ import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 
 import org.antlr.runtime.ANTLRInputStream;
 
@@ -58,7 +57,7 @@ public class RunTranslator {
 		}
 
 		try {
-			DirectTranslator translator = new DirectTranslator();
+			ANTLRBasedTranslator translator = new TPTPASOTranslator();
 			for (int i = 0; i < ruleBaseFileNames.length; ++i) {
 				translator.translateKB(new ANTLRInputStream(new FileInputStream(ruleBaseFileNames[i])), System.out);
 //				createBasicTreeParser(ruleBaseFileNames[i], false).document();
