@@ -92,7 +92,7 @@ var translate = function(kb, q, handler) {
 var translateRequest = function(psoa, query) {
 	var d = (psoa) ? psoa : "";
 	var q = (query) ? query : "";
-	return {document: d, query: q};
+	return {document: d, query: q, transType: transType()};
 }
 
 var executeQuery = function(handler) {
@@ -115,6 +115,10 @@ var tptpDoc = function() {
 
 var psoaQuery = function() {
 	return $("#PSOAQuery").val();
+}
+
+var transType = function() {
+	return $("input[name=translatorType]:checked").val();
 }
 
 var filter = function(result) {
@@ -179,6 +183,8 @@ $(document).ready(function() {
 		</ul>
 		<div id="tab-1">
 			<textarea id="PSOAKB" rows="20" cols="80"></textarea><br/>
+			<input type="radio" name="translatorType" value="Direct" /> Direct Translator
+			<input type="radio" name="translatorType" value="TPTPASO" checked="checked" /> TPTP ASO Translator<br/>
 			<input id="transKBBtn" type="button" value="Translate Rulebase" /> 
 			<input id="showSampleKBBtn" type="button" value="Sample Rulebase" /> 
 			<input id="resetKBBtn" type="button" value="Reset" />

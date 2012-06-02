@@ -21,7 +21,16 @@ public class ToTPTPResource {
 		String kb = decode(req.getDocument());
 		String query = decode(req.getQuery());
 		try {
-			Translator translator = new TPTPASOTranslator();
+			Translator translator = null;
+			switch (req.transType()) {
+				case Direct:
+					translator = new DirectTranslator();
+					break;
+				case TPTPASO:
+					translator = new TPTPASOTranslator();
+					break;
+			}
+			
 			if (kb.isEmpty()) kb = null;
 			if (query.isEmpty()) query = null;
 			return translator.translate(kb, query);
@@ -50,5 +59,3 @@ public class ToTPTPResource {
 		return URLDecoder.decode(s.replace("&gt;", ">"));
 	}
 }
-
-
