@@ -2,7 +2,7 @@ package org.ruleml.psoa2tptp.translator;
 
 import org.antlr.runtime.RecognitionException;
 
-public class TranslatorException extends Exception {
+public class TranslatorException extends RuntimeException {
 	/**
 	 * 
 	 */

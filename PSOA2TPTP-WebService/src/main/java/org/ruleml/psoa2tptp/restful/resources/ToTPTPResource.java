@@ -1,10 +1,6 @@
 package org.ruleml.psoa2tptp.restful.resources;
 
-import static org.ruleml.psoa2tptp.restful.resources.Collections.list;
-import static org.ruleml.psoa2tptp.restful.resources.Util.*;
-
 import java.net.URLDecoder;
-import java.util.List;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -25,7 +21,7 @@ public class ToTPTPResource {
 		String kb = decode(req.getDocument());
 		String query = decode(req.getQuery());
 		try {
-			Translator translator = new DirectTranslator();
+			Translator translator = new TPTPASOTranslator();
 			if (kb.isEmpty()) kb = null;
 			if (query.isEmpty()) query = null;
 			return translator.translate(kb, query);
