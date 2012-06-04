@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>PSOA2TPTP</groupId>
 	<artifactId>PSOA2TPTP.webservice</artifactId>
-	<version>1.5</version>
+	<version>1.6</version>
 	<packaging>war</packaging>
 	<name>PSOA2TPTP Translator Web Service API</name>
 	
