@@ -1,0 +1,5 @@
+#! /bin/bash
+
+CWD=`pwd`
+ln -s -f "$CWD/vkernelwrapper" /usr/local/bin
+ln -s -f "$CWD/vkernel" /usr/local/bin
