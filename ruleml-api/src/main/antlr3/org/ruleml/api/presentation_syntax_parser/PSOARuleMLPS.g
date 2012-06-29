@@ -199,6 +199,7 @@ constant
         }
         -> ^(SHORTCONST LOCAL[$ID.text.substring(1)])
     |   IRI_REF -> ^(SHORTCONST IRI[$IRI_REF.text])
+    |   TOP
     ;
 
 
@@ -227,6 +228,7 @@ EXISTS : 'Exists' ;
 AND : 'And' ;
 OR : 'Or' ;
 EXTERNAL : 'External';
+TOP : 'Top';
 
 //  Constants:
 NUMBER: DIGIT+ ('.' DIGIT*)?;

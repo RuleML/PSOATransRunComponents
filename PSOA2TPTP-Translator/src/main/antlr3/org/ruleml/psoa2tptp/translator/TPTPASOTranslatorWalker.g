@@ -105,7 +105,7 @@ subclass
     
 term returns [Term t]
     :   c=constant { $t = c; }
-    |   VAR_ID { $t = m_generator.getVariable($VAR_ID.text.substring(1)); }
+    |   VAR_ID { $t = m_generator.getVariable($VAR_ID.text); }
     |   p=psoa
     |   external
     ;
@@ -146,6 +146,7 @@ slot returns [List<Term> terms]
 constant returns [Term t]
     :   ^(LITERAL IRI)
     |   ^(SHORTCONST ct=constshort) { $t = ct; }
+    |   TOP { $t = null; }
     ;
     
 constshort returns [Term t]

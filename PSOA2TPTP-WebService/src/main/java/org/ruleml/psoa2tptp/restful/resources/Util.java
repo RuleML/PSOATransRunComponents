@@ -95,7 +95,7 @@ public enum Util {
 	protected static byte[] bytes(String s) {
 		return s.getBytes();
 	}
-	
+
 	protected static OutputStream out() {
 		return new ByteArrayOutputStream();
 	}
