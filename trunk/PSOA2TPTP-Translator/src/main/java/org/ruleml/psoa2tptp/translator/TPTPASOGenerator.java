@@ -1,9 +1,8 @@
 package org.ruleml.psoa2tptp.translator;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.Map.Entry;
 
 import logic.is.power.tptp_parser.*;
 import logic.is.power.tptp_parser.SimpleTptpParserOutput.AnnotatedFormula;
@@ -11,14 +10,18 @@ import logic.is.power.tptp_parser.TptpParserOutput.*;
 
 public class TPTPASOGenerator {
 	private TptpParserOutput m_factory = new SimpleTptpParserOutput();
-	private static final String PREFIX_Var = "V_",
-								PREFIX_Rulenames = "ax",
-								PREFIX_Querynames = "conj",
+	private Map<String, String> m_varMap = new HashMap<String, String>();
+	private static final String PREFIX_Var = "Q",
+								PREFIX_Rulename = "ax",
+								PREFIX_FactQueryname = "query",
+								PREFIX_NonFactQueryname = "query",
 								PRED_Member = "member",
 								PRED_TupTerm = "tupterm",
 								PRED_SlotTerm = "sloterm",
-								PRED_Subclass = "subclass";
-	private static int m_numRules = 0, m_numQueries = 0;
+								PRED_Subclass = "subclass",
+								PRED_Answer = "ans";
+								
+	private int m_numRules = 0;
 	private static DecimalFormat m_numFormat = new DecimalFormat();
 	
 	static {
@@ -52,32 +55,54 @@ public class TPTPASOGenerator {
 	
 	public String getVariableName(String varname)
 	{
-		for (int i = varname.length() - 1; i >= 0; i--) {
-			if (!Character.isLetterOrDigit(varname.charAt(i)))
-				throw new TranslatorException("Name of variables can only consist of letters or variables");
+		String tptpVarName = m_varMap.get(varname);
+		if (tptpVarName == null)
+		{
+			for (int i = varname.length() - 1; i >= 1; i--) {
+				if (!Character.isLetterOrDigit(varname.charAt(i)))
+					throw new TranslatorException("Name of variables can only consist of letters or variables");
+			}
+			tptpVarName = PREFIX_Var.concat(varname.substring(1));
+			m_varMap.put(varname, tptpVarName);
 		}
 		
-		return PREFIX_Var.concat(varname);
+		return tptpVarName;
 	}
 	
 	public Term getVariable(String varname)
-	{		
+	{
 		return m_factory.createVariableTerm(getVariableName(varname));
 	}
 	
 	public FofFormula getImplies(FofFormula head, FofFormula body)
 	{
-		return m_factory.createBinaryFormula(head, BinaryConnective.ReverseImplication, body);
+//		return m_factory.createBinaryFormula(head, BinaryConnective.ReverseImplication, body);
+		return m_factory.createBinaryFormula(body, BinaryConnective.Implication, head);
 	}
 	
 	public FofFormula getExist(Iterable<String> vars, FofFormula formula)
 	{
+		for (String var : vars) {
+			if (m_varMap.remove(var) == null)
+				throw new TranslatorException("Incorrect usage of variable " + var + " in the quantification of the formula " + formula);
+		}
 		return m_factory.createQuantifiedFormula(Quantifier.Exists, vars, formula);
 	}
 	
 	public FofFormula getForAll(Iterable<String> vars, FofFormula formula)
 	{
+		for (String var : vars) {
+			if (m_varMap.remove(var) == null)
+				throw new TranslatorException("Incorrect usage of variable " + var + " in the quantification of the formula " + formula);
+		}
 		return m_factory.createQuantifiedFormula(Quantifier.ForAll, vars, formula);
+	}
+	
+	private FofFormula getForAll(FofFormula formula)
+	{
+		FofFormula f = m_factory.createQuantifiedFormula(Quantifier.ForAll, m_varMap.values(), formula);
+		m_varMap.clear();
+		return f;
 	}
 	
 	public FofFormula getAndFormula(FofFormula left, FofFormula right)
@@ -95,27 +120,43 @@ public class TPTPASOGenerator {
 		return m_factory.atomAsFormula(m_factory.createPlainAtom(pred, args));
 	}
 	
+	private FofFormula getAndFormulaIfNotNull(FofFormula left, FofFormula right)
+	{
+		if (left == null)
+			return right;
+		
+		return m_factory.createBinaryFormula(left, BinaryConnective.And, right);
+	}
+	
 	public FofFormula getPSOAFormula(Term oid, Term classTerm, Set<? extends List<Term>> tuples, Set<? extends List<Term>> slots)
 	{
-		FofFormula f;
+		FofFormula f = null;
 		ArrayList<Term> terms = new ArrayList<TptpParserOutput.Term>();
-		terms.add(oid);
-		terms.add(classTerm);
 		
-		f = getAtomicFormula(PRED_Member, terms);
+		if (classTerm != null)
+		{
+			terms.add(oid);
+			terms.add(classTerm);
+			
+			f = getAtomicFormula(PRED_Member, terms);
+		}
+		
 		for (List<Term> tuple : tuples) {
 			terms.clear();
 			terms.add(oid);
 			terms.addAll(tuple);
-			f = getAndFormula(f, getAtomicFormula(PRED_TupTerm, terms));
+			f = getAndFormulaIfNotNull(f, getAtomicFormula(PRED_TupTerm, terms));
 		}
 		
 		for (List<Term> slot : slots) {
 			terms.clear();
 			terms.add(oid);
 			terms.addAll(slot);
-			f = getAndFormula(f, getAtomicFormula(PRED_SlotTerm, terms));
+			f = getAndFormulaIfNotNull(f, getAtomicFormula(PRED_SlotTerm, terms));
 		}
+		
+		if (f == null)
+			throw new TranslatorException(oid + "Top() is not supported");
 		
 		return f;
 	}
@@ -130,13 +171,51 @@ public class TPTPASOGenerator {
 	
 	public AnnotatedFormula getAnnotatedAxiom(FofFormula f)
 	{
-		String name = PREFIX_Rulenames.concat(String.valueOf(m_numFormat.format(++m_numRules)));		
+		if (!m_varMap.isEmpty())
+		{
+			throw new TranslatorException("Missing variable " +
+								m_varMap.keySet().iterator().next() +
+								" in the quantification of the formula " +
+								f + ".");
+		}
+		
+		String name = PREFIX_Rulename.concat(String.valueOf(m_numFormat.format(++m_numRules)));		
 		return (AnnotatedFormula)m_factory.createFofAnnotated(name, FormulaRole.Axiom, f, null, 0);
 	}
 	
 	public AnnotatedFormula getAnnotatedQuery(FofFormula f)
 	{
-		String name = PREFIX_Querynames.concat(String.valueOf(m_numFormat.format(++m_numQueries)));		
-		return (AnnotatedFormula)m_factory.createFofAnnotated(name, FormulaRole.Conjecture, f, null, 0);
+		if (!m_varMap.isEmpty())
+		{
+			ArrayList<Term> terms = new ArrayList<Term>();
+			for (Entry<String, String> varPair : m_varMap.entrySet()) {			
+				terms.add(m_factory.createPlainTerm(dblQuoted(varPair.getKey().concat(" = ")), null));
+				terms.add(m_factory.createVariableTerm(varPair.getValue()));
+			}
+			FofFormula conc = getPositionalAtom(PRED_Answer, terms);
+			f = getForAll(getImplies(conc, f));
+			
+			return (AnnotatedFormula)m_factory.createFofAnnotated(PREFIX_NonFactQueryname, FormulaRole.Theorem, f, null, 0);
+		}
+		else
+		{
+			FofFormula conc = m_factory.atomAsFormula(m_factory.createPlainAtom(PRED_Answer, null));
+			f = getImplies(conc, f);
+			// PREFIX_Querynames.concat(String.valueOf(m_numFormat.format(++m_numQueries)));
+			return (AnnotatedFormula)m_factory.createFofAnnotated(PREFIX_FactQueryname, FormulaRole.Theorem, f, null, 0);
+		}
+	}
+
+	public FofFormula getPositionalAtom(String pred, Iterable<Term> args)
+	{
+		return m_factory.atomAsFormula(m_factory.createPlainAtom(pred, args));
+	}
+	
+	private String quoted(String name) {
+		return '\'' + name + '\'';
+	}
+	
+	private String dblQuoted(String name) {
+		return '\"' + name + '\"';
 	}
 }

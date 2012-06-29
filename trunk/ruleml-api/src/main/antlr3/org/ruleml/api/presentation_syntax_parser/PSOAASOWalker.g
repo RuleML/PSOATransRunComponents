@@ -147,6 +147,7 @@ slot returns [Slot result]
 constant returns [Const result]
     :   ^(LITERAL IRI)
     |   ^(SHORTCONST constshort)
+    |   TOP
     ;
     
 constshort returns [Const_Constshort result]

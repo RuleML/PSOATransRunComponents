@@ -20,12 +20,17 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteException;
 
-import org.ruleml.psoa2tptp.restful.models.TptpDocument;
-
 @Path("/execute")
 public class VampirePrimeResource {
-	@Context UriInfo info;
+	@Context
+	UriInfo info;
 	
+	private static final String[] vpargs = new String[] { "-t", "300", "-m",
+			"300000", "--elim_def", "0", "--selection", "8", "--config",
+			"answer_predicates.xml", "--max_number_of_answers", "100",
+			"--inconsistencies_as_answers", "off",
+			"--limited_abs_lit_chaining", "on", "--proof", "on" };
+
 	@POST
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
@@ -33,10 +38,11 @@ public class VampirePrimeResource {
 	public String getVampirePrimeResults(String doc) {
 		CommandLine cl = cl(VKERNEL);
 		File tmp = tmpFile();
-		PrintWriter w = writer(tmp);		
-//		w.print(serialize(doc.getSentences()));
+		PrintWriter w = writer(tmp);
+		// w.print(serialize(doc.getSentences()));
 		w.print(doc);
 		w.close();
+		cl.addArguments(vpargs);
 		cl.addArgument(tmp.getAbsolutePath());
 		OutputStream out = out();
 		try {
@@ -48,5 +54,5 @@ public class VampirePrimeResource {
 		}
 		tmp.delete();
 		return out.toString();
-	}	
+	}
 }
