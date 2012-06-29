@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>PSOA2TPTP Translator</title>
+<link type="text/css" href="css/custom-theme/jquery-ui-1.8.20.custom.css" rel="Stylesheet" />	
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.20.custom.min.js"></script>
+<script type="text/javascript">
+
+const SamplePSOAKB=
+"Document(\n"+
+  "\tGroup (\n"+
+    "\t\tGroup (\n"+
+      "\t\t\t_Joe#_Male()\n"+
+      "\t\t\t_m1#_married(_Joe _Sue)\n"+
+      "\t\t\t_f1#_family(_husb->_Joe)\n"+
+      "\t\t\t_f1#_family(_child->_Pete)\n"+
+      
+      "\t\t\t_m2#_married(_John _Mary _child->_Tom)\n"+
+      "\t\t\t_f2#_family(_husb->_John _wife->_Mary _child->_Tom)\n"+
+   "\t\t)\n"+
+    "\t\t_m3#_married([_Tim _Jane1] [1980])\n"+
+    "\t\t_Tim#_Person([_Male 1960] _job->_Engineer _child->_Jack)\n"+
+    "\t\t_Jane1#_Person([_Female 1963] [_unb] _job->_Secretary)\n"+
+    
+    "\t\t_f4#_family([_Mike _Jessie] [1991] _child->_Tomas _child->_Jane2)\n"+
+  "\t)\n"+
+")";
+
+const App = "psoa2tptp-trans";
+const Translate = "translate";
+const Slash = "/";
+const Equal = "=";
+const Amp = "&";
+const Qmark = "?";
+const Doc = "document";
+const Query = "query";
+const Execute = "execute";
+const nullf = function() {};
+
+var translatedKB;
+
+var slash = function(s) {
+	return Slash+s;
+}
+var append = function(s1,s2) {
+	return s1 + s2;
+}
+const WS = "ws";
+
+var service = function(service) {
+	return append(WS,slash(service));
+}
+
+var htmlEncode = function(data) {
+	return $('<div/>').text(data).html();
+}
+var htmlDecode = function(data) {
+	return $('<div/>').html(data).text();
+}
+var param = function(key,val) {
+	return append(key,append(Equal,val));
+}
+var amp = function(val) {
+	return append(Amp,val);
+}
+
+var encode = encodeURIComponent;
+
+var qs = function(url, params) {
+	query = append(url,Qmark);
+	query += params.shift();
+	for (p in params) {
+		query += amp(p);
+	}
+	return query;
+}
+
+var translate = function(kb, q, handler) {
+	$.ajax({
+		type:"POST",
+		url:service(Translate),
+		data:JSON.stringify(translateRequest(kb, q)),
+		contentType:"application/json; charset=utf-8",
+		success:function(data) {
+			handler(data);
+		}
+	});
+}
+
+var translateRequest = function(psoa, query) {
+	var d = (psoa) ? psoa : "";
+	var q = (query) ? query : "";
+	return {document: d, query: q, transType: transType()};
+}
+
+var executeQuery = function(handler) {
+	$.ajax({
+     type:"POST",
+     contentType:"text/plain; charset=utf-8",
+     url:service(Execute),
+     data:tptpDoc(),
+     success:handler
+   });
+}
+
+var psoaKB = function() {
+	return $("#PSOAKB").val();
+}
+
+var tptpDoc = function() {
+	return $("#tptpOutput").val();
+}
+
+var psoaQuery = function() {
+	return $("#PSOAQuery").val();
+}
+
+var transType = function() {
+	return $("input[name=translatorType]:checked").val();
+}
+
+var filter = function(result) {
+	var filteredResult = "";
+	var startIndex, endIndex = 0;
+	
+	do
+	{
+		startIndex = result.lastIndexOf("%", result.indexOf("Proof ", endIndex));
+		endIndex = result.lastIndexOf("%", result.indexOf("Statistics", startIndex));
+		if (endIndex > 0)
+			filteredResult += result.substring(startIndex, endIndex);
+		else
+		{
+			filteredResult += result.substring(startIndex);
+			break;
+		}
+	} while (true);
+	return filteredResult;
+}
+
+// Set the button handler functions
+$(document).ready(function() {
+	$("#PSOAKB").val(SamplePSOAKB);
+	$('#transKBBtn').click(function() {
+		translate(encode(psoaKB()), null, function(result) {
+			translatedKB = result;
+			$("#tptpOutput").val(translatedKB);
+			$("#tabs").tabs('enable', 1);
+			$("#tabs").tabs('select', 1);
+		});
+	});
+	$("#transQueryBtn").click(function() {
+		translate(null, encode(psoaQuery()), function(result) {
+			$("#tptpOutput").val(translatedKB + "\n" + result);
+		});
+	});
+	$("#resetKBBtn").click(function() {
+		$("#PSOAKB").val("");
+	});
+	$("#showSampleKBBtn").click(function() {
+		$("#PSOAKB").val(SamplePSOAKB);	
+	});
+	$('#runQueryBtn').click(function() {
+		executeQuery(function(result) {
+			$("#vpOutput").val(filter(result));
+			$("#tabs").tabs('enable', 2);
+      		$("#tabs").tabs('select', 2);
+		});
+	});
+	$("#tabs").tabs({disabled:[1,2]});
+});
+</script>
+</head>
+<body>
+	<h1>PSOA2TPTP Translator</h1>
+	<div id="tabs">
+		<ul>
+			<li><a href="#tab-1">PSOA Rulebase</a></li>
+			<li><a href="#tab-2">TPTP Rulebase</a></li>
+			<li><a href="#tab-3">VampirePrime Reasoner</a></li>
+		</ul>
+		<div id="tab-1">
+			<textarea id="PSOAKB" rows="20" cols="80"></textarea><br/>
+			<input type="radio" name="translatorType" value="Direct" /> Direct Translator
+			<input type="radio" name="translatorType" value="TPTPASO" checked="checked" /> TPTP-ASO-based Translator<br/>
+			<input id="transKBBtn" type="button" value="Translate Rulebase" /> 
+			<input id="showSampleKBBtn" type="button" value="Sample Rulebase" /> 
+			<input id="resetKBBtn" type="button" value="Reset" />
+		</div>
+		<div id="tab-2">
+			<textarea id="tptpOutput" rows="20" cols="80"></textarea>
+			<h3>Query</h3>
+	        <textarea id="PSOAQuery" rows="1" cols="80"></textarea><br/>
+	        <input id="transQueryBtn" type="button" value="Translate Query" /> 
+	        <input id="runQueryBtn" type="button" value="Execute" />
+		</div>
+		<div id="tab-3">
+			<h3>VampirePrime Output</h3>
+			<h5>Note: If a query is successful, all its proofs will be shown. If a query fails, "proof not found" will be printed.</h5>
+			<!-- textarea id="vpOutput" rows="20" cols="80" style="border: 0"> -->
+			<textarea id="vpOutput" rows="20" cols="80">
+			</textarea>
+		</div>
+	</div>
+</body>
+</html>
