@@ -18,7 +18,8 @@ Prerequisites: Maven 2
 4. Run demo server
 
     mvn clean install
-    bin/demo <jboss_as_home>
+    cd bin
+    ./demo <jboss_as_home>
 
 5. Launch demo client
 
