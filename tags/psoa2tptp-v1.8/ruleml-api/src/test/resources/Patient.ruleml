@@ -1,0 +1,37 @@
+Document
+(
+	Prefix(modf <http://unbsj.biordf.net/haiku/dw/model/function#>)
+	Prefix(dwt <http://unbsj.biordf.net/haiku/dw/table#>)
+	Prefix(dwa <http://unbsj.biordf.net/haiku/dw/attribute#>)
+	Prefix(haio <http://www.semanticweb.org/ontologies/2010/7/HAI.owl#>)
+	Group
+	(
+		<!-- This rule inroduces function modf:Patient_by_patWID as generating 
+		 instances of the class haio:Patient.
+		-->
+		 
+		Forall ?WID (External(modf:Patient_by_patWID(?WID)) # haio:Patient())
+
+		<!-- This rule inroduces function modf:Medical_record_by_number as generating 
+		 instances of the class haio:Medical_record.
+		-->
+		Forall ?N (External(modf:Medical_record_by_number(?N))#haio:Medical_record)
+
+		<!-- This rule populates haio:has_record from the DW table dwt:Npatient
+		 by creating URIs for instances of haio:Patient and 
+		 haio:Medical_record with the functions modf:Patient_by_patWID
+		 and modf:Medical_record_by_number, and asserting the property
+		 haio:has_record for these instances. 
+		-->
+
+		Forall ?Row ?WID ?MedRecNum ?Patient ?MedRec
+		(
+			haio:has_record(?Patient ?MedRec) :- 
+				And(
+					?Row#dwt:Npatient(dwa:patWID->?WID dwa:patMrn->?MedRecNum)
+					?Patient = External(modf:Patient_by_patWID(?WID))
+					?MedRec = External(modf:Medical_record_by_number(?MedRecNum))
+				)
+		)
+	)
+)

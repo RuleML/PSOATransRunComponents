@@ -1,0 +1,12 @@
+#! /bin/bash
+
+# cwd=`pwd`
+JBOSSAS=$1
+# BASEDIR=$(dirname $0)
+# export PATH="$PATH:$BASEDIR"
+
+export PATH="$PATH:."
+
+cp -f "../PSOA2TPTP-WebService/target/psoa2tptp-trans.war" "$JBOSSAS/standalone/deployments/"
+
+$JBOSSAS/bin/standalone.sh
