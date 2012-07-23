@@ -4,13 +4,15 @@ import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.antlr.runtime.ANTLRInputStream;
 
 /** Command line utility to translate PSOA RuleML files into TPTP. */
 public class RunTranslator {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException, IOException {
 		boolean importClosure = false;
 		boolean hasQueryDoc = false;
 		String queryDoc = "";
@@ -67,12 +69,11 @@ public class RunTranslator {
 				translator.translateQuery(new ANTLRInputStream(new FileInputStream(queryDoc)), System.out);
 //				createBasicTreeParser(queryDoc, hasQueryDoc).query();
 			}
-		} catch (Exception ex) {
+		} catch (TranslatorException ex) {
 			System.err.println("Error: " + ex);
 			ex.printStackTrace();
 			System.exit(1);
 		}
-
 	}
 
 //	public static DirectTranslatorWalker createBasicTreeParser(
