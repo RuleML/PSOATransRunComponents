@@ -24,13 +24,12 @@ import org.apache.commons.exec.ExecuteException;
 public class VampirePrimeResource {
 	@Context
 	UriInfo info;
-	
 	private static final String[] vpargs = new String[] { "-t", "300", "-m",
 			"300000", "--elim_def", "0", "--selection", "8", "--config",
-			"answer_predicates.xml", "--max_number_of_answers", "100",
+			ANSWER_CONFIG_PATH, "--max_number_of_answers", "100",
 			"--inconsistencies_as_answers", "off",
 			"--limited_abs_lit_chaining", "on", "--proof", "on" };
-
+	
 	@POST
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)

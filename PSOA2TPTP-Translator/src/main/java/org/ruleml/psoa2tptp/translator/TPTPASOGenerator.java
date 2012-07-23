@@ -80,7 +80,7 @@ public class TPTPASOGenerator {
 		return m_factory.createBinaryFormula(body, BinaryConnective.Implication, head);
 	}
 	
-	public FofFormula getExist(Iterable<String> vars, FofFormula formula)
+	public FofFormula getExist(List<String> vars, FofFormula formula)
 	{
 		for (String var : vars) {
 			if (m_varMap.remove(var) == null)
@@ -89,13 +89,18 @@ public class TPTPASOGenerator {
 		return m_factory.createQuantifiedFormula(Quantifier.Exists, vars, formula);
 	}
 	
-	public FofFormula getForAll(Iterable<String> vars, FofFormula formula)
+	public FofFormula getForAll(List<String> vars, FofFormula formula)
 	{
+		List<String> translatedVars = new ArrayList<String>(vars.size());
 		for (String var : vars) {
-			if (m_varMap.remove(var) == null)
-				throw new TranslatorException("Incorrect usage of variable " + var + " in the quantification of the formula " + formula);
+			String translatedVar = m_varMap.remove(var);
+			if (translatedVar == null)
+				throw new TranslatorException("Incorrect usage of variable " + var + " in the quantification of the formula\n" + formula);
+			else
+				translatedVars.add(translatedVar);
 		}
-		return m_factory.createQuantifiedFormula(Quantifier.ForAll, vars, formula);
+		
+		return m_factory.createQuantifiedFormula(Quantifier.ForAll, translatedVars, formula);
 	}
 	
 	private FofFormula getForAll(FofFormula formula)
@@ -107,25 +112,23 @@ public class TPTPASOGenerator {
 	
 	public FofFormula getAndFormula(FofFormula left, FofFormula right)
 	{
+		if (left == null)
+			return right;
+		
 		return m_factory.createBinaryFormula(left, BinaryConnective.And, right);
 	}
 	
 	public FofFormula getOrFormula(FofFormula left, FofFormula right)
 	{
+		if (left == null)
+			return right;
+		
 		return m_factory.createBinaryFormula(left, BinaryConnective.Or, right);
 	}
 	
 	public FofFormula getAtomicFormula(String pred, List<Term> args)
 	{
 		return m_factory.atomAsFormula(m_factory.createPlainAtom(pred, args));
-	}
-	
-	private FofFormula getAndFormulaIfNotNull(FofFormula left, FofFormula right)
-	{
-		if (left == null)
-			return right;
-		
-		return m_factory.createBinaryFormula(left, BinaryConnective.And, right);
 	}
 	
 	public FofFormula getPSOAFormula(Term oid, Term classTerm, Set<? extends List<Term>> tuples, Set<? extends List<Term>> slots)
@@ -145,14 +148,14 @@ public class TPTPASOGenerator {
 			terms.clear();
 			terms.add(oid);
 			terms.addAll(tuple);
-			f = getAndFormulaIfNotNull(f, getAtomicFormula(PRED_TupTerm, terms));
+			f = getAndFormula(f, getAtomicFormula(PRED_TupTerm, terms));
 		}
 		
 		for (List<Term> slot : slots) {
 			terms.clear();
 			terms.add(oid);
 			terms.addAll(slot);
-			f = getAndFormulaIfNotNull(f, getAtomicFormula(PRED_SlotTerm, terms));
+			f = getAndFormula(f, getAtomicFormula(PRED_SlotTerm, terms));
 		}
 		
 		if (f == null)

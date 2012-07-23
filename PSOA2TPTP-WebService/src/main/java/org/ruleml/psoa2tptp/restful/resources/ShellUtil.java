@@ -1,5 +1,6 @@
 package org.ruleml.psoa2tptp.restful.resources;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -7,12 +8,27 @@ import org.apache.commons.exec.*;
 
 public enum ShellUtil {
 	;
-	public static final String VKERNEL = "vkernel";
+	public static final String VKERNEL;
 	public static final String VKERNELWRAPPER = "vkernelwrapper";
+	public static final String ANSWER_CONFIG_PATH;
 	public static final String ECHO = "echo";	
 	public static final String RREDIRECT = "<";
 	public static final String LPAREN = "(";
 	public static final String RPAREN = ")";
+	
+	static {
+		String dirPath = System.getProperty("psoa2tptpBinDir"),
+			   vpbin = "vkernel", ansConfig = "answer_predicates.xml";
+		
+		if (dirPath == null)
+		{
+			dirPath = ".";
+		}
+		
+		File dir = new File(dirPath);
+		VKERNEL = (new File(dir, vpbin)).getPath();
+		ANSWER_CONFIG_PATH = (new File(dir, ansConfig)).getPath();
+	}
 	
 	public static String rredirect(String s) {
 		return RREDIRECT.concat(s);

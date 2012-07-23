@@ -63,12 +63,17 @@ query
     ;
 
 rule returns [FofFormula formula]
-    :   ^(FORALL ^(VAR_LIST VAR_ID+) clause) {  }
+@init {
+    List<String> vars = new ArrayList<String>(4);
+}
+    :   ^(FORALL 
+            ^(VAR_LIST (VAR_ID { vars.add($VAR_ID.text); })+ )
+        f=clause) { $formula = m_generator.getForAll(vars, f); }
 	|   f=clause { $formula = f; }
     ;
 
 clause returns [FofFormula formula]
-    :   ^(IMPLICATION h=head f=formula) { m_generator.getImplies(h, f); }
+    :   ^(IMPLICATION h=head f=formula) { $formula = m_generator.getImplies(h, f); }
     |   atomicFormula=atomic { $formula = atomicFormula; }
     ;
     
@@ -78,10 +83,10 @@ head returns [FofFormula formula]
     ;
 
 formula returns [FofFormula formula]
-    :   ^(AND formula+)
+    :   ^(AND (f=formula { $formula = m_generator.getAndFormula($formula, f); })+)
     |   ^(OR formula+)
     |   ^(EXISTS ^(VAR_LIST VAR_ID+) formula)
-    |   atomic
+    |   f=atomic { $formula = f; }
     |   external
     ;
 

@@ -9,23 +9,21 @@
 <script type="text/javascript">
 
 const SamplePSOAKB=
-"Document(\n"+
-  "\tGroup (\n"+
-    "\t\tGroup (\n"+
-      "\t\t\t_Joe#_Male()\n"+
-      "\t\t\t_m1#_married(_Joe _Sue)\n"+
-      "\t\t\t_f1#_family(_husb->_Joe)\n"+
-      "\t\t\t_f1#_family(_child->_Pete)\n"+
-      
-      "\t\t\t_m2#_married(_John _Mary _child->_Tom)\n"+
-      "\t\t\t_f2#_family(_husb->_John _wife->_Mary _child->_Tom)\n"+
-   "\t\t)\n"+
-    "\t\t_m3#_married([_Tim _Jane1] [1980])\n"+
-    "\t\t_Tim#_Person([_Male 1960] _job->_Engineer _child->_Jack)\n"+
-    "\t\t_Jane1#_Person([_Female 1963] [_unb] _job->_Secretary)\n"+
-    
-    "\t\t_f4#_family([_Mike _Jessie] [1991] _child->_Tomas _child->_Jane2)\n"+
-  "\t)\n"+
+"Document (\n" + 
+"\tGroup (\n" + 
+"\t\tForall ?Hu ?Wi ?Ch ?o ?1 (\n" + 
+"\t\t\t?o#_family(_child->?Ch) :-\n" + 
+"\t\t\tAnd(?o#_family(_husb->?Hu _wife->?Wi)\n" + 
+"\t\t\t\t?1#_kid(?Hu ?Ch))\n" + 
+"\t\t)\n" + 
+"\t\tForall ?Hu ?Wi ?Ch ?o ?1 (\n" + 
+"\t\t\t?o#_family(_child->?Ch) :-\n" + 
+"\t\t\tAnd(?o#_family(_husb->?Hu _wife->?Wi)\n" + 
+"\t\t\t\t?1#_kid(?Wi ?Ch))\n" + 
+"\t\t)\n" + 
+"\t\t_f1#_family(_husb->_Joe _wife->_Sue)\n" + 
+"\t\t_k1#_kid(_Sue _Pete)\n" + 
+"\t)\n" + 
 ")";
 
 const App = "psoa2tptp-trans";
