@@ -59,7 +59,7 @@ group_element
     ;
 
 query
-    :   r=rule { m_outStream.print(m_generator.getAnnotatedQuery(r)); }
+    :   f=formula { m_outStream.print(m_generator.getAnnotatedQuery(f)); }
     ;
 
 rule returns [FofFormula formula]

@@ -63,7 +63,7 @@ tokens
 top_level_item : document? EOF;
 
 queries
-    :   rule+;
+    :   formula;
 
 document
     :   DOCUMENT LPAR base? prefix* importDecl* group? RPAR
