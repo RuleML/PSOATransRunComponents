@@ -1,0 +1,14 @@
+Document(
+	Prefix(ex <http://example.org/example#>)
+	Prefix(xs <http://www.w3.org/2001/XMLSchema#>) 
+
+	Group (
+		ex:Customer(ex:discount -> 10) :- ex:Customer(ex:status -> "gold")
+		ex:Customer(ex:discount -> 5) :- Or (ex:Customer(ex:status -> "silver") ex:Customer(ex:status -> "bronze"))
+
+		ex:c015#ex:Customer("Jack Anderson" ex:status -> "bronze")
+		ex:c016#ex:Customer(["Tim Smith"] ["Male" 29] ex:status -> "silver")
+		ex:c017#ex:Top(ex:status -> "gold") = ex:Customer("Jenny Williams")
+		ex:Customer("Jenny Williams") = ex:Customer([ex:Female 28] ["Married"])
+	)
+)

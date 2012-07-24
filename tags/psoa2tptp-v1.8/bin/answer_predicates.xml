@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<Parameters>
+  <!-- These predicate are reserved as answer predicates. -->
+  <AnswerPredicates>
+	<predicate name="ans" arity="0"/>
+    <predicate name="ans" arity="2"/>
+	<predicate name="ans" arity="4"/>
+	<predicate name="ans" arity="6"/>
+	<predicate name="ans" arity="8"/>
+	<predicate name="ans" arity="10"/>
+	<predicate name="ans" arity="12"/>
+	<predicate name="ans" arity="14"/>
+	<predicate name="ans" arity="16"/>
+	<predicate name="ans" arity="18"/>
+	<predicate name="ans" arity="20"/>
+  </AnswerPredicates>
+</Parameters>
