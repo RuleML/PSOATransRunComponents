@@ -57,8 +57,8 @@ public abstract class ANTLRBasedTranslator extends Translator {
 	public void translate(CharStream input, boolean isQuery, OutputStream out) throws TranslatorException
 	{
 		try {
-			ParserRuleReturnScope returnScope = parse(input, isQuery);
-			TranslatorWalker walker = createTranslatorWalker(new CommonTreeNodeStream((CommonTree) returnScope.getTree()));
+			CommonTreeNodeStream astStream = new CommonTreeNodeStream(parse(input, isQuery));
+			TranslatorWalker walker = createTranslatorWalker(astStream);
 			walker.setOutputStream(getPrintStream(out));
 			if (isQuery)
 				walker.parseQuery();
@@ -69,16 +69,27 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		}
 	}
 	
-	public static ParserRuleReturnScope parse(CharStream input, boolean isQuery) throws RecognitionException
+	public static CommonTree parse(CharStream input, boolean isQuery) throws RecognitionException
 	{
 		PSOARuleMLPSLexer lexer = new PSOARuleMLPSLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		PSOARuleMLPSParser parser = new PSOARuleMLPSParser(tokens);
+		PSOAObjectifier objectifier;
+		Object tree;
 		
 		if (isQuery)
-			return parser.queries();
-		else
-			return parser.top_level_item();
+		{
+			tree = parser.query().getTree();
+			objectifier = new PSOAObjectifier(new CommonTreeNodeStream((CommonTree) tree));
+			tree = objectifier.query().getTree();
+		}
+		else {
+			tree = parser.top_level_item().getTree();
+			objectifier = new PSOAObjectifier(new CommonTreeNodeStream((CommonTree) tree));
+			tree = objectifier.document().getTree();
+		}
+		
+		return (CommonTree) tree;
 	}
 	
 	public static abstract class TranslatorWalker extends TreeParser {

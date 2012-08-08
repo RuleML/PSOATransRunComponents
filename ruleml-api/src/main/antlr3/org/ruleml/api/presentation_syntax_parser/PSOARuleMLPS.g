@@ -62,7 +62,7 @@ tokens
 
 top_level_item : document? EOF;
 
-queries
+query
     :   formula;
 
 document
@@ -92,8 +92,8 @@ group_element
     ;
 
 rule
-    :   FORALL VAR_ID+ LPAR clause RPAR
-        -> ^(FORALL ^(VAR_LIST VAR_ID+) clause)
+    :   FORALL variable+ LPAR clause RPAR
+        -> ^(FORALL variable+ clause)
     |   clause
     ;
 
@@ -111,17 +111,17 @@ clause
             throw new RuntimeException("Unacceptable clause:" + $clause.text);
         }
     }
-    :   f1=formula ( IMPLICATION f2=formula { isRule = true; } )?
-    -> {isRule}? ^(IMPLICATION $f1 $f2)
-    ->           $f1
+    :   (f1=formula -> formula) ( IMPLICATION f2=formula { isRule = true; } -> ^(IMPLICATION $clause $f2) )?
+    //-> {isRule}? ^(IMPLICATION $f1 $f2)
+    //->           $f1
     ;
 
 formula returns [boolean isValidHead, boolean isAtomic]
 @init { $isValidHead = true; $isAtomic = false; }
     :   AND LPAR (f=formula { if(!$f.isValidHead) $isValidHead = false; } )+ RPAR -> ^(AND formula*)
     |   OR LPAR formula+ RPAR { $isValidHead = false; } -> ^(OR formula*)
-    |   EXISTS VAR_ID+ LPAR f=formula RPAR { $isValidHead = $f.isAtomic; }
-        -> ^(EXISTS ^(VAR_LIST VAR_ID+) $f)
+    |   EXISTS variable+ LPAR f=formula RPAR { $isValidHead = $f.isAtomic; }
+        -> ^(EXISTS variable+ $f)
     |   atomic { $isAtomic = true; } -> atomic
     |   (external_term { $isValidHead = false; } -> external_term)
         (psoa_rest { $isAtomic = true; } -> ^(PSOA $formula psoa_rest))?
@@ -143,7 +143,7 @@ term
 
 simple_term
     :   constant
-    |   VAR_ID
+    |   variable
     ;
 
 external_term
@@ -210,6 +210,10 @@ const_string
     -> {isAbbrivated}? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
     -> LITERAL[getStrValue($STRING.text)] IRI[$symspace.text]
     //|   STRING '@' ID /* langtag */ -> ^(SHORTCONST LITERAL[$STRING.text])
+    ;
+
+variable
+    :   VAR_ID -> VAR_ID[$VAR_ID.text.substring(1)]
     ;
 
 //--------------------- LEXER: -----------------------
