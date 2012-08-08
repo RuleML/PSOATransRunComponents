@@ -23,7 +23,7 @@ options
 @members
 {
     private TPTPASOGenerator m_generator = new TPTPASOGenerator();
-        
+
     public void parseDocument() throws RecognitionException {
         document();
     }
@@ -63,29 +63,32 @@ query
     ;
 
 rule returns [FofFormula formula]
-@init {
-    List<String> vars = new ArrayList<String>(4);
-}
-    :   ^(FORALL 
-            ^(VAR_LIST (VAR_ID { vars.add($VAR_ID.text); })+ )
-        f=clause) { $formula = m_generator.getForAll(vars, f); }
+    :   { List<String> vars = new ArrayList<String>(4); }
+        ^(FORALL (VAR_ID { vars.add($VAR_ID.text); })+ f=clause)
+        { $formula = m_generator.getForAll(vars, f); }
 	|   f=clause { $formula = f; }
     ;
 
 clause returns [FofFormula formula]
-    :   ^(IMPLICATION h=head f=formula) { $formula = m_generator.getImplies(h, f); }
+    :
+        ^(IMPLICATION h=head f=formula)
+        { $formula = m_generator.getImplies(h, f); }
     |   atomicFormula=atomic { $formula = atomicFormula; }
     ;
     
 head returns [FofFormula formula]
     :   f=atomic { $formula = f; }
-    |   ^(EXISTS ^(VAR_LIST (VAR_ID)+) f=atomic)
+    |   { List<String> vars = new ArrayList<String>(4); }
+        ^(EXISTS (VAR_ID { vars.add($VAR_ID.text); })+ f=atomic)
+        { $formula = m_generator.getExist(vars, f); }
     ;
 
 formula returns [FofFormula formula]
     :   ^(AND (f=formula { $formula = m_generator.getAndFormula($formula, f); })+)
     |   ^(OR formula+)
-    |   ^(EXISTS ^(VAR_LIST VAR_ID+) formula)
+    |   { List<String> vars = new ArrayList<String>(4); }
+        ^(EXISTS (VAR_ID { vars.add($VAR_ID.text); })+ f=formula)
+        { $formula = m_generator.getExist(vars, f); }
     |   f=atomic { $formula = f; }
     |   external
     ;
@@ -118,7 +121,7 @@ term returns [Term t]
 external
     :   ^(EXTERNAL psoa)
     ;
-    
+
 psoa returns [FofFormula formula]
 @init {
 	Set<List<Term>> tuples = new HashSet<List<Term>>(4);
@@ -126,7 +129,7 @@ psoa returns [FofFormula formula]
 }
     :   ^(PSOA oid=term? ^(INSTANCE type=term) (t=tuple {tuples.add(t); })* (s=slot {slots.add(s); })*)
     {
-		$formula = m_generator.getPSOAFormula(oid, type, tuples, slots);
+        $formula = m_generator.getPSOAFormula(oid, type, tuples, slots);
     }
     ;
 
@@ -156,7 +159,7 @@ constant returns [Term t]
     
 constshort returns [Term t]
     :   IRI
-    |   LITERAL
+    |   LITERAL { $t = m_generator.getConst('\"' + $LITERAL.text + '\"'); }
     |   NUMBER { $t = m_generator.getConst($NUMBER.text); }
-    |   LOCAL { $t = m_generator.getConst($LOCAL.text); }
+    |   LOCAL { $t = m_generator.getLocalConst($LOCAL.text); }
     ;

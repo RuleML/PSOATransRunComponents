@@ -10,8 +10,9 @@ import logic.is.power.tptp_parser.TptpParserOutput.*;
 
 public class TPTPASOGenerator {
 	private TptpParserOutput m_factory = new SimpleTptpParserOutput();
-	private Map<String, String> m_varMap = new HashMap<String, String>();
-	private static final String PREFIX_Var = "Q",
+	private Map<String, String> m_varMap = new LinkedHashMap<String, String>();
+	private static final String PREFIX_LocalConst = "l",
+								PREFIX_Var = "Q",
 								PREFIX_Rulename = "ax",
 								PREFIX_FactQueryname = "query",
 								PREFIX_NonFactQueryname = "query",
@@ -40,17 +41,12 @@ public class TPTPASOGenerator {
 	
 	public Term getConst(String name)
 	{
-		char firstChar = name.charAt(0), loweredChar = Character.toLowerCase(firstChar);
-		if (loweredChar != firstChar)
-		{
-			String loweredCharStr = String.valueOf(loweredChar);
-			if (name.length() > 1)
-				name = loweredCharStr.concat(name.substring(1));
-			else
-				name = loweredCharStr;
-		}
-		
 		return m_factory.createPlainTerm(name, null);
+	}
+	
+	public Term getLocalConst(String name)
+	{		
+		return m_factory.createPlainTerm(PREFIX_LocalConst.concat(name), null);
 	}
 	
 	public String getVariableName(String varname)
@@ -58,11 +54,11 @@ public class TPTPASOGenerator {
 		String tptpVarName = m_varMap.get(varname);
 		if (tptpVarName == null)
 		{
-			for (int i = varname.length() - 1; i >= 1; i--) {
+			for (int i = varname.length() - 1; i >= 0; i--) {
 				if (!Character.isLetterOrDigit(varname.charAt(i)))
 					throw new TranslatorException("Name of variables can only consist of letters or variables");
 			}
-			tptpVarName = PREFIX_Var.concat(varname.substring(1));
+			tptpVarName = PREFIX_Var.concat(varname);
 			m_varMap.put(varname, tptpVarName);
 		}
 		
@@ -82,14 +78,15 @@ public class TPTPASOGenerator {
 	
 	public FofFormula getExist(List<String> vars, FofFormula formula)
 	{
-		for (String var : vars) {
-			if (m_varMap.remove(var) == null)
-				throw new TranslatorException("Incorrect usage of variable " + var + " in the quantification of the formula " + formula);
-		}
-		return m_factory.createQuantifiedFormula(Quantifier.Exists, vars, formula);
+		return getQuantification(vars, formula, Quantifier.Exists);
 	}
 	
 	public FofFormula getForAll(List<String> vars, FofFormula formula)
+	{
+		return getQuantification(vars, formula, Quantifier.ForAll);
+	}
+	
+	private FofFormula getQuantification(List<String> vars, FofFormula formula, Quantifier quantifier)
 	{
 		List<String> translatedVars = new ArrayList<String>(vars.size());
 		for (String var : vars) {
@@ -100,7 +97,7 @@ public class TPTPASOGenerator {
 				translatedVars.add(translatedVar);
 		}
 		
-		return m_factory.createQuantifiedFormula(Quantifier.ForAll, translatedVars, formula);
+		return m_factory.createQuantifiedFormula(quantifier, translatedVars, formula);
 	}
 	
 	private FofFormula getForAll(FofFormula formula)
@@ -112,18 +109,20 @@ public class TPTPASOGenerator {
 	
 	public FofFormula getAndFormula(FofFormula left, FofFormula right)
 	{
-		if (left == null)
-			return right;
-		
-		return m_factory.createBinaryFormula(left, BinaryConnective.And, right);
+		return getBinaryFormula(left, right, BinaryConnective.And);
 	}
 	
 	public FofFormula getOrFormula(FofFormula left, FofFormula right)
 	{
+		return getBinaryFormula(left, right, BinaryConnective.Or);
+	}
+	
+	private FofFormula getBinaryFormula(FofFormula left, FofFormula right, BinaryConnective connective)
+	{
 		if (left == null)
 			return right;
 		
-		return m_factory.createBinaryFormula(left, BinaryConnective.Or, right);
+		return m_factory.createBinaryFormula(left, connective, right);
 	}
 	
 	public FofFormula getAtomicFormula(String pred, List<Term> args)
@@ -135,7 +134,7 @@ public class TPTPASOGenerator {
 	{
 		FofFormula f = null;
 		ArrayList<Term> terms = new ArrayList<TptpParserOutput.Term>();
-		
+			
 		if (classTerm != null)
 		{
 			terms.add(oid);
@@ -192,7 +191,7 @@ public class TPTPASOGenerator {
 		{
 			ArrayList<Term> terms = new ArrayList<Term>();
 			for (Entry<String, String> varPair : m_varMap.entrySet()) {			
-				terms.add(m_factory.createPlainTerm(dblQuoted(varPair.getKey().concat(" = ")), null));
+				terms.add(m_factory.createPlainTerm(dblQuoted("?" + varPair.getKey() + " = "), null));
 				terms.add(m_factory.createVariableTerm(varPair.getValue()));
 			}
 			FofFormula conc = getPositionalAtom(PRED_Answer, terms);
@@ -214,11 +213,11 @@ public class TPTPASOGenerator {
 		return m_factory.atomAsFormula(m_factory.createPlainAtom(pred, args));
 	}
 	
-	private String quoted(String name) {
+	private static String quoted(String name) {
 		return '\'' + name + '\'';
 	}
 	
-	private String dblQuoted(String name) {
+	private static String dblQuoted(String name) {
 		return '\"' + name + '\"';
 	}
 }
