@@ -1,0 +1,98 @@
+<!--
+  ================ Conventions: ===================================
+ 
+  We use PSOA RuleML presentation syntax. 
+
+
+  DB tables are modelled as classes with URIs from 
+  the namespace "http://unbsj.biordf.net/haiku/dw/table#". For example,
+  dwt:Npatient(?X) states that ?X is a row in the table dwt:Npatient.
+  
+  Attributes of tables are modelled as (constant) methods in frame 
+  atoms. For example, ?R[dwa:patWID->?X  dwa:patMrn->?Y] states that 
+  the row ?R has values ?X and ?Y in the columnts patWID and patMrn
+  correspondingly. "dwa" is the prefix for the attribute namespace
+  "http://unbsj.biordf.net/haiku/dw/attribute#"
+ 
+  Property assertions are made by using properties as binary positional
+  predicates. For example, haio:has_record(?X ?Y) is equivalent to 
+  "?X haio:has_record ?Y" in SPARQL.
+
+
+  To map various values from tables to instances of ontology classes, 
+  we use functions with positional arguments. For example, 
+  modf:Patient_by_patWID(?X) maps any data value ?X to an instance of 
+  http://www.semanticweb.org/ontologies/2010/7/HAI.owl#Patient.
+  The function URIs are in the namespace 
+  "http://unbsj.biordf.net/haiku/dw/model/function#".
+
+  Since this is an RDF world, we cannot have compound expressions like
+  modf:Patient_by_patWID("ABC4337") denoting instances in our virtual
+  ABox representing the data. So our implementations 
+  may have to actually compute them. For example, modf:Patient_by_patWID("ABC4337")
+  may have to be converted to the URI 
+  http://unbsj.biordf.net/haiku/dw/model/function/Patient_by_patWID?arg0=ABC4337 .
+  For this reason, such mapping functions are made External.
+-->
+
+
+
+
+
+Document
+(
+
+Prefix(modf <http://unbsj.biordf.net/haiku/dw/model/function#>)
+Prefix(dwt <http://unbsj.biordf.net/haiku/dw/table#>)
+Prefix(dwa <http://unbsj.biordf.net/haiku/dw/attribute#>)
+Prefix(haio <http://www.semanticweb.org/ontologies/2010/7/HAI.owl#>)
+
+Group
+(
+ 
+  <!-- This rule populates haio:has_record from the DW table dwt:Npatient
+     by creating URIs for instances of haio:Patient and 
+     haio:Medical_record with the functions modf:Patient_by_patWID
+     and modf:Medical_record_by_number, and asserting the property
+     haio:has_record for these instances. 
+   -->
+
+
+  Forall ?Row ?WID ?MedRecNum ?Patient ?MedRec
+  (
+    haio:has_record(?Patient ?MedRec)
+     :- 
+
+    And
+    (
+      ?Row # dwt:Npatient
+       (
+         dwa:patWID->?WID  
+         dwa:patMrn->?MedRecNum
+       )
+
+      ?Patient = External(modf:Patient_by_patWID(?WID))
+
+      ?MedRec = External(modf:Medical_record_by_number(?MedRecNum))
+     ) 
+  )
+
+   
+  <!-- This rule inroduces function modf:Patient_by_patWID as generating 
+     instances of the class haio:Patient.
+   -->
+     
+  Forall ?WID (External(modf:Patient_by_patWID(?WID)) # haio:Patient())
+
+
+   
+  <!-- This rule inroduces function modf:Medical_record_by_number as generating 
+     instances of the class haio:Medical_record.
+   -->
+
+  Forall ?N (External(modf:Medical_record_by_number(?N)) # haio:Medical_record())
+
+
+)
+
+)

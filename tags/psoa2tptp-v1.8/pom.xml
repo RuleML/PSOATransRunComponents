@@ -1,0 +1,16 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+<modelVersion>4.0.0</modelVersion>
+<groupId>PSOA2TPTP</groupId>
+<artifactId>PSOA2TPTP</artifactId>
+<version>1</version>
+<packaging>pom</packaging>
+
+<modules>
+    <module>tptp-parser</module>
+    <module>ruleml-api</module>
+    <module>PSOA2TPTP-Translator</module>
+    <module>PSOA2TPTP-WebService</module>
+</modules>
+</project>
