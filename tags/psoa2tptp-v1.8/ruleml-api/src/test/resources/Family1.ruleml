@@ -1,0 +1,24 @@
+Document (
+	Group (
+		<!-- Deobjectified version -->
+		Group (
+			Forall ?Hu ?Wi ?Ch (
+				_family(_husb->?Hu _wife->?Wi _child->?Ch):-
+					And(_married(?Hu ?Wi) Or(_kid(?Hu ?Ch) _kid(?Wi ?Ch)))
+			)
+			_married(_Joe _Sue)
+			_kid(_Sue _Pete)
+		)
+
+		<!-- Objectified version -->
+		Group (
+			Forall ?Hu ?Wi ?Ch ?o2 ?o3 ?o4 (
+				Exists ?o1 (
+					?o1#_family(_husb->?Hu _wife->?Wi _child->?Ch)) :-
+						And(?o2#_married(?Hu ?Wi) Or(?o3#_kid(?Hu ?Ch) ?o4#_kid(?Wi ?Ch)))
+			)
+			_inst1#_married(_Joe _Sue)
+			_inst2#_kid(_Sue _Pete)
+		)
+	)
+)
