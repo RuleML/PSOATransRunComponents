@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>PSOA2TPTP Translator</title>
+<title>PSOATransRun</title>
 <link type="text/css" href="css/custom-theme/jquery-ui-1.8.20.custom.css" rel="Stylesheet" />	
 <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.20.custom.min.js"></script>
@@ -172,7 +172,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<h1>PSOA2TPTP Translator</h1>
+	<h1>PSOATransRun</h1>
 	<div id="tabs">
 		<ul>
 			<li><a href="#tab-1">PSOA Rulebase</a></li>
@@ -181,14 +181,16 @@ $(document).ready(function() {
 		</ul>
 		<div id="tab-1">
 			<textarea id="PSOAKB" rows="20" cols="80"></textarea><br/>
+			<div style="visibility:hidden">
 			<input type="radio" name="translatorType" value="Direct" /> Direct Translator
 			<input type="radio" name="translatorType" value="TPTPASO" checked="checked" /> TPTP-ASO-based Translator<br/>
+			</div>
 			<input id="transKBBtn" type="button" value="Translate Rulebase" /> 
 			<input id="showSampleKBBtn" type="button" value="Sample Rulebase" /> 
 			<input id="resetKBBtn" type="button" value="Reset" />
 		</div>
 		<div id="tab-2">
-			<textarea id="tptpOutput" rows="20" cols="80"></textarea>
+			<textarea id="tptpOutput" rows="18" cols="80"></textarea>
 			<h3>Query</h3>
 	        <textarea id="PSOAQuery" rows="1" cols="80"></textarea><br/>
 	        <input id="transQueryBtn" type="button" value="Translate Query" /> 
