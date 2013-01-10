@@ -95,16 +95,16 @@ formula returns [FofFormula formula]
 
 atomic returns [FofFormula formula]
     :   f=atom { $formula = f; }
-    |   equal
+    |   f=equal  { $formula = f; }
     |   subclass
     ;
 
 atom returns [FofFormula formula]
-    :   f=psoa { $formula = f; }
+    :   f=psoa[true] { $formula = (FofFormula)f; }
     ;
 
-equal
-    :   ^(EQUAL term term)
+equal returns [FofFormula formula]
+    :   ^(EQUAL left=term right=term) { $formula = m_generator.getEqualityFormula(left, right); }
     ;
 
 subclass
@@ -114,22 +114,28 @@ subclass
 term returns [Term t]
     :   c=constant { $t = c; }
     |   VAR_ID { $t = m_generator.getVariable($VAR_ID.text); }
-    |   p=psoa
+    |   p=psoa[false] { $t = (Term)p; }
     |   external
     ;
 
 external
-    :   ^(EXTERNAL psoa)
+    :   ^(EXTERNAL psoa[false])
     ;
 
-psoa returns [FofFormula formula]
+psoa[boolean isAtomic] returns [Object psoa]
 @init {
 	Set<List<Term>> tuples = new HashSet<List<Term>>(4);
 	Set<List<Term>> slots = new HashSet<List<Term>>(4);
 }
     :   ^(PSOA oid=term? ^(INSTANCE type=term) (t=tuple {tuples.add(t); })* (s=slot {slots.add(s); })*)
     {
-        $formula = m_generator.getPSOAFormula(oid, type, tuples, slots);
+        if (isAtomic)
+          $psoa = m_generator.getPSOAFormula(oid, type, tuples, slots);
+        else
+        {
+            // Function applications
+            $psoa = m_generator.getPSOATerm(oid, type, tuples, slots);
+        }
     }
     ;
 

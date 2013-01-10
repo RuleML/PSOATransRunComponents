@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import logic.is.power.tptp_parser.*;
 import logic.is.power.tptp_parser.SimpleTptpParserOutput.AnnotatedFormula;
+import logic.is.power.tptp_parser.TptpParserOutput.AtomicFormula;
 import logic.is.power.tptp_parser.TptpParserOutput.*;
 
 public class TPTPASOGenerator {
@@ -29,16 +30,30 @@ public class TPTPASOGenerator {
 		m_numFormat.setMinimumIntegerDigits(2);
 	}
 	
+	/**
+	 *  Create a TPTPASOGenerator instance using default factory
+	 */
 	public TPTPASOGenerator()
 	{
 		this(new SimpleTptpParserOutput());
 	}
 	
+	/**
+	 * Create a TPTPASOGenerator instance using a specified factory
+	 * 
+	 * @param factory A factory instance for creating TPTP ASOs
+	 */
 	public TPTPASOGenerator(TptpParserOutput factory)
 	{
 		m_factory = factory;
 	}
 	
+	/**
+	 * Translate a constant into a TPTP term
+	 * 
+	 * @param name constant name
+	 * @return translated term
+	 */
 	public Term getConst(String name)
 	{
 		return m_factory.createPlainTerm(name, null);
@@ -130,11 +145,34 @@ public class TPTPASOGenerator {
 		return m_factory.atomAsFormula(m_factory.createPlainAtom(pred, args));
 	}
 	
+	public Term getPSOATerm(Term oid, Term func, Set<? extends List<Term>> tuples, Set<? extends List<Term>> slots)
+	{
+        if (oid != null)
+        {
+        	if(!oid.toString().equals("Q"))
+            	throw new TranslatorException("Psoa terms used as functions can only have '?' as an explicit OID.");
+        
+        	m_varMap.remove("");
+        }
+		if (!slots.isEmpty())
+			throw new TranslatorException("Function terms with slotted arguments are not supported.");
+		if (tuples.size() > 1)
+			throw new TranslatorException("Function applications more than one tuple is not supported.");
+		
+		if (tuples.isEmpty())
+			return m_factory.createPlainTerm(func.toString(), new ArrayList<Term>(0));
+		
+		return m_factory.createPlainTerm(func.toString(), tuples.iterator().next());
+	}
+	
 	public FofFormula getPSOAFormula(Term oid, Term classTerm, Set<? extends List<Term>> tuples, Set<? extends List<Term>> slots)
 	{
 		FofFormula f = null;
 		ArrayList<Term> terms = new ArrayList<TptpParserOutput.Term>();
-			
+
+		if (oid == null)
+			throw new TranslatorException("A psoa term has not been objectified.");
+		
 		if (classTerm != null)
 		{
 			terms.add(oid);
@@ -161,6 +199,12 @@ public class TPTPASOGenerator {
 			throw new TranslatorException(oid + "Top() is not supported");
 		
 		return f;
+	}
+	
+	public FofFormula getEqualityFormula(Term left, Term right)
+	{
+		AtomicFormula formula = m_factory.createEqualityAtom(left, right);
+		return m_factory.atomAsFormula(formula);
 	}
 	
 	public FofFormula getSubClassFormula(Term subClass, Term superClass)
