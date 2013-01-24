@@ -1,74 +1,68 @@
 package org.ruleml.psoa2tptp.restful.resources;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.exec.*;
 
-public enum ShellUtil {
-	;
-	public static final String VKERNEL;
-	public static final String VKERNELWRAPPER = "vkernelwrapper";
-	public static final String ANSWER_CONFIG_PATH;
-	public static final String ECHO = "echo";	
-	public static final String RREDIRECT = "<";
-	public static final String LPAREN = "(";
-	public static final String RPAREN = ")";
-	
-	static {
-		String dirPath = System.getProperty("psoa2tptpBinDir"),
-			   vpbin = "vkernel", ansConfig = "answer_predicates.xml";
-		
-		if (dirPath == null)
-		{
-			dirPath = ".";
-		}
-		
-		File dir = new File(dirPath);
-		VKERNEL = (new File(dir, vpbin)).getPath();
-		ANSWER_CONFIG_PATH = (new File(dir, ansConfig)).getPath();
-	}
-	
-	public static String rredirect(String s) {
-		return RREDIRECT.concat(s);
-	}
-	
-	public static String subshell(String s) {
-		return wrap(s,"(",")");
-	}
-	
-	public static String wrap(String s, String head, String tail) {
-		return head.concat(s).concat(tail);
-	}
-	
+public class ShellUtil
+{
 	public static DefaultExecuteResultHandler resultHandler() {
 		return new DefaultExecuteResultHandler();
 	}
 	
-	public static ExecuteWatchdog watchdog() {
-		return new ExecuteWatchdog(60*1000);
-	}
-	
-	public static Executor executor(ExecuteWatchdog dog) {
+	private static Executor executor(long timeout) {
 		Executor e = new DefaultExecutor();
-		e.setWatchdog(dog);
+		e.setWatchdog(new ExecuteWatchdog(timeout));
 		return e;
 	}
 	
-	public static int execute(CommandLine cl, OutputStream out) throws ExecuteException, IOException {
-		Executor e = executor(watchdog());
-		PumpStreamHandler psh = new PumpStreamHandler(out, out);
-		e.setStreamHandler(psh);
-		return e.execute(cl);
+	public static int execute(CommandLine cl, OutputStream out)
+	{
+		return execute(cl, out, ExecuteWatchdog.INFINITE_TIMEOUT);
 	}
 	
-	public static CommandLine cl(String s) {
-		return new CommandLine(s);
+	public static int execute(CommandLine cl, OutputStream out, long timeout)
+	{
+		Executor exec = executor(timeout);
+		PumpStreamHandler psh = new PumpStreamHandler(out, out);
+		exec.setStreamHandler(psh);
+		
+		try
+		{
+			return exec.execute(cl);
+		}
+		catch (ExecuteException e)
+		{
+			throw new PSOATransRunException("Execution Error", e); 
+		} catch (IOException e)
+		{
+			throw IOUtil.runtimeIOException(e);
+		}
 	}
 
+	public static String concat(String... strs)
+	{
+		switch (strs.length)
+		{
+			case 0:
+				return "";
+			case 1:
+				return strs[0];
+			case 2:
+				return strs[0].concat(strs[1]);
+			default:
+				StringBuilder sb = new StringBuilder();
+				for (String s : strs)
+				{
+					sb.append(s);
+				}
+				return sb.toString();
+		}
+	}
+	
 	public static String echo(String s) {
-		return ECHO.concat(padl(s));
+		return "echo ".concat(s);
 	}
 	
 	public static String padl(String s) {
@@ -76,10 +70,18 @@ public enum ShellUtil {
 	}
 	
 	public static String quote(String s) {
-		return "\"".concat(s).concat("\"");
+		return concat("\"", s, "\"");
 	}
 	
 	public static String parenthesize(String s) {
-		return LPAREN.concat(s).concat(RPAREN);
+		return concat("(", s, ")");
+	}
+
+	public static String rredirect(String s) {
+		return "<".concat(s);
+	}
+	
+	public static String subshell(String s) {
+		return concat("(", s, ")");
 	}
 }
