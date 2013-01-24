@@ -1,8 +1,7 @@
-package org.ruleml.psoa2tptp.restful.resources;
+package org.ruleml.psoatransrun.restful.resources;
 
-import static org.ruleml.psoa2tptp.restful.resources.Collections.set;
+import static org.ruleml.psoatransrun.utils.Collections.set;
 
-import java.io.IOException;
 import java.util.Set;
 
 public class Application extends javax.ws.rs.core.Application {
@@ -12,7 +11,7 @@ public class Application extends javax.ws.rs.core.Application {
 	public Application() {
 		// ADD YOUR RESTFUL RESOURCES HERE
 		this.singletons.add(new ToTPTPResource());
-		this.singletons.add(new VampirePrimeResource());
+		this.singletons.add(new ExecutionResource());
 	}
 
 	@Override

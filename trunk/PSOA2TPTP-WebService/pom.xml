@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>PSOA2TPTP</groupId>
-	<artifactId>PSOA2TPTP.webservice</artifactId>
+	<groupId>PSOATransRun</groupId>
+	<artifactId>PSOATransRun.webservice</artifactId>
 	<version>1.6</version>
 	<packaging>war</packaging>
-	<name>PSOA2TPTP Translator Web Service API</name>
+	<name>PSOATransRun Web Service API</name>
 	
 	<properties>
 	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,8 +30,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>PSOA2TPTP</groupId>
-			<artifactId>PSOA2TPTP.translator</artifactId>
+			<groupId>PSOATransRun</groupId>
+			<artifactId>PSOATransRun.translator</artifactId>
 			<version>1.0</version>
 		</dependency>
 	</dependencies>
@@ -39,8 +39,7 @@
 		<repository>
 			<id>jboss-public-repository</id>
 			<name>JBoss Repository</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public
-          </url>
+			<url>https://repository.jboss.org/nexus/content/groups/public</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -61,6 +60,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>psoa2tptp-trans</finalName>
+		<finalName>PSOATransRunService</finalName>
 	</build>
 </project>
