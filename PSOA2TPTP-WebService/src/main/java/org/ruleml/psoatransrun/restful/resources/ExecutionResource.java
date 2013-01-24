@@ -1,4 +1,4 @@
-package org.ruleml.psoa2tptp.restful.resources;
+package org.ruleml.psoatransrun.restful.resources;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -6,7 +6,7 @@ import javax.ws.rs.core.*;
 import org.ruleml.psoatransrun.engine.ExecutionEngine;
 
 @Path("/execute")
-public class VampirePrimeResource
+public class ExecutionResource
 {	
 	@POST
 	@Consumes(MediaType.TEXT_PLAIN)

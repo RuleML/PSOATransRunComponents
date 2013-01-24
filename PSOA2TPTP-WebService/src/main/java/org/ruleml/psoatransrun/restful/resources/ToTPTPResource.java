@@ -1,11 +1,11 @@
-package org.ruleml.psoa2tptp.restful.resources;
+package org.ruleml.psoatransrun.restful.resources;
 
 import java.net.URLDecoder;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import org.ruleml.psoa2tptp.restful.models.*;
+import org.ruleml.psoatransrun.restful.models.*;
 import org.ruleml.psoa2tptp.translator.*;
 
 @Path("/translate")

@@ -1,7 +1,7 @@
-package org.ruleml.psoa2tptp.restful.resources;
+package org.ruleml.psoatransrun.utils;
 
 import static java.util.Arrays.asList;
-import static org.ruleml.psoa2tptp.restful.resources.Collections.*;
+import static org.ruleml.psoatransrun.utils.Collections.*;
 
 import java.io.*;
 import java.net.URLDecoder;

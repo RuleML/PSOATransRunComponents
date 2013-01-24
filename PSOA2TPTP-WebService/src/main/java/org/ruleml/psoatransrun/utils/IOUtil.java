@@ -1,4 +1,4 @@
-package org.ruleml.psoa2tptp.restful.resources;
+package org.ruleml.psoatransrun.utils;
 
 import java.io.*;
 

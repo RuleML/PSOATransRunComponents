@@ -7,6 +7,6 @@ JBOSSAS=$1
 
 export PATH="$PATH:."
 
-cp -f "../PSOA2TPTP-WebService/target/psoa2tptp-trans.war" "$JBOSSAS/standalone/deployments/"
+cp -f "../PSOA2TPTP-WebService/target/PSOATransRun.war" "$JBOSSAS/standalone/deployments/"
 
 $JBOSSAS/bin/standalone.sh
