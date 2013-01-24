@@ -1,7 +1,7 @@
 package org.ruleml.psoatransrun.engine;
 
-import static org.ruleml.psoa2tptp.restful.resources.IOUtil.*;
-import static org.ruleml.psoa2tptp.restful.resources.ShellUtil.execute;
+import static org.ruleml.psoatransrun.utils.IOUtil.*;
+import static org.ruleml.psoatransrun.utils.ShellUtil.execute;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
