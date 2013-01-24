@@ -2,7 +2,6 @@ package org.ruleml.psoa2tptp.restful.resources;
 
 import static java.util.Arrays.asList;
 import static org.ruleml.psoa2tptp.restful.resources.Collections.*;
-import static org.ruleml.psoa2tptp.restful.resources.ShellUtil.*;
 
 import java.io.*;
 import java.net.URLDecoder;
@@ -14,9 +13,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-public enum Util {
-;
-
+public class Util {
 	public static List<String> deserialize(String output) {
 		return asList(output.split("\n"));
 	}
@@ -27,32 +24,6 @@ public enum Util {
 			builder.append(s).append('\n');
 		}
 		return builder.toString();
-	}
-	
-	public static File tmpFile() {
-		try {
-			return File.createTempFile("tptp-", ".dat", file("/tmp"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static File file(String path) {
-		return new File(path);
-	}
-	
-	public static PrintWriter writer(File f) {
-		try {
-			return new PrintWriter(f);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public static String redirectTPTP(String tptp) {
-		return padl(rredirect(parenthesize(echo(quote(tptp)))));
 	}
 	
 	protected static String decode(String s){
