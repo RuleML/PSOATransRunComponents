@@ -108,14 +108,12 @@ external
     ;
     
 psoa[boolean isAtomic]
-@init {
-    String varname;
-}
     :   ^(PSOA oid=term? ^(INSTANCE type=term) tuple* slot*)
-    -> { oid != null || !isAtomic }? ^(PSOA $oid ^(INSTANCE $type) tuple* slot*)
+    -> { oid != null }? ^(PSOA $oid ^(INSTANCE $type) tuple* slot*)
+    -> { !isAtomic }? ^(PSOA ^(INSTANCE $type) tuple* slot*)
     -> { m_isRule || m_isQuery }?
-        ^(EXISTS VAR_ID[varname = "obj"]
-            ^(PSOA VAR_ID[varname] ^(INSTANCE $type) tuple* slot*)
+        ^(EXISTS VAR_ID["obj"]
+            ^(PSOA VAR_ID["obj"] ^(INSTANCE $type) tuple* slot*)
         )
     -> ^(PSOA ^(SHORTCONST LOCAL[String.valueOf(++m_localConstID)]) ^(INSTANCE $type) tuple* slot*)
     ;
