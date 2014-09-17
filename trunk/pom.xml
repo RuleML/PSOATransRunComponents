@@ -2,15 +2,15 @@
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 <modelVersion>4.0.0</modelVersion>
-<groupId>PSOATransRun</groupId>
-<artifactId>PSOATransRun</artifactId>
+<groupId>PSOATools</groupId>
+<artifactId>PSOATools</artifactId>
 <version>1</version>
 <packaging>pom</packaging>
 
 <modules>
     <module>tptp-parser</module>
     <module>ruleml-api</module>
-    <module>PSOA2TPTP-Translator</module>
-    <module>PSOA2TPTP-WebService</module>
+    <module>PSOA2X</module>
+    <module>PSOATransRun</module>
 </modules>
 </project>
