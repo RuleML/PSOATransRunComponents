@@ -1,0 +1,30 @@
+
+
+
+<!-- Comment 1 -->
+
+Document
+(
+
+Base (<http://unbsj.biordf.net/haiku/dw/model/function#>)
+
+Prefix(modf <http://unbsj.biordf.net/haiku/dw/model/function#>)
+Prefix(dwt 
+<!-- Comment 2 --><http://unbsj.biordf.net/haiku/dw/table#>)
+Prefix(dwa <http://unbsj.biordf.net/haiku/dw/attribute#>)
+
+Import(<http://www.semanticweb.org/ontologies/2010/7/HAI.owl#>)
+
+Group
+(
+
+
+  Forall ?Row ?WID ?MedRecNum ?Patient ?MedRec
+  (
+    p = p
+     :- 
+    q
+  )
+)
+
+)
