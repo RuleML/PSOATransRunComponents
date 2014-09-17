@@ -2,7 +2,7 @@
  * the parser code.
  */
 
-grammar PSOARuleMLPS;
+grammar PSOAPS;
 
 options
 {
@@ -22,25 +22,18 @@ tokens
     SLOT;
     LITERAL;
     SHORTCONST;
-    IRI;  
+    IRI;
     NUMBER;
     LOCAL;
 }
 
 @header
 {
-	package org.ruleml.api.presentation_syntax_parser;
-    import org.ruleml.api.*;
-    import org.ruleml.api.AbstractSyntax.*;
+    package org.ruleml.psoa.parser;
 }
 
 @lexer::header {
-    package org.ruleml.api.presentation_syntax_parser;
-    import org.ruleml.api.*;
-    import org.ruleml.api.AbstractSyntax.*;
-}
-
-@lexer::members {
+    package org.ruleml.psoa.parser;
 }
 
 @members
@@ -118,10 +111,10 @@ clause
 
 formula returns [boolean isValidHead, boolean isAtomic]
 @init { $isValidHead = true; $isAtomic = false; }
-    :   AND LPAR (f=formula { if(!$f.isValidHead) $isValidHead = false; } )+ RPAR -> ^(AND formula*)
-    |   OR LPAR formula+ RPAR { $isValidHead = false; } -> ^(OR formula*)
+    :   AND LPAR (f=formula { if(!$f.isValidHead) $isValidHead = false; } )+ RPAR -> ^(AND["AND"] formula*)
+    |   OR LPAR formula+ RPAR { $isValidHead = false; } -> ^(OR["OR"] formula*)
     |   EXISTS variable+ LPAR f=formula RPAR { $isValidHead = $f.isAtomic; }
-        -> ^(EXISTS variable+ $f)
+        -> ^(EXISTS["EXISTS"] variable+ $f)
     |   atomic { $isAtomic = true; } -> atomic
     |   (external_term { $isValidHead = false; } -> external_term)
         (psoa_rest { $isAtomic = true; } -> ^(PSOA $formula psoa_rest))?
@@ -184,14 +177,14 @@ slot
     ;
 
 /*
-**  The rule of constant strings can be rewrited to
+**  The rule of constant strings can be rewritten to
 **  Const ::= '"' UNICODESTRING '"' (^^ SYMSPACE))? | '"' UNICODESTRING '"@' langtag)? | CURIE | NumericLiteral | '_' NCName | IRI_REF
 **  Symbol const_string is introduced to capture the first branch.
 */
 
 constant
     :   const_string -> const_string
-    |   CURIE   -> ^(SHORTCONST IRI[$CURIE.text]) 
+    |   CURIE   -> ^(SHORTCONST IRI[$CURIE.text])
     |   NUMBER  -> ^(SHORTCONST NUMBER[$NUMBER.text])
     |   ID /* _NCNAME */ {
             if (!$ID.text.startsWith("_"))
@@ -206,7 +199,7 @@ constant
 //  Complete and abbreviated string constant
 const_string
 @init { boolean isAbbrivated = true; } 
-    : STRING ((SYMSPACE_OPER symspace=(IRI_REF | CURIE) { isAbbrivated = false; } ) | '@')?    
+    : STRING ((SYMSPACE_OPER symspace=(IRI_REF | CURIE) { isAbbrivated = false; } ) | '@')?
     -> {isAbbrivated}? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
     -> LITERAL[getStrValue($STRING.text)] IRI[$symspace.text]
     //|   STRING '@' ID /* langtag */ -> ^(SHORTCONST LITERAL[$STRING.text])
@@ -243,7 +236,7 @@ STRING: '"' (~('"' | '\\' | EOL) | ECHAR)* '"';
 //  Identifiers:
 IRI_REF : '<' IRI_START_CHAR (IRI_CHAR)+ '>' ;
 VAR_ID : '?' ID_CHAR*;
-ID : ID_START_CHAR ID_CHAR* ;
+ID : ID_START_CHAR (ID_CHAR | { input.LA(2) != '>' }? => '-')*;
 
 //   Operators:
 IMPLICATION : ':-';

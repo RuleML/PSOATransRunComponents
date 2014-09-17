@@ -3,13 +3,13 @@ tree grammar PSOAASOWalker;
 options 
 {
 	ASTLabelType = CommonTree;
-	tokenVocab = PSOARuleMLPS;
+	tokenVocab = PSOAPS;
 	k = 1;
 } 
 
 @header
 {
-	package org.ruleml.api.presentation_syntax_parser;
+	package org.ruleml.psoa.parser;
 	import org.ruleml.api.*;
     import org.ruleml.api.AbstractSyntax.*;
 }
