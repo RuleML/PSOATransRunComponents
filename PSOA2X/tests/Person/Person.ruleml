@@ -1,0 +1,6 @@
+Document (
+	Group (
+		John#Male(30, "married", job->"doctor")
+		Male##Person
+	)
+)
