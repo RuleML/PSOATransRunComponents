@@ -1,17 +1,17 @@
-tree grammar PSOAObjectifier;
+tree grammar ExistObjectifier;
 
 options 
 {
-    output = AST;
+  output = AST;
 	ASTLabelType = CommonTree;
-	tokenVocab = PSOARuleMLPS;
+	tokenVocab = PSOAPS;
 	rewrite = true;
 	k = 1;
 } 
 
 @header
 {
-	package org.ruleml.api.presentation_syntax_parser;
+	package org.ruleml.psoa.normalizer;
 }
 
 @members
