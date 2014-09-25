@@ -14,7 +14,6 @@ import org.ruleml.psoa.psoa2x.psoa2tptp.*;
 public class RunTranslator {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
-		args = new String[] { "D:\\Programs\\PSOATools\\PSOATransRun\\src\\test\\testKB.ruleml" };
 		boolean importClosure = false;
 		boolean hasQueryDoc = false;
 		String queryDoc = "";
