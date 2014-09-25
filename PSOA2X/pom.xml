@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>PSOATransRun</groupId>
+	<groupId>org.ruleml.psoa</groupId>
 	<artifactId>PSOA2X</artifactId>
 	<version>1.0</version>
 	<name>PSOA2X</name>
@@ -82,7 +82,7 @@
 			<version>1.0.13</version>
 		</dependency>
 		<dependency>
-			<groupId>ruleml-api</groupId>
+			<groupId>org.ruleml.psoa</groupId>
 			<artifactId>ruleml-api</artifactId>
 			<version>0.0.1</version>
 		</dependency>

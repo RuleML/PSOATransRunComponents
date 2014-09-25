@@ -99,43 +99,4 @@ public class IOUtil
 	{
 		return new PSOATransRunException("I/O Error", e);
 	}
-	
-	public static void print(PrintStream output, Object... objs)
-	{
-		for (Object obj : objs) {
-			System.out.print(obj);
-		}
-	}
-	
-	public static void print(Object... objs)
-	{
-		print(System.out, objs);
-	}
-	
-	public static void println(PrintStream output, Object... objs)
-	{
-		print(output, objs);
-		output.println();
-	}
-	
-	public static void println(Object... objs)
-	{
-		println(System.out, objs);
-	}
-	
-	public static void printErr(Object... objs)
-	{
-		print(System.err, objs);
-	}
-	
-	public static void printErrln(Object... objs)
-	{
-		println(System.err, objs);
-	}
-	
-	public static void printErrlnAndExit(Object... objs)
-	{
-		println(System.err, objs);
-		System.exit(1);
-	}
 }

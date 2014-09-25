@@ -1,27 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>PSOATransRun</groupId>
-	<artifactId>PSOATransRunWebService</artifactId>
+	<groupId>org.ruleml.psoa</groupId>
+	<artifactId>PSOATransRun</artifactId>
 	<version>1.6</version>
-	<packaging>war</packaging>
-	<name>PSOATransRun Web Service API</name>
+	<name>PSOATransRun</name>
 	
 	<properties>
 	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-exec</artifactId>
 			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>jsr311-api</artifactId>
-			<version>1.1.1</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -30,36 +22,127 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>PSOATransRun</groupId>
+			<groupId>org.ruleml.psoa</groupId>
 			<artifactId>PSOA2X</artifactId>
 			<version>1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>gnu.getopt</groupId>
+			<artifactId>java-getopt</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+		<dependency>
+        	<groupId>com.declarativa.interprolog</groupId>
+	        <artifactId>InterProlog</artifactId>
+	        <scope>system</scope>
+	        <version>1.0</version>
+	        <systemPath>${basedir}\src\main\resources\prolog\interprolog.jar</systemPath>
+        </dependency>
+        <!-- <dependency>
+        	<groupId>com.declarativa.interprolog</groupId>
+	        <artifactId>interprolog</artifactId>
+	        <version>1.0</version>
+        </dependency> -->
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>jboss-public-repository</id>
-			<name>JBoss Repository</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 	<build>
+		<defaultGoal>install</defaultGoal>
+		<finalName>PSOATransRun</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
+				<configuration>
+					<sourceDirectory>src</sourceDirectory>
+					<source>1.6</source>
+					<target>1.6</target>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>org.ruleml.psoa.psoatransrun.prolog.PSOATransRunProlog</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+<!-- 			    <plugin>
+			        <groupId>org.eclipse.m2e</groupId>
+			        <artifactId>lifecycle-mapping</artifactId>
+			        <version>1.0.0</version>
+			        <configuration>
+			            <lifecycleMappingMetadata>
+			                <pluginExecutions>
+			                    copy-dependency plugin
+			                    <pluginExecution>
+			                        <pluginExecutionFilter>
+			                            <groupId>org.apache.maven.plugins</groupId>
+			                            <artifactId>maven-dependency-plugin</artifactId>
+			                            <versionRange>[2.0.0,)</versionRange>
+			                            <goals>
+			                                <goal>copy-dependencies</goal>
+			                            </goals>
+			                        </pluginExecutionFilter>
+			                        <action>
+			                            <ignore />
+			                        </action>
+			                    </pluginExecution>
+			                </pluginExecutions>
+			            </lifecycleMappingMetadata>
+			        </configuration>
+			    </plugin> -->
+<!-- 				<plugin>
+		            <groupId>org.apache.maven.plugins</groupId>
+		            <artifactId>maven-dependency-plugin</artifactId>
+		            <executions>
+		                <execution>
+		                    <id>copy-dependencies</id>
+		                    <phase>prepare-package</phase>
+		                    <goals>
+		                        <goal>copy-dependencies</goal>
+		                    </goals>
+		                    <configuration>
+		                        <outputDirectory>${project.build.directory}/lib</outputDirectory>
+		                        <overWriteReleases>false</overWriteReleases>
+		                        <overWriteSnapshots>false</overWriteSnapshots>
+		                        <overWriteIfNewer>true</overWriteIfNewer>
+		                    </configuration>
+		                </execution>
+		            </executions>
+		        </plugin> -->
+		        <!-- <plugin>
+		            <groupId>org.apache.maven.plugins</groupId>
+		            <artifactId>maven-jar-plugin</artifactId>
+		            <version>2.3.1</version>
+		            <configuration>
+		                <archive>
+		                    <manifest>
+		                        <addClasspath>true</addClasspath>
+		                        <classpathPrefix>lib/</classpathPrefix>
+		                        <mainClass>org.ruleml.psoa.psoatransrun.prolog.PSOATransRunProlog</mainClass>
+		                    </manifest>
+		                </archive>
+		            </configuration>
+		        </plugin> -->
 		</plugins>
-		<finalName>PSOATransRunService</finalName>
 	</build>
 </project>
