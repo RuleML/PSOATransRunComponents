@@ -152,12 +152,20 @@ public class PSOATransRunProlog
 			println("Translated KB:");
 			println(transKB);
 		}
+
+		if (_engine.consultAbsolute(transKBFile))
+			println("KB Loaded");
+		else
+		{
+			_engine.interrupt();
+			println("Failed to load KB");
+		}
 		
 		if (queryStream != null)
 		{
 			String transQuery = translator.translateQuery(queryStream);
 			
-			answerQuery(transKBFile, transQuery, translator.getQueryVarMap());
+			answerQuery(transQuery, translator.getQueryVarMap());
 		}
 		else
 		{
@@ -174,7 +182,7 @@ public class PSOATransRunProlog
 				try
 				{
 					String transQuery = translator.translateQuery(psoaQuery);
-					answerQuery(transKBFile, transQuery, translator.getQueryVarMap());
+					answerQuery(transQuery, translator.getQueryVarMap());
 				}
 				catch (Exception e)
 				{
@@ -190,7 +198,7 @@ public class PSOATransRunProlog
 			_engine.shutdown();
 	}
 
-	private static void answerQuery(File transKBFile, String transQuery, Map<String, String> queryVarMap)
+	private static void answerQuery(String transQuery, Map<String, String> queryVarMap)
 	{
 		Set<Entry<String, String>> varMapEntries;
 		TermModel result;
@@ -201,14 +209,6 @@ public class PSOATransRunProlog
 			println(transQuery + ".");
 		}
 		varMapEntries = queryVarMap.entrySet();
-
-		if (_engine.consultAbsolute(transKBFile))
-			println("KB Loaded");
-		else
-		{
-			_engine.interrupt();
-			println("Failed to load KB");
-		}
 		
 		println();
 		println("Answer(s):");
