@@ -1,29 +1,48 @@
-NOTE: Only works on a Linux platform, e.g. Fedora 16
+OVERVIEW
+PSOATransRun is an implementation of the PSOA RuleML language. PSOATransRun 
+composes a translator from PSOA to some target langauge t, and some runtime 
+environment executing the language t. This release contains an instantiation 
+using t=Prolog, composing a translator PSOA2Prolog and a runtime environment 
+XSB Prolog. See http://wiki.ruleml.org/index.php?title=PSOA_RuleML for more 
+details of PSOA RuleML and PSOATransRun.
 
-Prerequisites: Maven 2
 
-1. Download jboss AS 7.0.2.Final
+REQUIREMENTS
+Operating System: Windows
+Prerequisites: Java version 6.0 or higher, XSB Prolog 3.5
 
-    curl http://download.jboss.org/jbossas/7.0/jboss-as-7.0.2.Final/jboss-as-web-7.0.2.Final.zip -o jboss-as-7.0.2.Final.zip
 
-2. Unzip jboss-as-7.0.2.Final.zip somewhere in you home directory (this is for demo purposes only and using your home directory eases the burden of unix permissions).
+USAGE
+Download PSOATransRun.jar to a directory, which we will call $PSOATransRun_DIR.
+Then follow the next steps to run the program:
 
-    unzip jboss-as-7.0.2.Final.zip -d <jboss_as_home>
+1. Open the Command Line Prompt
+1) Click the key combination Windows+R, a "Run" box will be shown;
+2) Type cmd and click "Enter"
 
-3. Change port number of jboss AS 7
+2. Change the working directory to $PSOATransRun_DIR by executing
+   cd $PSOATransRun_DIR
+   If $PSOATransRun_DIR is not on the same drive as the current
+   working directory, the command line option /d should be used:
+   cd /d $PSOATransRun_DIR
+   
+3. Execute the following command
+   java -jar PSOATransRun.jar -i <kb>
 
-    vim <jboss_as_home>/standalone/configuration/standalone.xml
-    # on line 282, change socket binding named http to 808x
+<kb> is the path of the input knowledge base (KB) written in the PSOA RuleML 
+presentation syntax.
 
-4. Run demo server
+4. After the message "KB loaded" is shown, you can ask queries. Each time 
+when you see the "Input Query" message is prompted, you can input a one-line 
+query and click "Enter", and the answers will be shown. To finish, type
+Ctrl+Z and click "Enter".
 
-    mvn clean install
-    cd bin
-    ./demo <jboss_as_home>
+To see all available command line options, execute
+   java -jar PSOATransRun.jar -?
 
-5. Launch demo client
 
-    # See step 3 for port number if changed, else use port 8080 below (x = 0)
-    google-chrome localhost:808x/psoa2tptp-trans
-    # or
-    firefox localhost:808x/psoa2tptp-trans
+COMMON ERROR MESSAGES AND RESOLUTIONS
+* 'java' is not recognized as an internal or external command ...
+The java binary is not found by the Windows. Follow the steps explained in
+http://docs.oracle.com/javase/tutorial/essential/environment/paths.html
+to configure the PATH environment variable.

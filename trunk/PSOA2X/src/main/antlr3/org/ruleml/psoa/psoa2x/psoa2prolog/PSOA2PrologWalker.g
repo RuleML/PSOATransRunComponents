@@ -159,7 +159,7 @@ equal
 subclass
     :   ^(SUBCLASS sub=term sup=term)
     {
-       append(_output, "member(X,", $sup.output, ") :- member(X,", $sub.output, ")");
+       append(_output, "memterm(X,", $sup.output, ") :- memterm(X,", $sub.output, ")");
     }
     ;
     
@@ -221,7 +221,7 @@ scope
         {
           // Class membership
 	        if (!$type.output.equals("TOP"))
-	          append(_output, "member(", $psoa::oid, ",", $type.output, ")");
+	          append(_output, "memterm(", $psoa::oid, ",", $type.output, ")");
 	        else
 	          append(_output, "true");
 	      }
