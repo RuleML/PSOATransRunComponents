@@ -13,7 +13,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-public class Util {
+public class RESTfulUtils {
 	public static List<String> deserialize(String output) {
 		return asList(output.split("\n"));
 	}
@@ -30,7 +30,7 @@ public class Util {
 		try {
 			return URLDecoder.decode(s, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			Logger.getLogger(Util.class).error("Failed to UTF-8 encode string.", e);
+			Logger.getLogger(RESTfulUtils.class).error("Failed to UTF-8 encode string.", e);
 			return s;
 		}
 	}

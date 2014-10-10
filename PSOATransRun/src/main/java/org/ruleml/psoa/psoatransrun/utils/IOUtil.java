@@ -23,7 +23,9 @@ public class IOUtil
 	{
 		try
 		{
-			return File.createTempFile(prefix, suffix, tempDir);
+			File tmpFile = File.createTempFile(prefix, suffix, tempDir);
+			tmpFile.deleteOnExit();
+			return tmpFile;
 		}
 		catch (IOException e)
 		{

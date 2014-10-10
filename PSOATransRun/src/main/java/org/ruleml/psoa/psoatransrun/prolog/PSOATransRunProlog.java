@@ -25,18 +25,19 @@ public class PSOATransRunProlog
 		{
 			new LongOpt("help", LongOpt.NO_ARGUMENT, null, '?'),
 			new LongOpt("input", LongOpt.REQUIRED_ARGUMENT, null,'i'),
-			new LongOpt("outputTrans", LongOpt.OPTIONAL_ARGUMENT, null,'t'),
-//			new LongOpt("output", LongOpt.OPTIONAL_ARGUMENT, null,'o'),
-			new LongOpt("maxtime", LongOpt.REQUIRED_ARGUMENT, null,'m'),
+			new LongOpt("printTrans", LongOpt.NO_ARGUMENT, null,'p'),
+			new LongOpt("outputTrans", LongOpt.REQUIRED_ARGUMENT, null,'o'),
+//			new LongOpt("maxtime", LongOpt.REQUIRED_ARGUMENT, null,'m'),
 			new LongOpt("xsbfolder", LongOpt.REQUIRED_ARGUMENT, null,'x'),
 			new LongOpt("query", LongOpt.REQUIRED_ARGUMENT, null, 'q')
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?i:t::o::q:x:", opts);
+		Getopt optionsParser = new Getopt("", args, "?i:po:x:q:", opts);
 		FileInputStream kbStream = null,
 						queryStream = null;
 //		boolean outputTrans = false;
 		String xsbFolder = null;
+		File transKBFile = null;
 		String arg;
 		
 		for (int opt = optionsParser.getopt(); opt != -1; opt = optionsParser.getopt())
@@ -80,9 +81,14 @@ public class PSOATransRunProlog
 					}
 					break;
 				
-				case 't':
+				case 'p':
 					_outputTrans = true;
-//					optionsParser.getOptarg();
+					break;
+				case 'o':
+					arg = optionsParser.getOptarg();
+					if (!arg.endsWith(".pl") && !arg.endsWith(".P"))
+						printErrlnAndExit("Illegal translation output file name must end with .pl or .P: ", arg);
+					transKBFile = new File(arg);
 					break;
 				case 'x':
 					xsbFolder = optionsParser.getOptarg();
@@ -141,9 +147,15 @@ public class PSOATransRunProlog
 		PrologTranslator translator = new PrologTranslator();
 		String transKB = translator.translateKB(kbStream);
 		
-		File transKBFile = tmpFile("tmp-", ".pl");
+		if (transKBFile == null)
+			transKBFile = tmpFile("tmp-", ".pl");
 		PrintWriter writer = new PrintWriter(transKBFile);
-		writer.println(":- auto_table.");
+		writer.println(":- table(memterm/2).");
+		writer.println(":- table(sloterm/3).");
+		for (int i = 2; i < 11; i++)
+		{
+			writer.println(":- table(tupterm/" + i + ").");
+		}
 		writer.print(transKB);
 		writer.close();
 
@@ -154,7 +166,15 @@ public class PSOATransRunProlog
 		}
 
 		if (_engine.consultAbsolute(transKBFile))
+		{
 			println("KB Loaded");
+			
+			String path = transKBFile.getPath();
+			path = path.substring(0, path.length() - 2).concat("xwam");			
+			File xwamFile = new File(path);
+			if (xwamFile.exists())
+				xwamFile.deleteOnExit();
+		}
 		else
 		{
 			_engine.interrupt();
@@ -207,10 +227,10 @@ public class PSOATransRunProlog
 		{
 			println("Translated Query:");
 			println(transQuery + ".");
+			println();
 		}
 		varMapEntries = queryVarMap.entrySet();
 		
-		println();
 		println("Answer(s):");
 		if (varMapEntries.isEmpty())
 		{
@@ -252,21 +272,22 @@ public class PSOATransRunProlog
 					ansBuilder.setLength(0);
 				}
 			}
+			println();
 		}
 	}
 	
 	private static void printUsage()
 	{
-		println("Usage: java -jar PSOATransRun.jar --jar -i <rulebase> [-q <query>] [-t] [-x]");
+		println("Usage: java -jar PSOATransRun.jar -i <kb> [-q <query>] [-p] [-o <translated KB output>] [-x <xsb folder>]");
 		println("Options:");
 		println("  -?,--help         Print the help message");
 //		println("");
 		println("  -i,--input        Input Knowledge Base (KB)");
-//		println("\t--import_closure -i \n\t\tProcess the whole import closures of the rule bases.");
 		println("  -q,--query        Query document for the KB. If the query document");
-		println("                    is not specified, the engine will read query input");
-		println("                    from the console.");
-		println("  -t,--outputTrans  Output translated KB and query");
+		println("                    is not specified, the engine will read queries");
+		println("                    from the standard input.");
+		println("  -p,--printTrans   Print translated KB and queries to the standard output");
+		println("  -o,--outputTrans  Save translated KB to the designated file");
 		println("  -x,--xsbfolder    Specifies XSB installation folder. The default path is ");
 		println("                    obtained from the environment variable XSB_DIR");
 		

@@ -19,7 +19,7 @@ public class TPTPASOGenerator {
 								PREFIX_Rulename = "ax",
 								PREFIX_FactQueryname = "query",
 								PREFIX_NonFactQueryname = "query",
-								PRED_Member = "member",
+								PRED_Member = "memterm",
 								PRED_TupTerm = "tupterm",
 								PRED_SlotTerm = "sloterm",
 								PRED_Subclass = "subclass",
