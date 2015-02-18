@@ -1,0 +1,14 @@
+Document(
+  Group(
+    Forall ?Hu ?Wi ?Ch (
+      _family(_husb->?Hu _wife->?Wi _child->?Ch) :-
+        And(_married(?Hu ?Wi) _kid(?Hu ?Ch))
+    )
+    Forall ?Hu ?Wi ?Ch (
+      _family(_husb->?Hu _wife->?Wi _child->?Ch) :-
+        And(_married(?Hu ?Wi) _kid(?Wi ?Ch))
+    )
+    _married(_Joe _Sue)
+    _kid(_Sue _Pete)
+  )
+)

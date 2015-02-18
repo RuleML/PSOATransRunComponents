@@ -1,0 +1,6 @@
+Document(
+  Group(
+    Forall ?x (_o1#_p(_a ?x))
+    Forall ?x (_o1#_p(?x _b))
+  )
+)
