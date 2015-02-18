@@ -1,0 +1,9 @@
+?c1=_Adam ?c2=_Adam
+?c1=_Adam ?c2=_Jack
+?c1=_Adam ?c2=_Tom
+?c1=_Jack ?c2=_Adam
+?c1=_Jack ?c2=_Jack
+?c1=_Jack ?c2=_Tom
+?c1=_Tom ?c2=_Adam
+?c1=_Tom ?c2=_Jack
+?c1=_Tom ?c2=_Tom
