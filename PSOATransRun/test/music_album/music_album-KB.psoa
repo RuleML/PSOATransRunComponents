@@ -1,7 +1,7 @@
 Document(
   Group(
     :o1#:albsplitObj( :artist->"Van Morrison"   :title->"Astral Weeks"              :favorite->"Madame George"     )
-    :o2#:albsplitObj( :artist->"Beatles"        :title->"Sgt. Pepper's"             :favorite->"A Day in the Life" )
+    :o2#:albsplitObj( :artist->"Beatles"        :title->"Sgt. Pepper`s"             :favorite->"A Day in the Life" )
     :o3#:albsplitObj( :artist->"Beatles"        :title->"Abbey Road"                :favorite->"Something"         )
     :o4#:albsplitObj( :artist->"Rolling Stones" :title->"Sticky Fingers"            :favorite->"Brown Sugar"       )
     :o5#:albmergeObj( :artist->"Eagles"                :tivorite->"Hotel California"                               )

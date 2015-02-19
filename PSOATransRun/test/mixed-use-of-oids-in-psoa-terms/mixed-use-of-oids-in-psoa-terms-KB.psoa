@@ -1,0 +1,17 @@
+Document(
+  Group (
+    Forall ?X ?Y ( 
+      :isFatherOf(?Y ?X) :- And ( :isChildOf(?X ?Y) ?Y#:Male )
+    )
+
+    :c1#:isChildOf(:Adrian :Uwe)
+    :Adrian#:Male
+    :Uwe#:Male
+
+    Forall ?X ?Y ?C ( 
+      :isMotherOf(?Y ?X) :- And ( ?C#:isChildOf(?X ?Y) ?Y#:Female )
+    )
+    :isChildOf(:Adrian :Emily)
+    :Jane#:Female
+  )
+)

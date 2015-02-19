@@ -1,0 +1,24 @@
+Document (
+  Group (
+    Forall ?X
+    (
+      ?X#:c1 :- ?X#:c2
+    )
+    Forall ?X
+    (
+      ?X#:c1(:p1->:v1) :- ?X#:c2(:p2->:v1)
+    )
+    :o1#:c2
+    :o2#:c2(:p2->:v1)
+
+    Forall ?X
+    (
+      ?X#:c1 :- ?X#:c3
+    )
+    Forall ?X
+    (
+      ?X#Top(:p1->:v1) :- ?X#:c3(:p2->:v1)
+    )
+    :o3#:c3(:p2->:v1)
+  )
+)
