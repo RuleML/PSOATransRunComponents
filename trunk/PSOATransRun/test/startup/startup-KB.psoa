@@ -1,0 +1,18 @@
+Document (
+  Group (
+    Forall ?X ?Y ?Z ?EX ?EY (
+      _startup(_ceo->?X _cto->?Y
+               _employee->?Z) :-
+         And(_cofounders(?X ?Y) _hire(?X ?Z)
+             _equity(?X ?EX) _equity(?Y ?EY)
+             External(
+               pred:numeric-less-than-or-equal(
+                 External(func:numeric-add(?EX ?EY)) 100))
+      )
+    )
+
+    _cofounders(_John _Tony)  _hire(_John _Kate)
+    _equity(_John 50)         _equity(_Tony 30)
+    _startup##_company
+  )
+)

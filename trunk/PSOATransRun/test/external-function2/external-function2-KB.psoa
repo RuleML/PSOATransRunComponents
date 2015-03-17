@@ -1,0 +1,18 @@
+Document (
+  Group (
+    Forall ?X ?Y ?Z (
+      _qadd(?Z) :- And(_add(?X ?Y) ?Z=External(func:numeric-add(?X ?Y)))
+    )
+	_add(2 5)
+	
+	Forall ?X ?Y ?Z (
+      _qsub(?Z) :- And(_sub(_op1->?X _op2->?Y) ?Z=External(func:numeric-subtract(?X ?Y)))
+    )
+	_sub(_op1->5 _op2->2)
+	
+	Forall ?X ?Y ?Z (
+      _qmul(?Z) :- And(_mul(?X _p->?Y) ?Z=External(func:numeric-multiply(?X ?Y)))
+    )
+	_mul(3 _p->5)
+  )
+)

@@ -1,0 +1,12 @@
+Document (
+  Group (
+    Forall ?X (
+      ?X#_highIncomePerson :- And(?X#_Person(_income->?I)
+	                              External(pred:numeric-greater-than-or-equal(?I 100000)))
+    )
+	_Jim#_Person(_income->50000)
+	_Gray#_Person(_income->99999)
+	_Mike#_Person(_income->100000)
+	_Zack#_Person(_income->500000)
+  )
+)
