@@ -9,7 +9,8 @@ public class TreeWalkerTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ANTLRStringStream fileInput = new ANTLRFileStream("D:\\Programs\\PSOATools\\PSOATransRun\\src\\test\\testKB.ruleml");
+//		ANTLRStringStream fileInput = new ANTLRFileStream("D:\\Programs\\PSOATools\\PSOATransRun\\src\\test\\testCases\\testKB.psoa");
+		ANTLRStringStream fileInput = new ANTLRFileStream("D:\\Programs\\PSOATools\\PSOATransRun\\test\\class_membership\\class_membership-KB.psoa");
 		PSOAPSLexer lexer = new PSOAPSLexer(fileInput);
 		TokenRewriteStream tokens = new TokenRewriteStream(lexer);
 		PSOAPSParser parser = new PSOAPSParser(tokens);
@@ -29,7 +30,14 @@ public class TreeWalkerTest
 		
 		System.out.println();
 		System.out.println("Objectification:");
-		transformedTree = (CommonTree)(new OIDConstuctorObjectifier(nodes)).document().getTree();
+		transformedTree = (CommonTree)(new DiscriminativeObjectifier(nodes)).document().getTree();
+		System.out.println(transformedTree.toStringTree());
+		nodes = createAndPrintNodeStream(transformedTree);
+		nodes.setTokenStream(tokens);
+		
+		System.out.println();
+		System.out.println("Skolemization:");
+		transformedTree = (CommonTree)(new Skolemizer(nodes)).document().getTree();
 		System.out.println(transformedTree.toStringTree());
 		nodes = createAndPrintNodeStream(transformedTree);
 		nodes.setTokenStream(tokens);

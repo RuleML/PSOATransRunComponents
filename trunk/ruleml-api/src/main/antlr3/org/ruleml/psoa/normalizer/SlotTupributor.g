@@ -22,24 +22,29 @@ options
     {
 		CommonTree root = (CommonTree)adaptor.nil();
 		CommonTree typeTree, memberTree, topTypeTree;
-		// RewriteRuleSubtreeStream needs to be used since the tree oid needs to be duplicated
-		RewriteRuleSubtreeStream stream_oid = new RewriteRuleSubtreeStream(adaptor, "oid", oid),
-		                         stream_top;
 		
 		memberTree = (CommonTree)adaptor.create(PSOA, "PSOA");
-		adaptor.addChild(memberTree, stream_oid.nextTree());
+		adaptor.addChild(memberTree, oid);
 		typeTree = (CommonTree)adaptor.create(INSTANCE, "INSTANCE");
 		adaptor.addChild(typeTree, type);
 		adaptor.addChild(memberTree, typeTree);
 		
-		if (type.getToken().getType() != TOP)
-		{
-		    adaptor.addChild(root, memberTree);
-		}
-		
 		topTypeTree = (CommonTree)adaptor.create(INSTANCE, "#");
 		adaptor.addChild(topTypeTree, (CommonTree)adaptor.create(TOP, "TOP"));
-    stream_top = new RewriteRuleSubtreeStream(adaptor, "top", topTypeTree);
+    
+    if (list_slots != null)
+    {
+        CommonTree slot;
+        
+        for (int i = 0; i < list_slots.size(); i++)
+        {
+           slot = (CommonTree)adaptor.create(PSOA, "PSOA");
+           adaptor.addChild(slot, adaptor.dupTree(oid));
+           adaptor.addChild(slot, adaptor.dupTree(topTypeTree));
+           adaptor.addChild(slot, list_slots.get(i));
+           adaptor.addChild(root, slot);
+        }
+    }
 		
 		if (list_tuples != null)
 		{
@@ -48,26 +53,17 @@ options
 		    for (int i = 0; i < list_tuples.size(); i++)
 		    {
 		       tuple = (CommonTree)adaptor.create(PSOA, "PSOA");
-		       adaptor.addChild(tuple, stream_oid.nextTree());
-		       adaptor.addChild(tuple, stream_top.nextTree());
+		       adaptor.addChild(tuple, adaptor.dupTree(oid));
+		       adaptor.addChild(tuple, adaptor.dupTree(topTypeTree));
 		       adaptor.addChild(tuple, list_tuples.get(i));
 		       adaptor.addChild(root, tuple);
 		    }
 		}
-		
-		if (list_slots != null)
-		{
-		    CommonTree slot;
-		    
-		    for (int i = 0; i < list_slots.size(); i++)
-		    {
-		       slot = (CommonTree)adaptor.create(PSOA, "PSOA");
-		       adaptor.addChild(slot, stream_oid.nextTree());
-		       adaptor.addChild(slot, stream_top.nextTree());
-		       adaptor.addChild(slot, list_slots.get(i));
-		       adaptor.addChild(root, slot);
-		    }
-		}
+    
+    if (type.getToken().getType() != TOP)
+    {
+        adaptor.addChild(root, memberTree);
+    }
 		
 		switch (root.getChildCount())
 		{

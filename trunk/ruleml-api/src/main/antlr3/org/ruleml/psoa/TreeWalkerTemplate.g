@@ -54,8 +54,7 @@ rule
 
 clause
     :   ^(IMPLICATION head formula)
-    |   atomic
-    |   ^(AND atomic+)
+    |   head
     ;
     
 head

@@ -28,10 +28,10 @@ options
   }
   
 	private String getNewVarName()
-	{
+	{    
 	  Set<String> forallVars = $rule::forallVars,
 	              existVars = $rule::existsVars;
-	  int i = 0;
+	  int i = 1;
 	  String var;
 	  
 	  do
@@ -45,7 +45,7 @@ options
 	private CommonTree getVarNodeForExternal(CommonTree external)
 	{
 	  String extStr = external.toStringTree();
-	  Map<String, ExternalRewriteInfo> externalInfoMap = $rule::externalInfoMap;
+	  Map<String, ExternalRewriteInfo> externalInfoMap = $formula.size() > 0? $formula::externalInfoMap : $rule::externalInfoMap;
 	  ExternalRewriteInfo extInfo = externalInfoMap.get(extStr);
 	  CommonTree varNode;
 	  
@@ -64,7 +64,7 @@ options
 	
 	private CommonTree getExtEquals()
 	{
-    Map<String, ExternalRewriteInfo> externalInfoMap = $rule::externalInfoMap;
+    Map<String, ExternalRewriteInfo> externalInfoMap = $formula.size() > 0? $formula::externalInfoMap : $rule::externalInfoMap;
 	  
 	  assert !externalInfoMap.isEmpty();
 	  
@@ -166,7 +166,7 @@ clause
 }
     :  ^(IMPLICATION head formula)
     -> { externalInfoMap.isEmpty() }? ^(IMPLICATION head formula)
-    -> ^(IMPLICATION head ^(AND { getExtEquals() } formula ))
+    -> ^(IMPLICATION head ^(AND formula { getExtEquals() }))
     |  atomic
     -> { externalInfoMap.isEmpty() }? atomic
     -> { externalInfoMap.size() == 1 }? ^(IMPLICATION atomic { getExtEquals() } )
@@ -185,11 +185,27 @@ head
     ;
     
 formula
+scope
+{
+  Map<String, ExternalRewriteInfo> externalInfoMap;
+}
+@init
+{
+  $formula::externalInfoMap = new LinkedHashMap<String, ExternalRewriteInfo>();
+}
+@after
+{
+  $formula::externalInfoMap = null;
+}
     :   ^(AND formula+)
     |   ^(OR formula+)
     |   ^(EXISTS VAR_ID+ formula)
     |   atomic
+    -> { $formula::externalInfoMap.isEmpty() }? atomic
+    -> ^(AND { getExtEquals() } atomic)
     |   external
+    -> { $formula::externalInfoMap.isEmpty() }? external
+    -> ^(AND { getExtEquals() } external)
     ;
 
 atomic
