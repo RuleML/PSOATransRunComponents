@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="PSOA2TPTP-Translator">
+    <wb-module deploy-name="PSOATransRunWebService">
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
-        <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
-        <property name="context-root" value="psoa2tptp-trans"/>
-        <property name="java-output-path" value="/PSOA2TPTP-Translator/target/classes"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <dependent-module archiveName="PSOA2X-1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/PSOA2X/PSOA2X">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="ruleml-api-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/ruleml-api/ruleml-api">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="tptp-parser-1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/tptp-parser/tptp-parser">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="PSOATransRun-0.7.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/PSOATransRun/PSOATransRun">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path" value="/PSOATransRunWebService/target/classes"/>
+        <property name="context-root" value="PSOATransRunWebService"/>
     </wb-module>
 </project-modules>
