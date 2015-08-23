@@ -29,18 +29,16 @@ const SamplePSOAKB=
 "    )\n" +
 ")";
 const SamplePSOAQuery="?f#_family(_husb->_Joe _wife->?Wi _child->?Ch)";
-const App = "psoa2tptp-trans";
+//const App = "psoa2tptp-trans";
 const Translate = "translate";
 const Slash = "/";
 const Equal = "=";
 const Amp = "&";
 const Qmark = "?";
-const Doc = "document";
-const Query = "query";
 const Execute = "execute";
 const nullf = function() {};
 
-var translatedKB;
+var translatedKB, translatedQuery, queryVariables;
 
 var slash = function(s) {
 	return Slash+s;
@@ -84,24 +82,30 @@ var translate = function(kb, q, handler) {
 		url:service(Translate),
 		data:JSON.stringify(translateRequest(kb, q)),
 		contentType:"application/json; charset=utf-8",
-		success:function(data) {
-			handler(data);
+		success:function(result) {
+			handler(result);
 		}
 	});
 }
 
-var translateRequest = function(psoa, query) {
-	var d = (psoa) ? psoa : "";
-	var q = (query) ? query : "";
-	return {document: d, query: q, transType: transType()};
+var translateRequest = function(k, q) {
+//	var d = (psoa) ? psoa : "";
+//	var q = (query) ? query : "";
+	return {kb: k, query: q, target: transTarget() };
 }
 
 var executeQuery = function(handler) {
 	$.ajax({
      type:"POST",
-     contentType:"text/plain; charset=utf-8",
+     contentType:"application/json; charset=utf-8",
      url:service(Execute),
-     data:tptpDoc(),
+     data:JSON.stringify(
+    	{
+        	 kb:encode(translatedKB),
+		     query:encode(translatedQuery),
+		     queryVars:queryVariables,
+		     engine:transTarget()=="prolog"?"xsb":"vp"
+		}),
      success:handler
    });
 }
@@ -111,11 +115,15 @@ var psoaKB = function() {
 }
 
 var tptpDoc = function() {
-	return $("#tptpOutput").val();
+	return $("#transKB").val();
 }
 
 var psoaQuery = function() {
 	return $("#PSOAQuery").val();
+}
+
+var transTarget = function() {
+	return $("input[name=translatorTarget]:checked").val();
 }
 
 var transType = function() {
@@ -123,6 +131,9 @@ var transType = function() {
 }
 
 var filter = function(result) {
+    if (transTarget() == "prolog")
+    	return result;
+    
 	var filteredResult = "";
 	var startIndex, endIndex = 0;
 	
@@ -147,15 +158,17 @@ $(document).ready(function() {
 	$("#PSOAQuery").val(SamplePSOAQuery);
 	$('#transKBBtn').click(function() {
 		translate(encode(psoaKB()), null, function(result) {
-			translatedKB = result;
-			$("#tptpOutput").val(translatedKB);
+			translatedKB = result.kb;
+			$("#transKB").val(translatedKB);
 			$("#tabs").tabs('enable', 1);
 			$("#tabs").tabs('select', 1);
 		});
 	});
 	$("#transQueryBtn").click(function() {
 		translate(null, encode(psoaQuery()), function(result) {
-			$("#tptpOutput").val(translatedKB + "\n" + result);
+			translatedQuery = result.query;
+			queryVariables = result.queryVars;
+			$("#transQuery").val(translatedQuery);
 		});
 	});
 	$("#resetKBBtn").click(function() {
@@ -182,12 +195,17 @@ $(document).ready(function() {
 	<h1>PSOATransRun</h1>
 	<div id="tabs">
 		<ul>
-			<li><a href="#tab-1">PSOA Rulebase</a></li>
-			<li><a href="#tab-2">TPTP Rulebase</a></li>
-			<li><a href="#tab-3">VampirePrime Reasoner</a></li>
+			<li><a href="#tab-1">PSOA KB</a></li>
+			<li><a href="#tab-2">Translation Result</a></li>
+			<li><a href="#tab-3">Execution Result</a></li>
 		</ul>
 		<div id="tab-1">
-			<textarea id="PSOAKB" rows="20" cols="80"></textarea><br/>
+			<textarea id="PSOAKB" rows="20" cols="80"></textarea><br/><br/>
+			<div>
+			Target Language: 
+			<input type="radio" name="translatorTarget" value="prolog" /> Prolog
+			<input type="radio" name="translatorTarget" value="tptp" checked="checked" /> TPTP <br/>
+			</div>
 			<div style="visibility:hidden">
 			<input type="radio" name="translatorType" value="Direct" /> Direct Translator
 			<input type="radio" name="translatorType" value="TPTPASO" checked="checked" /> TPTP-ASO-based Translator<br/>
@@ -197,15 +215,18 @@ $(document).ready(function() {
 			<input id="resetKBBtn" type="button" value="Reset" />
 		</div>
 		<div id="tab-2">
-			<textarea id="tptpOutput" rows="18" cols="80"></textarea>
+			<h3>Translated KB</h3>
+			<textarea id="transKB" rows="18" cols="80"></textarea>
 			<h3>Query</h3>
-	        <textarea id="PSOAQuery" rows="1" cols="80"></textarea><br/>
-	        <input id="transQueryBtn" type="button" value="Translate Query" /> 
-			<input id="showSampleQueryBtn" type="button" value="Sample Query" />
-	        <input id="runQueryBtn" type="button" value="Execute" />
+	        <textarea id="PSOAQuery" rows="1" cols="80"></textarea><br/><br/>
+	        <input id="transQueryBtn" type="button" value="Translate Query" />
+			<input id="showSampleQueryBtn" type="button" value="Sample Query" /><br/>
+	        <h3>Translated Query</h3>
+	        <textarea id="transQuery" rows="7" cols="80"></textarea><br/><br/>
+	        <input id="runQueryBtn" type="button" value="Execute" /><br/>
 		</div>
 		<div id="tab-3">
-			<h3>VampirePrime Output</h3>
+			<h3>Execution Result</h3>
 			<h5>Note: If a query is successful, all of its proofs will be shown, 
 				with one answer-variable <br>
 				substitution at the bottom of each proof.

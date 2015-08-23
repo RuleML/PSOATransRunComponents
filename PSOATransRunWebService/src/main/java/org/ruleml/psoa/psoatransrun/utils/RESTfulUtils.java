@@ -5,6 +5,7 @@ import static org.ruleml.psoa.psoatransrun.utils.Collections.*;
 
 import java.io.*;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -26,7 +27,21 @@ public class RESTfulUtils {
 		return builder.toString();
 	}
 	
-	protected static String decode(String s){
+	public static String encode(String s) {
+		try
+		{
+			return URLEncoder.encode(s, "UTF-8");
+		} catch (UnsupportedEncodingException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static String decode(String s){
+		if (s == null)
+			return null;
+		
 		try {
 			return URLDecoder.decode(s, "UTF-8");
 		} catch (UnsupportedEncodingException e) {

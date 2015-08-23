@@ -10,7 +10,7 @@ public class Application extends javax.ws.rs.core.Application {
 
 	public Application() {
 		// ADD YOUR RESTFUL RESOURCES HERE
-		this.singletons.add(new ToTPTPResource());
+		this.singletons.add(new TranslateResource());
 		this.singletons.add(new ExecutionResource());
 	}
 
