@@ -1,7 +1,9 @@
 package org.ruleml.psoa.psoa2x.common;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Translator {
@@ -11,6 +13,7 @@ public abstract class Translator {
 	abstract public void translateQuery(String query, OutputStream out) throws TranslatorException;
 	abstract public void translateKB(InputStream kb, OutputStream out) throws TranslatorException;
 	abstract public void translateQuery(InputStream query, OutputStream out) throws TranslatorException;
+	abstract public String inverseTranslateTerm(String term);
 	
 	public String translateKB(InputStream kb) throws TranslatorException {
 		OutputStream output = new ByteArrayOutputStream(512);
@@ -32,6 +35,7 @@ public abstract class Translator {
 	
 	public String translateQuery(String query) throws TranslatorException {
 		OutputStream output = new ByteArrayOutputStream();
+		_queryVarMap.clear();
 		translateQuery(query, output);
 		return output.toString();
 	}
@@ -59,5 +63,9 @@ public abstract class Translator {
 	public Map<String, String> getQueryVarMap()
 	{
 		return _queryVarMap;
+	}
+	
+	public List<String> getQueryVars() {
+		return new ArrayList<String>(_queryVarMap.keySet());
 	}
 }

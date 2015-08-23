@@ -198,7 +198,7 @@ public class TPTPASOGenerator {
 		}
 		
 		if (f == null)
-			throw new TranslatorException(oid + "Top() is not supported");
+			throw new TranslatorException(oid + "#Top() is not supported");
 		
 		return f;
 	}

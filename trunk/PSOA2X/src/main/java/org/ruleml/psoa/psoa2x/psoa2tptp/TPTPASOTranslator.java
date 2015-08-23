@@ -11,4 +11,8 @@ public class TPTPASOTranslator extends ANTLRBasedTranslator {
 		return new TPTPASOTranslatorWalker(astNodes);
 	}
 
+	@Override
+	public String inverseTranslateTerm(String term) {
+		return PSOATranslatorUtil.inverseTranslateTerm(term);
+	}
 }
