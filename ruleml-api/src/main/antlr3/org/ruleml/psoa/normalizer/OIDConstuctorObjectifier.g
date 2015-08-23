@@ -16,21 +16,6 @@ options
 	import java.util.ListIterator;
 }
 
-@members
-{    
-    private CommonTree getTuplesTreeRest(ListIterator tupleItr)
-    {
-      CommonTree root = (CommonTree) adaptor.nil();
-      
-      while (tupleItr.hasNext())
-      {
-        adaptor.addChild(root, tupleItr.next());
-      }
-      
-      return root;
-    }
-}
-
 document
     :   ^(DOCUMENT base? prefix* importDecl* group?)
     ;
@@ -125,16 +110,16 @@ scope
 }
 @init
 {
-  int numTuples = 0, numSlots = 0;
+  int numSlots = 0;
   ListIterator itr = null;
 }    
     :   ^(PSOA oid=term? { $psoa::createOIDFunc = (isAtomic && oid == null); } 
             ^(INSTANCE type=term) { $psoa::createOIDFunc = false; }
             tuples+=tuple* (slot { numSlots++; })*)
-    -> { isAtomic && oid == null && !$tuples.isEmpty() }?
+    -> { isAtomic && oid == null && $tuples.size() == 1 && numSlots == 0 }?
         ^(PSOA
           ^(PSOA ^(INSTANCE ^(SHORTCONST {$psoa::oidFuncTree})) { (CommonTree)(itr = $tuples.listIterator()).next() })
-          ^(INSTANCE $type) { getTuplesTreeRest(itr) } slot*)
+          ^(INSTANCE $type))
     ->  ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
     ;
 

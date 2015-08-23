@@ -40,7 +40,7 @@ options
         for (Object conjunct : headConjuncts)
         {
             Set<String> conjunctVars = conjunctVarsListItr.next();
-            Object newImply = adaptor.create(IMPLICATION, "IMPLICATION");
+            Object newImply = adaptor.create(IMPLICATION, ":-");
             
             adaptor.addChild(newImply, conjunct);
             adaptor.addChild(newImply, stream_body.nextTree());

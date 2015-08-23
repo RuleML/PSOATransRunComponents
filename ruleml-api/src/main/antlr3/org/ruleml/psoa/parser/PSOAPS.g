@@ -112,8 +112,8 @@ clause
 formula returns [boolean isValidHead, boolean isAtomic]
 @init { $isValidHead = true; $isAtomic = false; }
     :   AND LPAR (f=formula { if(!$f.isValidHead) $isValidHead = false; } )+ RPAR -> ^(AND["AND"] formula*)
-    |   OR LPAR formula+ RPAR { $isValidHead = false; } -> ^(OR["OR"] formula*)
-    |   EXISTS variable+ LPAR f=formula RPAR { $isValidHead = $f.isAtomic; }
+    |   OR LPAR formula* RPAR { $isValidHead = false; } -> ^(OR["OR"] formula*)
+    |   EXISTS variable+ LPAR f=formula RPAR { } // $isValidHead = $f.isAtomic; }
         -> ^(EXISTS["EXISTS"] variable+ $f)
     |   atomic { $isAtomic = true; } -> atomic
     |   (external_term { $isValidHead = false; } -> external_term)
@@ -209,6 +209,12 @@ variable
     :   VAR_ID -> VAR_ID[$VAR_ID.text.substring(1)]
     ;
 
+answer
+    : 'yes'
+    | 'no'
+    | (term EQUAL term)+  
+    ;
+    
 //--------------------- LEXER: -----------------------
 // Comments and whitespace:
 WHITESPACE  :  (' '|'\t'|'\r'|'\n')+ { $channel = HIDDEN; } ;
@@ -228,7 +234,7 @@ EXTERNAL : 'External';
 TOP : 'Top';
 
 //  Constants:
-NUMBER: DIGIT+ ('.' DIGIT*)?;
+NUMBER: '-'? DIGIT+ ('.' DIGIT*)?;
 CURIE : ID? ':' ID?;
 
 STRING: '"' (~('"' | '\\' | EOL) | ECHAR)* '"';
