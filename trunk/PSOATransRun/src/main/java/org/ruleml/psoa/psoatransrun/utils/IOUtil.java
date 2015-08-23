@@ -52,10 +52,16 @@ public class IOUtil
 		File f = new File(tempDir, resource);
 		InputStream in = loader.getResourceAsStream(resource);
 		
+		if (in == null)
+			throw new PSOATransRunException("Resource " + resource + " not found");
 		try
 		{
 			try
 			{
+				File dir = f.getParentFile();
+				if (dir != null && !dir.exists())
+					dir.mkdirs();
+
 				FileOutputStream out = new FileOutputStream(f, false);
 				try
 				{

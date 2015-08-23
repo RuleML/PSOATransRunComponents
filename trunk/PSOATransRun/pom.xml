@@ -33,10 +33,10 @@
 		</dependency>
 		<dependency>
         	<groupId>com.declarativa.interprolog</groupId>
-	        <artifactId>InterProlog</artifactId>
-	        <scope>system</scope>
-	        <version>1.0</version>
-	        <systemPath>${basedir}\src\main\resources\prolog\interprolog.jar</systemPath>
+	        <artifactId>interprolog</artifactId>
+		        <version>2.5</version>
+<!-- 	        <scope>system</scope>
+	        <systemPath>${basedir}\src\main\resources\prolog\interprolog.jar</systemPath> -->
         </dependency>
         <!-- <dependency>
         	<groupId>com.declarativa.interprolog</groupId>
@@ -70,6 +70,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
+							<!-- <mainClass>org.ruleml.psoa.psoatransrun.test.PSOATransRunTest</mainClass> -->
 							<mainClass>org.ruleml.psoa.psoatransrun.prolog.PSOATransRunProlog</mainClass>
 						</manifest>
 					</archive>

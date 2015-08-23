@@ -8,7 +8,7 @@ import java.io.File;
 
 import org.apache.commons.exec.CommandLine;
 
-public class ExecutionEngine
+public abstract class CommandLineExecutionEngine extends ExecutionEngine 
 {
 	protected final String[] m_resourcePaths;
 	protected final String m_binPath;
@@ -16,7 +16,7 @@ public class ExecutionEngine
 	protected final long m_exeTimeout;
 	protected final ResultHandler m_resultHandler;
 	
-	public ExecutionEngine(CommandLineArgsBuilder cBuilder, ResultHandler resultHandler, long exeTimeout, String binPath, String... resources)
+	public CommandLineExecutionEngine(CommandLineArgsBuilder cBuilder, ResultHandler resultHandler, long exeTimeout, String binPath, String... resources)
 	{
 		ClassLoader loader = this.getClass().getClassLoader();
 		File binFile = extractFromResource(loader, binPath);
@@ -43,24 +43,30 @@ public class ExecutionEngine
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		execute(cl, out, m_exeTimeout);
-		req.delete();
 		return m_resultHandler.parse(out.toString());
 	}
 	
-	public static ExecutionEngine VampirePrime = new ExecutionEngine(new CommandLineArgsBuilder() {
-		
-		@Override
-		public String[] buildCommandLine(String[] resourcePaths,
-				String inputFilePath)
-		{
-			return new String[] { "-t", "300", "-m",
-								"300000", "--elim_def", "0", "--selection", "8",
-								"--config", resourcePaths[0], "--max_number_of_answers", "100",
-								"--inconsistencies_as_answers", "off",
-								"--limited_abs_lit_chaining", "on", 
-								"--proof", "on", inputFilePath };
-		}
-	}, ResultHandler.IdentityHandler, 5 * 60 * 1000, "vkernel", "answer_predicates.xml");
+//	public static CommandLineExecutionEngine VampirePrime = new CommandLineExecutionEngine(new CommandLineArgsBuilder() {
+//		
+//		@Override
+//		public String[] buildCommandLine(String[] resourcePaths,
+//				String inputFilePath)
+//		{
+//			return new String[] { "-t", "300", "-m",
+//								"300000", "--elim_def", "0", "--selection", "8",
+//								"--config", resourcePaths[0], "--max_number_of_answers", "100",
+//								"--inconsistencies_as_answers", "off",
+//								"--limited_abs_lit_chaining", "on", 
+//								"--proof", "on", inputFilePath };
+//		}
+//	}, ResultHandler.IdentityHandler, 5 * 60 * 1000, "vkernel", "answer_predicates.xml");
+
+	public static CommandLineExecutionEngine createEngine(String engine) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public abstract String run(String kb, String query);
 	
 	// TODO Update for Eprover
 //	public static ExecutionEngine EProver = new ExecutionEngine(new CommandLineArgsBuilder() {
