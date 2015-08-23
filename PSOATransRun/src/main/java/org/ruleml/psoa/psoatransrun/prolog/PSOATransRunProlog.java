@@ -12,12 +12,14 @@ import org.ruleml.psoa.psoa2x.common.TranslatorException;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PrologTranslator;
 
 import com.declarativa.interprolog.*;
+
 import static org.ruleml.psoa.psoatransrun.utils.IOUtil.*;
 
 public class PSOATransRunProlog
 {
 	private static PrologEngine _engine;
-	private static boolean _outputTrans = false;
+	private static boolean _outputTrans = false, _getAllAnswers = false;
+	private static int _maxDepth = 0;
 	
 	public static void main(String[] args) throws TranslatorException, IOException
 	{
@@ -27,12 +29,14 @@ public class PSOATransRunProlog
 			new LongOpt("input", LongOpt.REQUIRED_ARGUMENT, null,'i'),
 			new LongOpt("printTrans", LongOpt.NO_ARGUMENT, null,'p'),
 			new LongOpt("outputTrans", LongOpt.REQUIRED_ARGUMENT, null,'o'),
-//			new LongOpt("maxtime", LongOpt.REQUIRED_ARGUMENT, null,'m'),
+			new LongOpt("timeout", LongOpt.REQUIRED_ARGUMENT, null,'t'),
 			new LongOpt("xsbfolder", LongOpt.REQUIRED_ARGUMENT, null,'x'),
-			new LongOpt("query", LongOpt.REQUIRED_ARGUMENT, null, 'q')
+			new LongOpt("query", LongOpt.REQUIRED_ARGUMENT, null, 'q'),
+			new LongOpt("allAns", LongOpt.NO_ARGUMENT, null, 'a'),
+			new LongOpt("termDep", LongOpt.REQUIRED_ARGUMENT, null, 'd')
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?i:po:x:q:", opts);
+		Getopt optionsParser = new Getopt("", args, "?i:po:x:q:ad:t:", opts);
 		FileInputStream kbStream = null,
 						queryStream = null;
 //		boolean outputTrans = false;
@@ -64,7 +68,11 @@ public class PSOATransRunProlog
 						System.exit(1);
 					}
 					break;
-					
+				
+				case 'd':
+					arg = optionsParser.getOptarg();
+					_maxDepth = Integer.parseInt(arg);
+					break;
 				case 'q':
 					arg = optionsParser.getOptarg(); 
 					try
@@ -92,6 +100,9 @@ public class PSOATransRunProlog
 					break;
 				case 'x':
 					xsbFolder = optionsParser.getOptarg();
+					break;
+				case 'a':
+					_getAllAnswers = true;
 					break;
 				default:
 					assert false;
@@ -125,7 +136,8 @@ public class PSOATransRunProlog
 				if (f1.canExecute())
 					xsbFile = f1;
 				
-				if (dir.getName().contains("x86"))
+				if (dir.getName().contains("86"))
+//				if (dir.getName().contains("btc"))
 					break;
 			}
 			
@@ -236,7 +248,7 @@ public class PSOATransRunProlog
 		{
 			println(_engine.deterministicGoal(transQuery));
 		}
-		else
+		else if (_getAllAnswers)
 		{
 			StringBuilder outputBuilder = new StringBuilder("findall([");
 			for (Entry<String, String> entry : varMapEntries)
@@ -255,9 +267,9 @@ public class PSOATransRunProlog
 				Set<String> answers = new HashSet<String>();
 				StringBuilder ansBuilder = new StringBuilder();
 				boolean separator = false;
-				for (TermModel bindings : result.getChildren())
-				{
-					for (TermModel term : bindings.getChildren())
+				for (TermModel bindings : result.flatList())
+				{					
+					for (TermModel term : bindings.flatList())
 					{
 						ansBuilder.append(term);
 						if (separator)
@@ -274,6 +286,55 @@ public class PSOATransRunProlog
 			}
 			println();
 		}
+		else
+		{
+			StringBuilder queryBuilder = new StringBuilder(transQuery);
+			queryBuilder.append(",buildTermModel([");
+			for (Entry<String, String> entry : varMapEntries)
+			{
+				queryBuilder.append("\'?").append(entry.getValue()).append("=\',");
+				queryBuilder.append(entry.getKey()).append(",");
+			}
+			queryBuilder.setCharAt(queryBuilder.length() - 1, ']');
+			queryBuilder.append(",LM)");
+
+			String input = ";";
+			Scanner sc = new Scanner(System.in);
+			SolutionIterator iter = _engine.goal(queryBuilder.toString(), "[LM]");
+			
+			do
+			{
+				if (input.equals(";"))
+				{
+					if (!iter.hasNext())
+					{
+						System.out.println("No more answers");
+						break;
+					}
+					TermModel m = (TermModel)iter.next()[0];
+					
+					StringBuilder ansBuilder = new StringBuilder();
+					boolean separator = false;
+					for (TermModel term : m.flatList())
+					{
+						ansBuilder.append(term);
+						if (separator)
+							ansBuilder.append(",");
+						separator = !separator;
+					}
+					ansBuilder.setCharAt(ansBuilder.length() - 1, '\t');
+					
+					System.out.print(ansBuilder);
+				}
+				else if (input.equals(""))
+				{
+					iter.cancel();
+					break;
+				}
+				
+				input = sc.nextLine();
+			} while (true);
+		}
 	}
 	
 	private static void printUsage()
@@ -282,6 +343,7 @@ public class PSOATransRunProlog
 		println("Options:");
 		println("  -?,--help         Print the help message");
 //		println("");
+		println("  -a,--allAns       Retrieve all answers for each query at once");
 		println("  -i,--input        Input Knowledge Base (KB)");
 		println("  -q,--query        Query document for the KB. If the query document");
 		println("                    is not specified, the engine will read queries");
