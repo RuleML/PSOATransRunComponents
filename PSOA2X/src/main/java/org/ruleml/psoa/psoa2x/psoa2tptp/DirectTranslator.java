@@ -9,4 +9,9 @@ public class DirectTranslator extends ANTLRBasedTranslator {
 			CommonTreeNodeStream astNodes) {
 		return new DirectTranslatorWalker(astNodes);
 	}
+
+	@Override
+	public String inverseTranslateTerm(String term) {
+		return PSOATranslatorUtil.inverseTranslateTerm(term);
+	}
 }

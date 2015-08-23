@@ -50,7 +50,7 @@ group
     ;
 
 group_element
-    :   rule 
+    :   rule
     { println(_output.toString(), "."); _output.setLength(0); }
     |   group
     ;
@@ -59,10 +59,12 @@ query returns [Map<String, String> varMap]
 scope
 {
   Map<String, String> freeVarMap;
+  Set<String> existVars;
 }
 @init
 {
    $varMap = ($query::freeVarMap = new LinkedHashMap<String, String>());
+   $query::existVars = new HashSet<String>();
 }
     :   formula
     {
@@ -90,17 +92,13 @@ head
     ;
 
 formula
-scope
-{
-  Set<String> existVars;
-}
 @init
 { 
    boolean hasConjunct = false, isQuery = $query.size() > 0;
    Set<String> existVars;
    
    if (isQuery)
-     existVars = ($formula::existVars = new HashSet<String>());
+     existVars = $query::existVars;
    else
      existVars = null;
 }
@@ -181,7 +179,7 @@ scope
     {
       String varName = $VAR_ID.text, newVarName = "Q".concat(varName);
       append(outputBuilder, newVarName);
-      if ($query.size() > 0 && !$formula::existVars.contains(varName))
+      if ($query.size() > 0 && !$query::existVars.contains(varName))
       {
         $query::freeVarMap.put(newVarName, varName);
       }

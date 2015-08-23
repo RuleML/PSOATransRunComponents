@@ -19,8 +19,12 @@ public class PSOATranslatorUtil {
 	
 	static
 	{
+		builtInMap.put("pred:numeric-equal", "\'=:=\'");
+		builtInMap.put("pred:numeric-not-equal", "\'=\\=\'");
 		builtInMap.put("pred:numeric-greater-than", "\'>\'");
+		builtInMap.put("pred:numeric-greater-than-or-equal", "\'>=\'");
 		builtInMap.put("pred:numeric-less-than", "\'<\'");
+		builtInMap.put("pred:numeric-less-than-or-equal", "\'=<\'");
 		builtInMap.put("func:numeric-add", "\'+\'");
 		builtInMap.put("func:numeric-subtract", "\'-\'");
 		builtInMap.put("func:numeric-multiply", "\'*\'");
@@ -172,6 +176,20 @@ public class PSOATranslatorUtil {
 	
 	public static String randomConjectureId() {
 		return "conj" + ruleCounter++;
+	}
+	
+	public static String inverseTranslateTerm(String term)
+	{		
+		// TODO: change to correct term translation 
+		if (term.charAt(0) != 'Q')
+		{
+//			if (term.startsWith("'") && term.endsWith("'"))
+//				return term.substring(1, term.length() - 1);
+//			else
+			return term;
+		}
+		else
+			return '?' + term.substring(1);
 	}
 	
 	public static StringBuilder builder() { return builder(""); }

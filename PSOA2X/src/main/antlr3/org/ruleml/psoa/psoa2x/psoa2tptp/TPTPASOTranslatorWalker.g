@@ -175,7 +175,7 @@ constant returns [Term t]
     ;
     
 constshort returns [Term t]
-    :   IRI
+    :   IRI { $t = m_generator.getConst('\'' + $IRI.text + '\''); }
     |   LITERAL { $t = m_generator.getConst('\"' + $LITERAL.text + '\"'); }
     |   NUMBER { $t = m_generator.getConst($NUMBER.text); }
     |   LOCAL { $t = m_generator.getLocalConst($LOCAL.text); }
