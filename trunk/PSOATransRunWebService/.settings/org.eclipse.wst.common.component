@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project-modules id="moduleCoreId" project-version="1.5.0">
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="PSOATransRunWebService">
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
@@ -14,7 +13,7 @@
         <dependent-module archiveName="tptp-parser-1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/tptp-parser/tptp-parser">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="PSOATransRun-0.7.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/PSOATransRun/PSOATransRun">
+        <dependent-module archiveName="PSOATransRun-0.8.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/PSOATransRun/PSOATransRun">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/PSOATransRunWebService/target/classes"/>
