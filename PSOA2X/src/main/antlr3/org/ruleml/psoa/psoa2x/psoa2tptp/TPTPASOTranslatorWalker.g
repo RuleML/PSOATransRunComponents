@@ -26,7 +26,13 @@ options
 @members
 {
     private TPTPASOGenerator m_generator = new TPTPASOGenerator();
+    private PSOA2TPTPConfig m_config;
 
+    public TPTPASOTranslatorWalker(TreeNodeStream input, PSOA2TPTPConfig config) {
+        this(input);
+        m_config = config;
+    }
+    
     public void parseDocument() throws RecognitionException {
         document();
     }

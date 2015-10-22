@@ -119,6 +119,7 @@ public class XSBEngine extends ReusableKBEngine {
 		
 		writer.println(":- table(memterm/2).");
 		writer.println(":- table(sloterm/3).");
+		writer.println(":- table(sloterm/4).");
 		for (int i = 2; i < 11; i++)
 		{
 			writer.println(":- table(tupterm/" + i + ").");

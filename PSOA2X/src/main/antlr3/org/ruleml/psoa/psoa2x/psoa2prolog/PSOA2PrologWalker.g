@@ -15,22 +15,32 @@ options
 	import static org.ruleml.psoa.psoa2x.common.PSOATranslatorUtil.*;
 	import org.ruleml.psoa.psoa2x.common.*;
 	import org.ruleml.psoa.psoa2x.common.ANTLRBasedTranslator.TranslatorWalker;
-  import java.io.*;
-  import java.util.Set;
-  import java.util.HashSet;
-  import java.util.Map;
-  import java.util.LinkedHashMap;
+    import java.io.*;
+    import java.util.Set;
+    import java.util.HashSet;
+    import java.util.Map;
+    import java.util.LinkedHashMap;
 }
 
 @members
 {
+   private PSOA2PrologConfig m_config;
    private StringBuilder _output = new StringBuilder(256);
     
    private enum TermType { CONST, VAR, FUNC_INTERNAL, FUNC_EXTERNAL };
+   
+   public PSOA2PrologWalker(TreeNodeStream input, PSOA2PrologConfig config) {
+        this(input);
+        m_config = config;
+   }
 }
 
 document
     :   ^(DOCUMENT base? prefix* importDecl* group?)
+    {
+        if (m_config.crossOverAxiom)
+          println("sloterm(X,C1,P,V) :- (sloterm(X,C2,P,V),memterm(X,C1)).");
+    }
     ;
 
 base
@@ -198,17 +208,22 @@ scope
 {
   String oid;
   String func;
+  String type;
 }
 @init
 {
   boolean hasTupleOrSlot = false;
 }
     :   ^(PSOA (o=term { $psoa::oid = $o.output; })?
-           ^(INSTANCE type=term
+           ^(INSTANCE t=term
             {
               if ($psoa::oid == null)
               {
-                $psoa::func = $type.output;
+                $psoa::func = $t.output;
+              }
+              else
+              {
+                $psoa::type = $t.output;
               }
             })
            ({ hasTupleOrSlot = true; } tuple)*
@@ -218,11 +233,11 @@ scope
         if (!hasTupleOrSlot)
         {
           // Class membership
-	        if (!$type.output.equals("TOP"))
-	          append(_output, "memterm(", $psoa::oid, ",", $type.output, ")");
+	        if (!$t.output.equals("TOP"))
+	          append(_output, "memterm(", $psoa::oid, ",", $t.output, ")");
 	        else
 	          append(_output, "true");
-	      }
+	    }
     }
     ;
 
@@ -244,7 +259,10 @@ tuple
   else
   {
     b = _output;
-    append(b, "tupterm(", oid, ",");
+    if (m_config.reproduceClass)
+      append(b, "tupterm(", oid, ",", $psoa::type, ",");
+    else
+      append(b, "tupterm(", oid, ",");
   }
 }
     :   ^(TUPLE (term { append(b, $term.output, ","); })+)
@@ -259,7 +277,12 @@ slot
     {
         String oid;
         if ((oid = $psoa::oid) != null)
-          append(_output, "sloterm(", oid, ",", $s.output, ",", $v.output, ")");
+        {
+          if (m_config.reproduceClass)
+            append(_output, "sloterm(", oid, ",", $psoa::type, ",", $s.output, ",", $v.output, ")");
+          else
+            append(_output, "sloterm(", oid, ",", $s.output, ",", $v.output, ")");
+        }
     }
     ;
 

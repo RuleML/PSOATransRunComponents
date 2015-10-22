@@ -9,7 +9,9 @@ import java.util.*;
 
 import org.apache.commons.exec.OS;
 import org.ruleml.psoa.psoa2x.common.TranslatorException;
+import org.ruleml.psoa.psoa2x.psoa2prolog.PSOA2PrologConfig;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PrologTranslator;
+import org.ruleml.psoa.psoatransrun.PSOATransRun;
 
 import com.declarativa.interprolog.*;
 
@@ -19,8 +21,9 @@ public class PSOATransRunProlog
 {
 	private static PrologEngine _engine;
 	private static boolean _outputTrans = false, _getAllAnswers = false;
+	private static PSOA2PrologConfig _config = new PSOA2PrologConfig();
 	private static int _maxDepth = 0;
-	
+
 	public static void main(String[] args) throws TranslatorException, IOException
 	{
 		LongOpt[] opts = new LongOpt[]
@@ -33,10 +36,11 @@ public class PSOATransRunProlog
 			new LongOpt("xsbfolder", LongOpt.REQUIRED_ARGUMENT, null,'x'),
 			new LongOpt("query", LongOpt.REQUIRED_ARGUMENT, null, 'q'),
 			new LongOpt("allAns", LongOpt.NO_ARGUMENT, null, 'a'),
+			new LongOpt("repClass", LongOpt.REQUIRED_ARGUMENT, null, 'r'),
 			new LongOpt("termDep", LongOpt.REQUIRED_ARGUMENT, null, 'd')
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?i:po:x:q:ad:t:", opts);
+		Getopt optionsParser = new Getopt("", args, "?i:po:x:q:ad:t:r", opts);
 		FileInputStream kbStream = null,
 						queryStream = null;
 //		boolean outputTrans = false;
@@ -88,7 +92,9 @@ public class PSOATransRunProlog
 						printErrln("Unable to read query file ", arg, ". Read from console.");
 					}
 					break;
-				
+				case 'r':
+					_config.reproduceClass = true;
+					break;
 				case 'p':
 					_outputTrans = true;
 					break;
@@ -108,7 +114,7 @@ public class PSOATransRunProlog
 					assert false;
 			}
 		}
-		
+
 		if (kbStream == null)
 			printErrlnAndExit("Input KB must be specified.");
 		
@@ -156,14 +162,18 @@ public class PSOATransRunProlog
 			printErrlnAndExit("Unsupported operating system.");
 		}
 		
-		PrologTranslator translator = new PrologTranslator();
+		PrologTranslator translator = new PrologTranslator(_config);
 		String transKB = translator.translateKB(kbStream);
 		
 		if (transKBFile == null)
 			transKBFile = tmpFile("tmp-", ".pl");
 		PrintWriter writer = new PrintWriter(transKBFile);
 		writer.println(":- table(memterm/2).");
-		writer.println(":- table(sloterm/3).");
+		if (_config.reproduceClass)
+			writer.println(":- table(sloterm/4).");
+		else
+			writer.println(":- table(sloterm/3).");
+		
 		for (int i = 2; i < 11; i++)
 		{
 			writer.println(":- table(tupterm/" + i + ").");

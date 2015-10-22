@@ -16,35 +16,48 @@ options
 
 @members
 {
-    private boolean m_isQuery = false;
+    private boolean m_isQuery = false, m_reproduceClass, m_omitMemtermInRuleBody;
+    
+    public boolean getReproduceClass()
+    {
+        return m_reproduceClass;
+    }
+    
+    public void setReproduceClass(boolean reproduceClass)
+    {
+        m_reproduceClass = reproduceClass;
+    }
     
     private CommonTree getSlotTupributorTree(CommonTree oid, CommonTree type, List list_tuples, List list_slots)
     {
 		CommonTree root = (CommonTree)adaptor.nil();
-		CommonTree typeTree, memberTree, topTypeTree;
+		CommonTree typeTree, memberTree;
 		
 		memberTree = (CommonTree)adaptor.create(PSOA, "PSOA");
 		adaptor.addChild(memberTree, oid);
-		typeTree = (CommonTree)adaptor.create(INSTANCE, "INSTANCE");
+		typeTree = (CommonTree)adaptor.create(INSTANCE, "#");
 		adaptor.addChild(typeTree, type);
 		adaptor.addChild(memberTree, typeTree);
 		
-		topTypeTree = (CommonTree)adaptor.create(INSTANCE, "#");
-		adaptor.addChild(topTypeTree, (CommonTree)adaptor.create(TOP, "TOP"));
-    
-    if (list_slots != null)
-    {
-        CommonTree slot;
-        
-        for (int i = 0; i < list_slots.size(); i++)
+        if (!m_reproduceClass)
         {
-           slot = (CommonTree)adaptor.create(PSOA, "PSOA");
-           adaptor.addChild(slot, adaptor.dupTree(oid));
-           adaptor.addChild(slot, adaptor.dupTree(topTypeTree));
-           adaptor.addChild(slot, list_slots.get(i));
-           adaptor.addChild(root, slot);
+		   typeTree = (CommonTree)adaptor.create(INSTANCE, "#");
+		   adaptor.addChild(typeTree, (CommonTree)adaptor.create(TOP, "TOP"));
         }
-    }
+  
+        if (list_slots != null)
+        {
+            CommonTree slot;
+        
+            for (int i = 0; i < list_slots.size(); i++)
+            {
+               slot = (CommonTree)adaptor.create(PSOA, "PSOA");
+               adaptor.addChild(slot, adaptor.dupTree(oid));
+               adaptor.addChild(slot, adaptor.dupTree(typeTree));
+               adaptor.addChild(slot, list_slots.get(i));
+               adaptor.addChild(root, slot);
+            }
+        }
 		
 		if (list_tuples != null)
 		{
@@ -54,16 +67,16 @@ options
 		    {
 		       tuple = (CommonTree)adaptor.create(PSOA, "PSOA");
 		       adaptor.addChild(tuple, adaptor.dupTree(oid));
-		       adaptor.addChild(tuple, adaptor.dupTree(topTypeTree));
+		       adaptor.addChild(tuple, adaptor.dupTree(typeTree));
 		       adaptor.addChild(tuple, list_tuples.get(i));
 		       adaptor.addChild(root, tuple);
 		    }
 		}
     
-    if (type.getToken().getType() != TOP)
-    {
-        adaptor.addChild(root, memberTree);
-    }
+        if (type.getToken().getType() != TOP)
+        {
+            adaptor.addChild(root, memberTree);
+        }
 		
 		switch (root.getChildCount())
 		{

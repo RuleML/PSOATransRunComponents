@@ -215,7 +215,7 @@ public class TestCase {
 	}
 	
 	public void cleanup() {
-		System.out.println("Shutdown engine");
+//		System.out.println("Shutdown engine");
 		try
 		{
 //			Scanner sc = new Scanner(System.in);

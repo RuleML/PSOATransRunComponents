@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.ruleml.psoa.psoa2x.psoa2prolog.PSOA2PrologConfig;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PrologTranslator;
 import org.ruleml.psoa.psoa2x.psoa2tptp.*;
 
@@ -62,7 +63,7 @@ public class RunTranslator {
 		try {
 //			ANTLRBasedTranslator translator = new TPTPASOTranslator();
 //			ANTLRBasedTranslator translator = new DirectTranslator();
-			ANTLRBasedTranslator translator = new PrologTranslator();
+			ANTLRBasedTranslator translator = new PrologTranslator(new PSOA2PrologConfig());
 			for (int i = 0; i < ruleBaseFileNames.length; ++i) {
 				translator.translateKB(new FileInputStream(ruleBaseFileNames[i]), System.out);
 //				createBasicTreeParser(ruleBaseFileNames[i], false).document();

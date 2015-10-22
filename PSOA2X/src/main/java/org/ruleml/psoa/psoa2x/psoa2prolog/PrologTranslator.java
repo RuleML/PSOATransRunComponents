@@ -9,10 +9,17 @@ import org.ruleml.psoa.psoa2x.common.PSOATranslatorUtil;
 import org.ruleml.psoa.psoa2x.common.TranslatorException;
 
 public class PrologTranslator extends ANTLRBasedTranslator {
+	PSOA2PrologConfig m_config;
+	
+	public PrologTranslator(PSOA2PrologConfig config)
+	{
+		m_config = config;
+	}
+	 
 	@Override
 	protected TranslatorWalker createTranslatorWalker(
 			CommonTreeNodeStream astNodes) {
-		return new PSOA2PrologWalker(astNodes);
+		return new PSOA2PrologWalker(astNodes, m_config);
 	}
 	
 	@Override
@@ -34,6 +41,7 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 			
 //			System.out.println("Slotribute and Tupribute Query");
 			slotTupributor = new SlotTupributor(treeNodeStream);
+			slotTupributor.setReproduceClass(m_config.reproduceClass);
 			treeNodeStream = new CommonTreeNodeStream(slotTupributor.query().getTree());
 			treeNodeStream.setTokenStream(tokens);
 			
@@ -58,6 +66,7 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 			
 //			System.out.println("Slotribute and Tupribute KB");
 			slotTupributor = new SlotTupributor(treeNodeStream);
+			slotTupributor.setReproduceClass(m_config.reproduceClass);
 			treeNodeStream = new CommonTreeNodeStream(slotTupributor.document().getTree());
 			treeNodeStream.setTokenStream(tokens);
 			printTree(treeNodeStream);

@@ -44,7 +44,9 @@ public class TreeWalkerTest
 		
 		System.out.println();
 		System.out.println("Slotribution and Tupribution:");
-		transformedTree = (CommonTree)(new SlotTupributor(nodes)).document().getTree();
+		SlotTupributor st = new SlotTupributor(nodes);
+		st.setReproduceClass(true);
+		transformedTree = (CommonTree)st.document().getTree();
 		System.out.println(transformedTree.toStringTree());
 		nodes = createAndPrintNodeStream(transformedTree);
 		nodes.setTokenStream(tokens);

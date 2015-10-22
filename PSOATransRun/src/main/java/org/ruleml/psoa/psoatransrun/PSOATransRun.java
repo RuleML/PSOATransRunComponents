@@ -3,16 +3,13 @@ package org.ruleml.psoa.psoatransrun;
 import java.io.InputStream;
 import java.util.List;
 
-import org.ruleml.psoa.psoa2x.common.Translator;
-import org.ruleml.psoa.psoa2x.psoa2prolog.PrologTranslator;
-import org.ruleml.psoa.psoa2x.psoa2tptp.TPTPASOTranslator;
-import org.ruleml.psoa.psoatransrun.engine.ExecutionEngine;
-import org.ruleml.psoa.psoatransrun.engine.ReusableKBEngine;
-import org.ruleml.psoa.psoatransrun.prolog.XSBEngine;
-import org.ruleml.psoa.psoatransrun.prolog.XSBEngineConfig;
+import org.ruleml.psoa.psoa2x.common.*;
+import org.ruleml.psoa.psoa2x.psoa2prolog.*;
+import org.ruleml.psoa.psoa2x.psoa2tptp.*;
+import org.ruleml.psoa.psoatransrun.engine.*;
+import org.ruleml.psoa.psoatransrun.prolog.*;
+import org.ruleml.psoa.psoatransrun.tptp.*;
 import org.ruleml.psoa.psoatransrun.test.Watch;
-import org.ruleml.psoa.psoatransrun.tptp.VampirePrimeEngine;
-import org.ruleml.psoa.psoatransrun.tptp.VampirePrimeEngineConfig;
 import org.ruleml.psoa.psoatransrun.utils.PSOATransRunException;
 
 public class PSOATransRun {
@@ -36,14 +33,28 @@ public class PSOATransRun {
 	{
 		if (targetLang.equalsIgnoreCase("prolog"))
 		{
-			return new PSOATransRun(new PrologTranslator(), new XSBEngine(new XSBEngineConfig()));
+			return new PSOATransRun(new PrologTranslator(new PSOA2PrologConfig()), new XSBEngine(new XSBEngineConfig()));
 		}
 		else if (targetLang.equalsIgnoreCase("tptp"))
 		{
-			return new PSOATransRun(new TPTPASOTranslator(), new VampirePrimeEngine(new VampirePrimeEngineConfig()));
+			return new PSOATransRun(new TPTPASOTranslator(new PSOA2TPTPConfig()), new VampirePrimeEngine(new VampirePrimeEngineConfig()));
 		}
 		
-		throw new PSOATransRunException("Unknown target language: " + targetLang);		
+		throw new PSOATransRunException("Unknown target language: " + targetLang);
+	}
+	
+	public static PSOATransRun getInstantiation(String targetLang, TranslatorConfig config)
+	{
+		if (targetLang.equalsIgnoreCase("prolog"))
+		{
+			return new PSOATransRun(new PrologTranslator((PSOA2PrologConfig)config), new XSBEngine(new XSBEngineConfig()));
+		}
+		else if (targetLang.equalsIgnoreCase("tptp"))
+		{
+			return new PSOATransRun(new TPTPASOTranslator((PSOA2TPTPConfig)config), new VampirePrimeEngine(new VampirePrimeEngineConfig()));
+		}
+		
+		throw new PSOATransRunException("Unknown target language: " + targetLang);
 	}
 	
 	public void loadKB(InputStream in)
