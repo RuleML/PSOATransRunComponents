@@ -2,7 +2,7 @@ tree grammar BodyExistentialRewriter;
 
 options 
 {
-  output = AST;
+    output = AST;
 	ASTLabelType = CommonTree;
 	tokenVocab = PSOAPS;
 	rewrite = true;
@@ -77,6 +77,7 @@ head
 formula
     :   ^(AND formula+)
     |   ^(OR formula+)
+    |   FALSITY
     |   ^(EXISTS 
            (VAR_ID
               {

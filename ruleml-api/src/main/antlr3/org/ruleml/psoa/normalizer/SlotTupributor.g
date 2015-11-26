@@ -139,6 +139,7 @@ head
 formula
     :   ^(AND formula+)
     |   ^(OR formula+)
+    |   FALSITY
     |   ^(EXISTS VAR_ID+ formula)
     |   atomic
     |   external
@@ -182,12 +183,13 @@ scope
 {
     $psoa::isAtomic = isAtomicFormula;
 }
-    :   ^(PSOA oid=term? ^(INSTANCE type=term) tuples+=tuple* slots+=slot*)   
-    {
-       if ($psoa::isAtomic && oid == null)
-           throw new RuntimeException("Psoa formulas must be objectified before slotribution and tupribution");
-    }
-    -> { !$psoa::isAtomic }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
+    :   ^(PSOA oid=term? ^(INSTANCE type=term) tuples+=tuple* slots+=slot*)
+//    {
+//       if ($psoa::isAtomic && oid == null)
+//           throw new RuntimeException("Psoa formulas must be objectified before slotribution and tupribution");
+//    }
+    -> { !$psoa::isAtomic || oid == null }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
+//    -> { $oid == null }? ^(PSOA ^(INSTANCE $type) tuple* slot*)
     -> { getSlotTupributorTree($oid.tree, $type.tree, $tuples, $slots) }
 
 //    :   ^(PSOA oid=term? ^(INSTANCE type=term) tuple* slot*)    

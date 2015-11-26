@@ -22,7 +22,7 @@ public class PSOATransRunProlog
 	private static PrologEngine _engine;
 	private static boolean _outputTrans = false, _getAllAnswers = false;
 	private static PSOA2PrologConfig _config = new PSOA2PrologConfig();
-	private static int _maxDepth = 0;
+//	private static int _maxDepth = 0;
 
 	public static void main(String[] args) throws TranslatorException, IOException
 	{
@@ -32,15 +32,16 @@ public class PSOATransRunProlog
 			new LongOpt("input", LongOpt.REQUIRED_ARGUMENT, null,'i'),
 			new LongOpt("printTrans", LongOpt.NO_ARGUMENT, null,'p'),
 			new LongOpt("outputTrans", LongOpt.REQUIRED_ARGUMENT, null,'o'),
-			new LongOpt("timeout", LongOpt.REQUIRED_ARGUMENT, null,'t'),
 			new LongOpt("xsbfolder", LongOpt.REQUIRED_ARGUMENT, null,'x'),
 			new LongOpt("query", LongOpt.REQUIRED_ARGUMENT, null, 'q'),
 			new LongOpt("allAns", LongOpt.NO_ARGUMENT, null, 'a'),
-			new LongOpt("repClass", LongOpt.REQUIRED_ARGUMENT, null, 'r'),
-			new LongOpt("termDep", LongOpt.REQUIRED_ARGUMENT, null, 'd')
+//			new LongOpt("termDep", LongOpt.REQUIRED_ARGUMENT, null, 'd'),
+//			new LongOpt("timeout", LongOpt.REQUIRED_ARGUMENT, null,'t'),
+			new LongOpt("repClass", LongOpt.NO_ARGUMENT, null, 'r'),
+			new LongOpt("staticObj", LongOpt.NO_ARGUMENT, null, 's')
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?i:po:x:q:ad:t:r", opts);
+		Getopt optionsParser = new Getopt("", args, "?i:po:x:q:ad:t:rs", opts);
 		FileInputStream kbStream = null,
 						queryStream = null;
 //		boolean outputTrans = false;
@@ -73,10 +74,10 @@ public class PSOATransRunProlog
 					}
 					break;
 				
-				case 'd':
-					arg = optionsParser.getOptarg();
-					_maxDepth = Integer.parseInt(arg);
-					break;
+//				case 'd':
+//					arg = optionsParser.getOptarg();
+//					_maxDepth = Integer.parseInt(arg);
+//					break;
 				case 'q':
 					arg = optionsParser.getOptarg(); 
 					try
@@ -109,6 +110,9 @@ public class PSOATransRunProlog
 					break;
 				case 'a':
 					_getAllAnswers = true;
+					break;
+				case 's':
+					_config.dynamicObjectification = false;
 					break;
 				default:
 					assert false;
@@ -178,6 +182,8 @@ public class PSOATransRunProlog
 		{
 			writer.println(":- table(tupterm/" + i + ").");
 		}
+		
+		writer.println(":- set_prolog_flag(unknown,fail).");
 		writer.print(transKB);
 		writer.close();
 
@@ -255,8 +261,8 @@ public class PSOATransRunProlog
 		
 		println("Answer(s):");
 		if (varMapEntries.isEmpty())
-		{
-			println(_engine.deterministicGoal(transQuery));
+		{	
+			println(_engine.deterministicGoal(transQuery)? "Yes" : "No");
 		}
 		else if (_getAllAnswers)
 		{
@@ -318,7 +324,7 @@ public class PSOATransRunProlog
 				{
 					if (!iter.hasNext())
 					{
-						System.out.println("No more answers");
+						System.out.println("No");
 						break;
 					}
 					TermModel m = (TermModel)iter.next()[0];
@@ -362,6 +368,6 @@ public class PSOATransRunProlog
 		println("  -o,--outputTrans  Save translated KB to the designated file");
 		println("  -x,--xsbfolder    Specifies XSB installation folder. The default path is ");
 		println("                    obtained from the environment variable XSB_DIR");
-		
+		println("  -s,--staticObj    Apply static objectification instead of the default dymanic objectification");
 	} // End printUsage()
 }

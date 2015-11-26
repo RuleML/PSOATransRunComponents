@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ruleml.psoa</groupId>
 	<artifactId>PSOATransRun</artifactId>
-	<version>0.8</version>
+	<version>1.0</version>
 	<name>PSOATransRun</name>
 	
 	<properties>
@@ -34,20 +34,38 @@
 		<dependency>
         	<groupId>com.declarativa.interprolog</groupId>
 	        <artifactId>interprolog</artifactId>
-		        <version>2.5</version>
-<!-- 	        <scope>system</scope>
-	        <systemPath>${basedir}\src\main\resources\prolog\interprolog.jar</systemPath> -->
+	        <version>2.5</version>
+<!--  	    <scope>system</scope>
+	        <systemPath>${project.basedir}/src/main/resources/prolog/interprolog.jar</systemPath>  -->
         </dependency>
-        <!-- <dependency>
-        	<groupId>com.declarativa.interprolog</groupId>
-	        <artifactId>interprolog</artifactId>
-	        <version>1.0</version>
-        </dependency> -->
 	</dependencies>
 	<build>
 		<defaultGoal>install</defaultGoal>
 		<finalName>PSOATransRun</finalName>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+		            <execution>
+		                <id>install-external-jar</id>
+				        <phase>clean</phase>
+		                <configuration>
+		                    <file>${basedir}/lib/interprolog.jar</file>
+		                    <repositoryLayout>default</repositoryLayout>
+		                    <groupId>com.declarativa.interprolog</groupId>
+		                    <artifactId>interprolog</artifactId>
+		                    <version>2.5</version>
+		                    <packaging>jar</packaging>
+		                    <generatePom>true</generatePom>
+		                </configuration>
+		                <goals>
+		                    <goal>install-file</goal>
+		                </goals>
+		            </execution>
+		        </executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -65,9 +83,12 @@
 					<sourceDirectory>src</sourceDirectory>
 					<source>1.6</source>
 					<target>1.6</target>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
+ 					<descriptorRefs>
+ 						<descriptorRef>jar-with-dependencies</descriptorRef>
+ 					</descriptorRefs>
+ 					<appendAssemblyId>false</appendAssemblyId>
+ 					<attach>false</attach>
+					<finalName>PSOATransRunLocal</finalName>
 					<archive>
 						<manifest>
 							<!-- <mainClass>org.ruleml.psoa.psoatransrun.test.PSOATransRunTest</mainClass> -->

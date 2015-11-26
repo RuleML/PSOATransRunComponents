@@ -124,6 +124,7 @@ public class XSBEngine extends ReusableKBEngine {
 		{
 			writer.println(":- table(tupterm/" + i + ").");
 		}
+		writer.println(":- set_prolog_flag(unknown,fail).");
 		writer.print(kb);
 		writer.close();
 		

@@ -2,7 +2,7 @@ tree grammar TreeWalkerTemplate;
 
 options 
 {
-  output = AST;
+    output = AST;
 	ASTLabelType = CommonTree;
 	tokenVocab = PSOAPS;
 	rewrite = false;
@@ -67,6 +67,7 @@ formula
     :   ^(AND formula+)
     |   ^(OR formula+)
     |   ^(EXISTS VAR_ID+ formula)
+    |   FALSITY
     |   atomic
     |   external
     ;

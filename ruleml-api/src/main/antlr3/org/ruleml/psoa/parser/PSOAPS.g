@@ -25,6 +25,7 @@ tokens
     IRI;
     NUMBER;
     LOCAL;
+    FALSITY;
 }
 
 @header
@@ -99,10 +100,10 @@ clause
             if (!$f1.isValidHead)
                 throw new RuntimeException("Unacceptable head formula:" + $f1.text);
         }
-        else if (!$f1.isAtomic)
-        {
-            throw new RuntimeException("Unacceptable clause:" + $clause.text);
-        }
+//        else if (!$f1.isAtomic)
+//        {
+//            throw new RuntimeException("Unacceptable clause:" + $clause.text);
+//        }
     }
     :   (f1=formula -> formula) ( IMPLICATION f2=formula { isRule = true; } -> ^(IMPLICATION $clause $f2) )?
     //-> {isRule}? ^(IMPLICATION $f1 $f2)
@@ -110,9 +111,15 @@ clause
     ;
 
 formula returns [boolean isValidHead, boolean isAtomic]
-@init { $isValidHead = true; $isAtomic = false; }
+@init
+{
+   $isValidHead = true; $isAtomic = false;
+   boolean hasSubformulas = false;
+}
     :   AND LPAR (f=formula { if(!$f.isValidHead) $isValidHead = false; } )+ RPAR -> ^(AND["AND"] formula*)
-    |   OR LPAR formula* RPAR { $isValidHead = false; } -> ^(OR["OR"] formula*)
+    |   OR LPAR (formula { hasSubformulas = true; })* RPAR { $isValidHead = false; }
+        -> { hasSubformulas }? ^(OR["OR"] formula*)
+        -> FALSITY
     |   EXISTS variable+ LPAR f=formula RPAR { } // $isValidHead = $f.isAtomic; }
         -> ^(EXISTS["EXISTS"] variable+ $f)
     |   atomic { $isAtomic = true; } -> atomic

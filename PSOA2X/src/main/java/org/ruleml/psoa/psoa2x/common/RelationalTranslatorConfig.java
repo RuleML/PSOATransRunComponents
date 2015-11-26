@@ -4,5 +4,6 @@ public abstract class RelationalTranslatorConfig extends TranslatorConfig
 {
 	public boolean reproduceClass,
 				   omitMemtermInBody,
+				   dynamicObjectification,
 	               crossOverAxiom;
 }

@@ -8,5 +8,6 @@ public class PSOA2PrologConfig extends RelationalTranslatorConfig
 	{
 		reproduceClass = false;
 		crossOverAxiom = false;
+		dynamicObjectification = true;
 	}
 }

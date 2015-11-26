@@ -3,6 +3,7 @@ package org.ruleml.psoa.psoa2x.psoa2prolog;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.ruleml.psoa.analyzer.KBInfoCollector;
 import org.ruleml.psoa.normalizer.*;
 import org.ruleml.psoa.psoa2x.common.ANTLRBasedTranslator;
 import org.ruleml.psoa.psoa2x.common.PSOATranslatorUtil;
@@ -15,7 +16,7 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 	{
 		m_config = config;
 	}
-	 
+	
 	@Override
 	protected TranslatorWalker createTranslatorWalker(
 			CommonTreeNodeStream astNodes) {
@@ -30,58 +31,89 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 		SlotTupributor slotTupributor;
 		ExternalFlattener externalFlattener;
 		ConjunctiveHeadSplitter splitter;
+		QueryRewriter rewriter;
 		TokenStream tokens = treeNodeStream.getTokenStream();
 		
 		if (isQuery)
 		{
-//			System.out.println("Objectify Query");
-			objectifier = new DiscriminativeObjectifier(treeNodeStream);
-			treeNodeStream = new CommonTreeNodeStream(objectifier.query().getTree());
-			treeNodeStream.setTokenStream(tokens);			
+			if (m_config.dynamicObjectification)
+			{
+				debugPrintln("Rewrite query");
+				rewriter = new QueryRewriter(treeNodeStream, m_KBInfo);
+				treeNodeStream = new CommonTreeNodeStream(rewriter.query().getTree());
+				treeNodeStream.setTokenStream(tokens);
+				debugPrintTree(treeNodeStream);
+				
+				objectifier = new DiscriminativeObjectifier(treeNodeStream, m_KBInfo);
+				objectifier.setReducedObjectification(true);
+			}
+			else
+				objectifier = new DiscriminativeObjectifier(treeNodeStream);
 			
-//			System.out.println("Slotribute and Tupribute Query");
+			debugPrintln("Objectify query");
+			treeNodeStream = new CommonTreeNodeStream(objectifier.query().getTree());
+			treeNodeStream.setTokenStream(tokens);	
+			debugPrintTree(treeNodeStream);
+			
+			debugPrintln("Slotribute and tupribute query");
 			slotTupributor = new SlotTupributor(treeNodeStream);
 			slotTupributor.setReproduceClass(m_config.reproduceClass);
 			treeNodeStream = new CommonTreeNodeStream(slotTupributor.query().getTree());
 			treeNodeStream.setTokenStream(tokens);
+			debugPrintTree(treeNodeStream);
 			
-//			System.out.println("Flatten Externals for Query");
+			debugPrintln("Flatten externals in query");
 			externalFlattener = new ExternalFlattener(treeNodeStream);
 			treeNodeStream = new CommonTreeNodeStream(externalFlattener.query().getTree());
 			treeNodeStream.setTokenStream(tokens);
-			
-//			System.out.println();
+			debugPrintTree(treeNodeStream);
 		}
 		else
-		{
-//			System.out.println("Objectify KB");
-			objectifier = new DiscriminativeObjectifier(treeNodeStream);
+		{			
+			if (m_config.dynamicObjectification)
+			{
+				m_KBInfo = new KBInfoCollector(treeNodeStream);
+				m_KBInfo.document().getTree();
+				treeNodeStream.reset();
+//				treeNodeStream = new CommonTreeNodeStream(objectifier.document().getTree());
+				objectifier = new DiscriminativeObjectifier(treeNodeStream, m_KBInfo);
+				objectifier.setReducedObjectification(true);
+			}
+			else
+			{
+				objectifier = new DiscriminativeObjectifier(treeNodeStream);
+			}
+			
+			debugPrintln("Objectify KB");
 			treeNodeStream = new CommonTreeNodeStream(objectifier.document().getTree());
 			treeNodeStream.setTokenStream(tokens);
+			debugPrintTree(treeNodeStream);
 			
 			// Skolemization
+			debugPrintln("Skolemize KB");
 			skolemizer = new Skolemizer(treeNodeStream);
 			treeNodeStream = new CommonTreeNodeStream(skolemizer.document().getTree());
 			treeNodeStream.setTokenStream(tokens);
+			debugPrintTree(treeNodeStream);
 			
-//			System.out.println("Slotribute and Tupribute KB");
+			debugPrintln("Slotribute and tupribute KB");
 			slotTupributor = new SlotTupributor(treeNodeStream);
 			slotTupributor.setReproduceClass(m_config.reproduceClass);
 			treeNodeStream = new CommonTreeNodeStream(slotTupributor.document().getTree());
 			treeNodeStream.setTokenStream(tokens);
-			printTree(treeNodeStream);
+			debugPrintTree(treeNodeStream);
 			
-//			System.out.println("Flatten Externals for KB");
+			debugPrintln("Flatten externals in KB");
 			externalFlattener = new ExternalFlattener(treeNodeStream);
 			treeNodeStream = new CommonTreeNodeStream(externalFlattener.document().getTree());
 			treeNodeStream.setTokenStream(tokens);
-			printTree(treeNodeStream);
+			debugPrintTree(treeNodeStream);
 			
-//			System.out.println("Split Conjunctive Head for KB");
+			debugPrintln("Split conjunctive-headed KB rules");
 			splitter = new ConjunctiveHeadSplitter(treeNodeStream);
 			treeNodeStream = new CommonTreeNodeStream(splitter.document().getTree());
 			treeNodeStream.setTokenStream(tokens);
-			printTree(treeNodeStream);
+			debugPrintTree(treeNodeStream);
 			
 //			System.out.println("Finished normalizing KB.");
 //			System.out.println("Normalized tree:");

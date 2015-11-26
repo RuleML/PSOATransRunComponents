@@ -132,7 +132,8 @@ formula
             else
               _output.replace(len - 1, len, ")");
          }
-    |   ^(EXISTS 
+    |    FALSITY { _output.append("false"); }
+    |   ^(EXISTS
             (VAR_ID { if (isQuery) existVars.add($VAR_ID.text); })+
             formula)
     {
@@ -160,6 +161,10 @@ equal
             $t2.type == TermType.FUNC_EXTERNAL)
         {
             append(_output, "is(", $t1.output, ",", $t2.output, ")");
+        }
+        else
+        {
+            append(_output, "\'=\'(", $t1.output, ",", $t2.output ,")");
         }
     }
     ;
@@ -232,11 +237,14 @@ scope
     {
         if (!hasTupleOrSlot)
         {
-          // Class membership
-	        if (!$t.output.equals("TOP"))
-	          append(_output, "memterm(", $psoa::oid, ",", $t.output, ")");
+	        if ($t.output.equals("TOP"))
+              append(_output, "true");
+	        else if (o == null)
+	          // Nullary predicate
+	          append(_output, $t.output);
 	        else
-	          append(_output, "true");
+              // Class membership
+              append(_output, "memterm(", $psoa::oid, ",", $t.output, ")");
 	    }
     }
     ;

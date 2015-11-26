@@ -64,6 +64,7 @@ head
 formula
     :   ^(AND formula+)
     |   ^(OR formula+)
+    |   FALSITY
     |   ^(EXISTS VAR_ID+ formula)
     |   atomic
     |   external

@@ -6,8 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.ruleml.psoa.analyzer.*;
+
 public abstract class Translator {
-	Map<String, String> _queryVarMap = new HashMap<String, String>();
+	protected Map<String, String> _queryVarMap = new HashMap<String, String>();
+	protected KBInfoCollector m_KBInfo = null;
+	protected static boolean debugMode = false;
 	
 	abstract public void translateKB(String kb, OutputStream out) throws TranslatorException;
 	abstract public void translateQuery(String query, OutputStream out) throws TranslatorException;
@@ -67,5 +71,28 @@ public abstract class Translator {
 	
 	public List<String> getQueryVars() {
 		return new ArrayList<String>(_queryVarMap.keySet());
+	}
+	
+	protected static void print(Object... objs)
+	{		
+		for (Object obj : objs)
+		{
+			System.out.print(obj);
+		}
+	}
+	
+	protected static void debugPrint(Object... objs)
+	{
+		if (debugMode)
+			print(objs);
+	}
+	
+	protected static void debugPrintln(Object... objs)
+	{
+		if (debugMode)
+		{
+			print(objs);
+			System.out.println();
+		}
 	}
 }

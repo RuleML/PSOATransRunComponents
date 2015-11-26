@@ -55,7 +55,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 	{
 		try {
 			CommonTreeNodeStream parseTreeStream = parse(input, isQuery);
-			printTree(parseTreeStream);
+			debugPrintTree(parseTreeStream);
 			CommonTreeNodeStream astStream = preprocess(parseTreeStream, isQuery);
 			TranslatorWalker walker = createTranslatorWalker(astStream);
 			walker.setOutputStream(getPrintStream(out));
@@ -108,9 +108,10 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		return newTreeNodeStream;
 	}
 	
-	protected static void printTree(CommonTreeNodeStream stream)
+	protected static void debugPrintTree(CommonTreeNodeStream stream)
 	{
-//		System.out.println(((CommonTree)stream.getTreeSource()).toStringTree());
+		if (debugMode)
+			System.out.println(((CommonTree)stream.getTreeSource()).toStringTree());
 	}
 	
 	public static abstract class TranslatorWalker extends TreeParser {

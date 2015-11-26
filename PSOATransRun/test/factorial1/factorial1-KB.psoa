@@ -2,7 +2,7 @@ Document(
   Group(
     Forall ?x ?y ?fx ?fy (
       _factorial(?y ?fy) :- 
-         And(_factorial(?x ?fx) _multiply(?fx ?y ?fy) _sum(?x 1 ?y))
+         And(_sum(?x 1 ?y) _factorial(?x ?fx) _multiply(?fx ?y ?fy))
     )
     _factorial(0 1)
     _sum(0 1 1)

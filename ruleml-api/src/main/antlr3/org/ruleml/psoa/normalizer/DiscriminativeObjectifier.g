@@ -15,12 +15,25 @@ options
 	
 	import java.util.Set;
 	import java.util.HashSet;
+	import org.ruleml.psoa.analyzer.*;
 }
 
 @members
 {
     private int m_localConstID = 0, m_varCtr;
-    private boolean m_isRuleHead = false, m_isRuleBody = false;
+    private boolean m_isRuleHead = false, m_isRuleBody = false, m_reducedObjectification = false;
+    private KBInfoCollector m_KBInfo = null;
+    
+    public DiscriminativeObjectifier(TreeNodeStream input, KBInfoCollector info)
+    {
+        this(input);
+        m_KBInfo = info;
+    }
+    
+    public void setReducedObjectification(boolean b)
+    {
+        m_reducedObjectification = b;
+    } 
     
     private String newVarName()
     {
@@ -82,6 +95,11 @@ scope
 {
   $query::queryVars = new HashSet<String>();
 }
+@after
+{
+   $query::queryVars.clear();
+   $query::queryVars = null;
+}
     :   formula
     ;
     
@@ -121,6 +139,7 @@ head
 formula
     :   ^(AND formula+)
     |   ^(OR formula+)
+    |   FALSITY
     |   ^(EXISTS VAR_ID+ formula)
     |   atomic
     |   external
@@ -166,7 +185,11 @@ psoa[boolean isAtomic]
 }
     :   ^(PSOA oid=term? ^(INSTANCE type=term) tuple* slot*)
     -> { oid != null }? ^(PSOA $oid ^(INSTANCE $type) tuple* slot*)
-    -> { !isAtomic }? ^(PSOA ^(INSTANCE $type) tuple* slot*)
+    -> { !isAtomic || 
+         (   m_reducedObjectification 
+          && !m_KBInfo.hasHeadOnlyVariables()
+          && m_KBInfo.isPurelyRelational($type.tree)) }?
+          ^(PSOA ^(INSTANCE $type) tuple* slot*)
     -> { m_isRuleBody }?
           ^(PSOA VAR_ID[newVarName()] ^(INSTANCE $type) tuple* slot*)
     -> { $query.size() > 0 || !$rule::vars.isEmpty() }?

@@ -199,6 +199,7 @@ scope
 }
     :   ^(AND formula+)
     |   ^(OR formula+)
+    |   FALSITY
     |   ^(EXISTS VAR_ID+ formula)
     |   atomic
     -> { $formula::externalInfoMap.isEmpty() }? atomic

@@ -168,6 +168,7 @@ head
 formula
     :   ^(AND formula+)
     |   ^(OR formula+)
+    |   FALSITY
     |   ^(EXISTS VAR_ID+ formula)
     |   atomic
     |   external
@@ -193,7 +194,7 @@ subclass
     
 term
     :   constant
-    |   VAR_ID 
+    |   VAR_ID
         {
             if ($rule::hasConjunctiveHead && $clause::inRuleHead)
                 $clause::conjunctVars.add($VAR_ID.text);

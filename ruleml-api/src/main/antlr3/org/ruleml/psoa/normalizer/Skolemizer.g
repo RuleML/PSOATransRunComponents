@@ -118,6 +118,7 @@ head
 formula
     :   ^(AND formula+)
     |   ^(OR formula+)
+    |   FALSITY
     |   ^(EXISTS VAR_ID+ formula)
     {
         System.err.println("Body existentials should be removed before Skolemization.");
