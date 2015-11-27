@@ -1,48 +1,41 @@
 OVERVIEW
-PSOATransRun is an implementation of the PSOA RuleML language. PSOATransRun 
-composes a translator from PSOA to some target langauge t, and some runtime 
-environment executing the language t. This release contains an instantiation 
-using t=Prolog, composing a translator PSOA2Prolog and a runtime environment 
-XSB Prolog. See http://wiki.ruleml.org/index.php?title=PSOA_RuleML for more 
-details of PSOA RuleML and PSOATransRun.
-
+PSOATransRun is an implementation of the Positional-Slotted, Object-Applicative
+RuleML (PSOA RuleML) language. The PSOATransRun 1.0 release includes a composition 
+of a translator PSOA2Prolog, from PSOA RuleML to a subset of the logic 
+programming language ISO Prolog, with the well-known efficient XSB Prolog engine.
+See http://psoa.ruleml.org for details of PSOA RuleML and PSOATransRun
+and http://github.com/ZOUG/psoa2tptp for the repository.
 
 REQUIREMENTS
-Operating System: Windows
-Prerequisites: Java version 6.0 or higher, XSB Prolog 3.5
-
+Operating System: Windows or Linux
+Prerequisites: Java version 6.0 or higher, XSB Prolog 3.5 or higher (http://xsb.sourceforge.net/)
 
 USAGE
-Download PSOATransRun.jar to a directory, which we will call $PSOATransRun_DIR.
-Then follow the next steps to run the program:
+Download http://psoa.ruleml.org/transrun/1.0/local/PSOATransRunLocal.jar to 
+a directory, which we will call $PSOATransRun_DIR. Then follow these next steps 
+to run the program:
 
-1. Open the Command Line Prompt
-1) Click the key combination Windows+R, a "Run" box will be shown;
-2) Type cmd and click "Enter"
+1. Open Command Line Prompt
+   Windows: see http://windows.microsoft.com/en-ca/windows-vista/open-a-command-prompt-window
+   Linux: start the Linux Terminal
 
 2. Change the working directory to $PSOATransRun_DIR by executing
    cd $PSOATransRun_DIR
-   If $PSOATransRun_DIR is not on the same drive as the current
+   In Windows, if $PSOATransRun_DIR is on a different drive from the current
    working directory, the command line option /d should be used:
    cd /d $PSOATransRun_DIR
-   
-3. Execute the following command
-   java -jar PSOATransRun.jar -i <kb>
+
+3. Execute the following command:
+   java -jar PSOATransRunLocal.jar -x <xsb_dir> -i <kb>
 
 <kb> is the path of the input knowledge base (KB) written in the PSOA RuleML 
-presentation syntax.
+presentation syntax. <xsb_dir> is the path of the installation folder of XSB Prolog.
 
-4. After the message "KB loaded" is shown, you can ask queries. Each time 
-when you see the "Input Query" message is prompted, you can input a one-line 
-query and click "Enter", and the answers will be shown. To finish, type
-Ctrl+Z and click "Enter".
+* The -x <xsb_dir> part of the command can be omitted if the XSB_DIR environment
+variable is set to be the installation folder of XSB Prolog.
 
-To see all available command line options, execute
-   java -jar PSOATransRun.jar -?
-
-
-COMMON ERROR MESSAGES AND RESOLUTIONS
-* 'java' is not recognized as an internal or external command ...
-The java binary is not found by the Windows. Follow the steps explained in
-http://docs.oracle.com/javase/tutorial/essential/environment/paths.html
-to configure the PATH environment variable.
+4. After the message "KB loaded" is shown, queries can be posed. One query at a time
+is entered and every query must be in a single line. One answer at a time will be shown.
+To get the next answer, press the semicolon key. To stop processing the current query 
+and proceed to the next query, press the Enter key. To finish querying and exit, press 
+Ctrl+Z and Enter (Windows) or Ctrl+D (Linux).

@@ -35,8 +35,6 @@
         	<groupId>com.declarativa.interprolog</groupId>
 	        <artifactId>interprolog</artifactId>
 	        <version>2.5</version>
-<!--  	    <scope>system</scope>
-	        <systemPath>${project.basedir}/src/main/resources/prolog/interprolog.jar</systemPath>  -->
         </dependency>
 	</dependencies>
 	<build>
@@ -50,7 +48,7 @@
 				<executions>
 		            <execution>
 		                <id>install-external-jar</id>
-				        <phase>clean</phase>
+		                <phase>clean</phase>
 		                <configuration>
 		                    <file>${basedir}/lib/interprolog.jar</file>
 		                    <repositoryLayout>default</repositoryLayout>
@@ -107,31 +105,6 @@
 					</execution>
 				</executions>
 			</plugin>
-<!-- 			    <plugin>
-			        <groupId>org.eclipse.m2e</groupId>
-			        <artifactId>lifecycle-mapping</artifactId>
-			        <version>1.0.0</version>
-			        <configuration>
-			            <lifecycleMappingMetadata>
-			                <pluginExecutions>
-			                    copy-dependency plugin
-			                    <pluginExecution>
-			                        <pluginExecutionFilter>
-			                            <groupId>org.apache.maven.plugins</groupId>
-			                            <artifactId>maven-dependency-plugin</artifactId>
-			                            <versionRange>[2.0.0,)</versionRange>
-			                            <goals>
-			                                <goal>copy-dependencies</goal>
-			                            </goals>
-			                        </pluginExecutionFilter>
-			                        <action>
-			                            <ignore />
-			                        </action>
-			                    </pluginExecution>
-			                </pluginExecutions>
-			            </lifecycleMappingMetadata>
-			        </configuration>
-			    </plugin> -->
 <!-- 				<plugin>
 		            <groupId>org.apache.maven.plugins</groupId>
 		            <artifactId>maven-dependency-plugin</artifactId>
@@ -150,20 +123,6 @@
 		                    </configuration>
 		                </execution>
 		            </executions>
-		        </plugin> -->
-		        <!-- <plugin>
-		            <groupId>org.apache.maven.plugins</groupId>
-		            <artifactId>maven-jar-plugin</artifactId>
-		            <version>2.3.1</version>
-		            <configuration>
-		                <archive>
-		                    <manifest>
-		                        <addClasspath>true</addClasspath>
-		                        <classpathPrefix>lib/</classpathPrefix>
-		                        <mainClass>org.ruleml.psoa.psoatransrun.prolog.PSOATransRunProlog</mainClass>
-		                    </manifest>
-		                </archive>
-		            </configuration>
 		        </plugin> -->
 		</plugins>
 	</build>
