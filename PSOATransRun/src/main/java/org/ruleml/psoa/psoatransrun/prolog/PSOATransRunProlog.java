@@ -4,6 +4,7 @@ import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Map.Entry;
 import java.util.*;
 
@@ -20,7 +21,7 @@ import static org.ruleml.psoa.psoatransrun.utils.IOUtil.*;
 public class PSOATransRunProlog
 {
 	private static PrologEngine _engine;
-	private static boolean _outputTrans = false, _getAllAnswers = false;
+	private static boolean _outputTrans = false, _getAllAnswers = false, _showOrigKB = false;
 	private static PSOA2PrologConfig _config = new PSOA2PrologConfig();
 //	private static int _maxDepth = 0;
 
@@ -38,10 +39,12 @@ public class PSOATransRunProlog
 //			new LongOpt("termDep", LongOpt.REQUIRED_ARGUMENT, null, 'd'),
 //			new LongOpt("timeout", LongOpt.REQUIRED_ARGUMENT, null,'t'),
 			new LongOpt("repClass", LongOpt.NO_ARGUMENT, null, 'r'),
-			new LongOpt("staticObj", LongOpt.NO_ARGUMENT, null, 's')
+			new LongOpt("staticOnly", LongOpt.NO_ARGUMENT, null, 's'),
+			new LongOpt("echoInput", LongOpt.NO_ARGUMENT, null, 'e')
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?i:po:x:q:ad:t:rs", opts);
+		Getopt optionsParser = new Getopt("", args, "?i:po:x:q:ad:t:rse", opts);
+		File kbFile = null;
 		FileInputStream kbStream = null,
 						queryStream = null;
 //		boolean outputTrans = false;
@@ -60,7 +63,8 @@ public class PSOATransRunProlog
 					arg = optionsParser.getOptarg(); 
 					try
 					{
-						kbStream = new FileInputStream(arg);
+						kbFile = new File(arg);
+						kbStream = new FileInputStream(kbFile);
 					}
 					catch (FileNotFoundException e)
 					{
@@ -114,6 +118,8 @@ public class PSOATransRunProlog
 				case 's':
 					_config.dynamicObjectification = false;
 					break;
+				case 'e':
+					_showOrigKB = true;
 				default:
 					assert false;
 			}
@@ -168,6 +174,7 @@ public class PSOATransRunProlog
 		
 		PrologTranslator translator = new PrologTranslator(_config);
 		String transKB = translator.translateKB(kbStream);
+//		System.out.println("Translation finished.");
 		
 		if (transKBFile == null)
 			transKBFile = tmpFile("tmp-", ".pl");
@@ -187,6 +194,22 @@ public class PSOATransRunProlog
 		writer.print(transKB);
 		writer.close();
 
+		if (_showOrigKB)
+		{
+			println("Original KB:");
+			BufferedReader reader = new BufferedReader(new FileReader(kbFile));
+			do
+			{
+				String line = reader.readLine();
+				if (line != null)
+					println(line);
+				else
+					break;
+			} while (true);
+			reader.close();
+			println();
+		}
+		
 		if (_outputTrans)
 		{
 			println("Translated KB:");
@@ -213,7 +236,7 @@ public class PSOATransRunProlog
 		{
 			String transQuery = translator.translateQuery(queryStream);
 			
-			answerQuery(transQuery, translator.getQueryVarMap());
+			answerQuery(transQuery, translator);
 		}
 		else
 		{
@@ -230,7 +253,7 @@ public class PSOATransRunProlog
 				try
 				{
 					String transQuery = translator.translateQuery(psoaQuery);
-					answerQuery(transQuery, translator.getQueryVarMap());
+					answerQuery(transQuery, translator);
 				}
 				catch (Exception e)
 				{
@@ -246,7 +269,7 @@ public class PSOATransRunProlog
 			_engine.shutdown();
 	}
 
-	private static void answerQuery(String transQuery, Map<String, String> queryVarMap)
+	private static void answerQuery(String transQuery, PrologTranslator translator)
 	{
 		Set<Entry<String, String>> varMapEntries;
 		TermModel result;
@@ -257,7 +280,7 @@ public class PSOATransRunProlog
 			println(transQuery + ".");
 			println();
 		}
-		varMapEntries = queryVarMap.entrySet();
+		varMapEntries = translator.getQueryVarMap().entrySet();
 		
 		println("Answer(s):");
 		if (varMapEntries.isEmpty())
@@ -287,7 +310,7 @@ public class PSOATransRunProlog
 				{					
 					for (TermModel term : bindings.flatList())
 					{
-						ansBuilder.append(term);
+						ansBuilder.append(translator.inverseTranslateTerm(term.toString()));
 						if (separator)
 							ansBuilder.append(",");
 						separator = !separator;
@@ -333,7 +356,7 @@ public class PSOATransRunProlog
 					boolean separator = false;
 					for (TermModel term : m.flatList())
 					{
-						ansBuilder.append(term);
+						ansBuilder.append(translator.inverseTranslateTerm(term.toString()));
 						if (separator)
 							ansBuilder.append(",");
 						separator = !separator;
@@ -355,19 +378,20 @@ public class PSOATransRunProlog
 	
 	private static void printUsage()
 	{
-		println("Usage: java -jar PSOATransRun.jar -i <kb> [-q <query>] [-p] [-o <translated KB output>] [-x <xsb folder>]");
+		println("Usage: java -jar PSOATransRun.jar -i <kb> [-e] [-p] [-o <translated KB output>] [-q <query>] [-a] [-s] [-x <xsb folder>]");
 		println("Options:");
 		println("  -?,--help         Print the help message");
 //		println("");
 		println("  -a,--allAns       Retrieve all answers for each query at once");
 		println("  -i,--input        Input Knowledge Base (KB)");
+		println("  -e,--echoInput    Echo input KB to standard output");
 		println("  -q,--query        Query document for the KB. If the query document");
 		println("                    is not specified, the engine will read queries");
 		println("                    from the standard input.");
-		println("  -p,--printTrans   Print translated KB and queries to the standard output");
+		println("  -p,--printTrans   Print translated KB and queries to standard output");
 		println("  -o,--outputTrans  Save translated KB to the designated file");
 		println("  -x,--xsbfolder    Specifies XSB installation folder. The default path is ");
 		println("                    obtained from the environment variable XSB_DIR");
-		println("  -s,--staticObj    Apply static objectification instead of the default dymanic objectification");
+		println("  -s,--staticOnly   Apply static objectification only");
 	} // End printUsage()
 }

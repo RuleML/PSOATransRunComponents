@@ -15,52 +15,47 @@ options
 	
 	import java.util.Set;
 	import java.util.HashSet;
+	import java.util.Map;
+    import java.util.HashMap;
 	import java.util.List;
 	import java.util.ArrayList;
-	import java.util.Iterator;
 }
 
 @members
 {
-    private CommonTree splitImplication(CommonTree head, CommonTree body)
+    private CommonTree splitRules(CommonTree head, CommonTree body)
     {
-        CommonTree root;
-        RewriteRuleSubtreeStream stream_body;
-        List headConjuncts, conjunctVarsList;
+        CommonTree root = (CommonTree)adaptor.nil();
+        Map<Object, Set<String>> headConjuctVars = $clause::headConjuctVars;
         
-        root = (CommonTree)adaptor.nil();
-        stream_body = new RewriteRuleSubtreeStream(adaptor, "rule body", body);
-        headConjuncts = head.getChildren();
-        conjunctVarsList = $rule::conjunctVarsList;
+        int i = 0;
         
-        assert headConjuncts.size() == conjunctVarsList.size();
-        
-        Iterator<Set<String>> conjunctVarsListItr = conjunctVarsList.iterator();
-        
-        for (Object conjunct : headConjuncts)
+        for (Object conjunct : head.getChildren())
         {
-            Set<String> conjunctVars = conjunctVarsListItr.next();
+            i++;
+            Set<String> conjunctVars = headConjuctVars.get(conjunct);
             Object newImply = adaptor.create(IMPLICATION, ":-");
             
             adaptor.addChild(newImply, conjunct);
-            adaptor.addChild(newImply, stream_body.nextTree());
+            adaptor.addChild(newImply, i == 1? body : adaptor.dupTree(body));
             
+            conjunctVars.addAll($clause::bodyVars);
             if (conjunctVars.isEmpty())
             {
-              adaptor.addChild(root, newImply);
+                adaptor.addChild(root, newImply);
             }
             else
             {
-	            Object forall = adaptor.create(FORALL, "FORALL");
-	            
-	            for (String var : conjunctVars)
-	            {
-	                adaptor.addChild(forall, adaptor.create(VAR_ID, var));
-	            }
-	            
-	            adaptor.addChild(forall, newImply); 
-	            adaptor.addChild(root, forall);
-	          }
+                Object forall = adaptor.create(FORALL, "FORALL");
+                
+                for (String var : conjunctVars)
+                {
+                    adaptor.addChild(forall, adaptor.create(VAR_ID, var));
+                }
+                
+                adaptor.addChild(forall, newImply); 
+                adaptor.addChild(root, forall);
+            }
         }
         
         return root;
@@ -99,70 +94,81 @@ query
 rule
 scope
 {
-    boolean hasConjunctiveHead;
-    List<Set<String>> conjunctVarsList;
+    boolean hasConjuctiveHead;
 }
 @init
-{ 
-    $rule::conjunctVarsList = new ArrayList<Set<String>>();
-}
-@after
 {
-    // Clean up conjunctVarsList
-    List<Set<String>> l = $rule::conjunctVarsList;
-    for (Set<String> conjunctVars : l)
-    {
-        conjunctVars.clear();
-    }
-    l.clear();
+    $rule::hasConjuctiveHead = false;
 }
-    :  ^(FORALL VAR_ID+ clause)
-    -> { $rule::hasConjunctiveHead }? clause
+    // The AST has between rewritten while parsing clause
+    :  ^(FORALL VAR_ID+ clause) 
+    -> { $rule::hasConjuctiveHead }? clause
     -> ^(FORALL VAR_ID+ clause)
-	|   clause // The AST of conjunction has between rewritten while parsing clause 
+	|   clause 
     ;
 
 clause
 scope
 {
-    boolean inRuleHead;
-    Set<String> conjunctVars;
+    Map<Object, Set<String>> headConjuctVars;
+    Set<String> conjunctFreeVars;
+    Set<String> bodyVars;
 }
 @init
 {
-    $clause::conjunctVars = new HashSet<String>();
-    $clause::inRuleHead = true;
-    $rule::hasConjunctiveHead = false;
+    $clause::headConjuctVars = new HashMap<Object, Set<String>>();
+    $clause::conjunctFreeVars = new HashSet<String>();
+    $clause::bodyVars = new HashSet<String>();
 }
-    :   ^(IMPLICATION head { $clause::inRuleHead = false; } formula)
-    -> { $rule::hasConjunctiveHead }?
-       { splitImplication($head.tree, $formula.tree) }
-    ->  ^(IMPLICATION head formula)
-    |   atomic
-    |   ^(AND { $rule::hasConjunctiveHead = true; }
-            (
-                atomic
-                {
-                    $rule::conjunctVarsList.add($clause::conjunctVars);
-                    $clause::conjunctVars = new HashSet<String>();
-                }
-            )+
-         )
-    ->  atomic+
+@after
+{
+    $clause::conjunctFreeVars = null;
+    $clause::bodyVars = null;
+    for (Map.Entry<Object, Set<String>> entry : $clause::headConjuctVars.entrySet())
+    {
+        entry.getValue().clear();
+    }
+    $clause::headConjuctVars = null;
+}
+    :   ^(IMPLICATION head[false] formula)
+    -> { $rule::hasConjuctiveHead }? { splitRules($head.tree, $formula.tree) }
+    -> ^(IMPLICATION head formula)
+    |   head[false]
     ;
     
-head
+head[boolean inExists]
+scope
+{
+    Set<String> existVars;
+}
+@init
+{
+    $head::existVars = new HashSet<String>();
+}
+@after
+{
+    $head::existVars = null;
+}
     :   atomic
-    |   ^(AND { $rule::hasConjunctiveHead = true; }
-            (
-	            atomic
-	            {
-	                $rule::conjunctVarsList.add($clause::conjunctVars);
-	                $clause::conjunctVars = new HashSet<String>();
-	            }
+    |   ^(AND
+            (h=head[inExists]
+                {
+                    if (!inExists)
+                    {
+                        $clause::headConjuctVars.put($h.tree, $clause::conjunctFreeVars);
+                        $clause::conjunctFreeVars = new HashSet<String>();
+                    }
+                }
             )+
-         )
-    |   ^(EXISTS VAR_ID+ atomic)
+          )
+       {
+            if (!inExists)
+                $rule::hasConjuctiveHead = true;
+       }
+    -> { inExists }? ^(AND head+)
+    -> head+
+    |   ^(EXISTS (VAR_ID { $head::existVars.add($VAR_ID.text); })+ head[true])
+        { $head::existVars.clear(); }
     ;
     
 formula
@@ -196,8 +202,29 @@ term
     :   constant
     |   VAR_ID
         {
-            if ($rule::hasConjunctiveHead && $clause::inRuleHead)
-                $clause::conjunctVars.add($VAR_ID.text);
+            if ($head.size() > 0)
+            {
+                boolean isExistentialVar = false;
+			    for (int i = 0; i < $head.size(); i++)
+			    {
+			        Set<String> formulaExistVars = $head[i]::existVars;
+                    if (!formulaExistVars.isEmpty())
+                    {
+	                    if(formulaExistVars.contains($VAR_ID.text))
+	                    {
+	                        isExistentialVar = true;
+	                        break;
+	                    }
+                    }
+			    }
+			    
+                if(!isExistentialVar)
+                    $clause::conjunctFreeVars.add($VAR_ID.text);
+            }
+            else
+            {
+                $clause::bodyVars.add($VAR_ID.text);
+            }
         }
     |   psoa
     |   external

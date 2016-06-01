@@ -105,14 +105,14 @@ clause
     
 head
     :   atomic
-    |   ^(AND atomic+)
+    |   ^(AND head+)
     |   ^(EXISTS 
             (VAR_ID 
               { $rule::existVarMap.put($VAR_ID.text, createSkolemTermTree()); }
             )+
-            atomic
+            head
          )
-    ->  atomic
+    ->  head
     ;
     
 formula

@@ -206,8 +206,10 @@ constant
 //  Complete and abbreviated string constant
 const_string
 @init { boolean isAbbrivated = true; } 
-    : STRING ((SYMSPACE_OPER symspace=(IRI_REF | CURIE) { isAbbrivated = false; } ) | '@')?
+    : STRING ((SYMSPACE_OPER (symspace=IRI_REF | symspace=CURIE) { isAbbrivated = false; } ) | '@')?
     -> {isAbbrivated}? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
+    -> { $symspace.text.equals("<http://www.w3.org/2001/XMLSchema#integer>") }? ^(SHORTCONST NUMBER[getStrValue($STRING.text)])
+    -> { $symspace.text.equals("<http://www.w3.org/2001/XMLSchema#string>") }? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
     -> LITERAL[getStrValue($STRING.text)] IRI[$symspace.text]
     //|   STRING '@' ID /* langtag */ -> ^(SHORTCONST LITERAL[$STRING.text])
     ;

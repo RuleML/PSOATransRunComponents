@@ -3,6 +3,7 @@ package org.ruleml.psoa.psoa2x.psoa2prolog;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.ruleml.psoa.FreshNameGenerator;
 import org.ruleml.psoa.analyzer.KBInfoCollector;
 import org.ruleml.psoa.normalizer.*;
 import org.ruleml.psoa.psoa2x.common.ANTLRBasedTranslator;
@@ -26,6 +27,7 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 	@Override
 	protected CommonTreeNodeStream preprocess(CommonTreeNodeStream treeNodeStream, boolean isQuery) throws RecognitionException
 	{
+		Unnester unnester;
 		DiscriminativeObjectifier objectifier;
 		Skolemizer skolemizer;
 		SlotTupributor slotTupributor;
@@ -35,7 +37,13 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 		TokenStream tokens = treeNodeStream.getTokenStream();
 		
 		if (isQuery)
-		{
+		{			
+			debugPrintln("Unnest Query");
+			unnester = new Unnester(treeNodeStream);
+			treeNodeStream = new CommonTreeNodeStream(unnester.query().getTree());
+			treeNodeStream.setTokenStream(tokens);
+			debugPrintTree(treeNodeStream);
+			
 			if (m_config.dynamicObjectification)
 			{
 				debugPrintln("Rewrite query");
@@ -69,7 +77,15 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 			debugPrintTree(treeNodeStream);
 		}
 		else
-		{			
+		{
+			FreshNameGenerator.reset();
+			
+			debugPrintln("Unnest KB");
+			unnester = new Unnester(treeNodeStream);
+			treeNodeStream = new CommonTreeNodeStream(unnester.document().getTree());
+			treeNodeStream.setTokenStream(tokens);
+			debugPrintTree(treeNodeStream);
+			
 			if (m_config.dynamicObjectification)
 			{
 				m_KBInfo = new KBInfoCollector(treeNodeStream);

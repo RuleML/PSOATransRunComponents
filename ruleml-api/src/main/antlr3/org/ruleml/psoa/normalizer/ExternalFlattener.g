@@ -21,68 +21,68 @@ options
 
 @members
 {
-  private static class ExternalRewriteInfo
-  {
-     public RewriteRuleSubtreeStream streamVar;
-     public CommonTree externalTree; 
-  }
+	private static class ExternalRewriteInfo
+	{
+		public RewriteRuleSubtreeStream streamVar;
+		public CommonTree externalTree; 
+	}
   
 	private String getNewVarName()
 	{    
-	  Set<String> forallVars = $rule::forallVars,
-	              existVars = $rule::existsVars;
-	  int i = 1;
-	  String var;
-	  
-	  do
-	  {
-	    var = String.valueOf(i++);
-	  } while (existVars.contains(var) || !forallVars.add(var));
-	  
-	  return var;
+		Set<String> forallVars = $rule::forallVars,
+		            existVars = $rule::existsVars;
+		int i = 1;
+		String var;
+		
+		do
+		{
+		  var = String.valueOf(i++);
+		} while (existVars.contains(var) || !forallVars.add(var));
+		
+		return var;
 	}
 	
 	private CommonTree getVarNodeForExternal(CommonTree external)
 	{
-	  String extStr = external.toStringTree();
-	  Map<String, ExternalRewriteInfo> externalInfoMap = $formula.size() > 0? $formula::externalInfoMap : $rule::externalInfoMap;
-	  ExternalRewriteInfo extInfo = externalInfoMap.get(extStr);
-	  CommonTree varNode;
-	  
-	  if (extInfo == null)
-	  {
-      varNode = (CommonTree)adaptor.create(VAR_ID, getNewVarName());
-       
-	    extInfo = new ExternalRewriteInfo();
-	    extInfo.streamVar = new RewriteRuleSubtreeStream(adaptor, "NewVar", varNode);
-	    extInfo.externalTree = external;
-	    externalInfoMap.put(extStr, extInfo);
-	  }
-	   
-    return (CommonTree) extInfo.streamVar.nextTree();
+		String extStr = external.toStringTree();
+		Map<String, ExternalRewriteInfo> externalInfoMap = $formula.size() > 0? $formula::externalInfoMap : $rule::externalInfoMap;
+		ExternalRewriteInfo extInfo = externalInfoMap.get(extStr);
+		CommonTree varNode;
+		
+		if (extInfo == null)
+		{
+		   varNode = (CommonTree)adaptor.create(VAR_ID, getNewVarName());
+		    
+		  extInfo = new ExternalRewriteInfo();
+		  extInfo.streamVar = new RewriteRuleSubtreeStream(adaptor, "NewVar", varNode);
+		  extInfo.externalTree = external;
+		  externalInfoMap.put(extStr, extInfo);
+		}
+		 
+		return (CommonTree) extInfo.streamVar.nextTree();
 	}
 	
 	private CommonTree getExtEquals()
 	{
-    Map<String, ExternalRewriteInfo> externalInfoMap = $formula.size() > 0? $formula::externalInfoMap : $rule::externalInfoMap;
-	  
-	  assert !externalInfoMap.isEmpty();
-	  
-	  CommonTree root = (CommonTree)adaptor.nil(),
-	             rootNewVars = (CommonTree)adaptor.nil();
-	  
-    for (ExternalRewriteInfo rewriteInfo : externalInfoMap.values())
-	  {
-      CommonTree equal = (CommonTree)adaptor.create(EQUAL, "EQUAL");
-      
-      adaptor.addChild(equal, rewriteInfo.streamVar.nextTree());
-      adaptor.addChild(equal, rewriteInfo.externalTree);
-      adaptor.addChild(root, equal);
-      adaptor.addChild(rootNewVars, rewriteInfo.streamVar.nextTree());
-	  }
-	  
-	  $rule::newVarsTree = rootNewVars;
-	  return root;
+		Map<String, ExternalRewriteInfo> externalInfoMap = $formula.size() > 0? $formula::externalInfoMap : $rule::externalInfoMap;
+		
+		assert !externalInfoMap.isEmpty();
+		
+		CommonTree root = (CommonTree)adaptor.nil(),
+		           rootNewVars = (CommonTree)adaptor.nil();
+		
+		for (ExternalRewriteInfo rewriteInfo : externalInfoMap.values())
+		{
+			CommonTree equal = (CommonTree)adaptor.create(EQUAL, "EQUAL");
+			
+			adaptor.addChild(equal, rewriteInfo.streamVar.nextTree());
+			adaptor.addChild(equal, rewriteInfo.externalTree);
+			adaptor.addChild(root, equal);
+			adaptor.addChild(rootNewVars, rewriteInfo.streamVar.nextTree());
+		}
+		
+		$rule::newVarsTree = rootNewVars;
+		return root;
 	}
 	
 //	private CommonTree newVarsTree()
@@ -167,21 +167,17 @@ clause
     :  ^(IMPLICATION head formula)
     -> { externalInfoMap.isEmpty() }? ^(IMPLICATION head formula)
     -> ^(IMPLICATION head ^(AND formula { getExtEquals() }))
-    |  atomic
-    -> { externalInfoMap.isEmpty() }? atomic
-    -> { externalInfoMap.size() == 1 }? ^(IMPLICATION atomic { getExtEquals() } )
-    -> ^(IMPLICATION atomic ^(AND { getExtEquals() } ))
-    |  ^(AND atomic+)
-    -> { externalInfoMap.isEmpty() }? ^(AND atomic+)
-    -> { externalInfoMap.size() == 1 }? ^(IMPLICATION ^(AND atomic+) { getExtEquals() } )
-    -> ^(IMPLICATION ^(AND atomic+) ^(AND { getExtEquals() } ))
+    |  head
+    -> { externalInfoMap.isEmpty() }? head
+    -> { externalInfoMap.size() == 1 }? ^(IMPLICATION head { getExtEquals() } )
+    -> ^(IMPLICATION head ^(AND { getExtEquals() } ))
     ;
     
 head
     :   atomic
-    |   ^(AND atomic+)
+    |   ^(AND head+)
     |   ^(EXISTS 
-          (VAR_ID { $rule::existsVars.add($VAR_ID.text); } )+ atomic)
+          (VAR_ID { $rule::existsVars.add($VAR_ID.text); } )+ head)
     ;
     
 formula

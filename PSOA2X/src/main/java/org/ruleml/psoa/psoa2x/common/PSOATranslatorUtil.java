@@ -180,16 +180,42 @@ public class PSOATranslatorUtil {
 	
 	public static String inverseTranslateTerm(String term)
 	{		
-		// TODO: change to correct term translation 
-		if (term.charAt(0) != 'Q')
+		// TODO: correct term translation
+		
+		StringBuilder sb = new StringBuilder(term);
+		
+		boolean inString = false;
+		char lastChar = ' ';
+		for (int i = 0; i < sb.length(); i++)
 		{
-//			if (term.startsWith("'") && term.endsWith("'"))
-//				return term.substring(1, term.length() - 1);
-//			else
-			return term;
+			char c = sb.charAt(i);
+			if (c == '"')
+				inString = !inString;
+			else if(!inString)
+			{
+				if (c == ',')
+				{
+					sb.setCharAt(i, ' ');
+					c = ' ';
+				}
+				else if (c == 'Q' && (lastChar == ' ' || lastChar == '('))
+					sb.setCharAt(i, '?');
+			}
+			lastChar = c;
 		}
-		else
-			return '?' + term.substring(1);
+		
+//		System.out.println(term + "," + sb.toString());
+		return sb.toString();
+		
+//		if (term.charAt(0) != 'Q')
+//		{
+////			if (term.startsWith("'") && term.endsWith("'"))
+////				return term.substring(1, term.length() - 1);
+////			else
+//			return term;
+//		}
+//		else
+//			return '?' + term.substring(1);
 	}
 	
 	public static StringBuilder builder() { return builder(""); }

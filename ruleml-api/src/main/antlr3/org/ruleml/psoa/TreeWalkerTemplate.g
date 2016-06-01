@@ -59,8 +59,8 @@ clause
     
 head
     :   atomic
-    |   ^(AND atomic+)
-    |   ^(EXISTS VAR_ID+ atomic)
+    |   ^(AND head+)
+    |   ^(EXISTS VAR_ID+ head)
     ;
     
 formula

@@ -64,14 +64,13 @@ scope
 
 clause
     :   ^(IMPLICATION head formula)
-    |   atomic
-    |   ^(AND atomic+)
+    |   head
     ;
     
 head
     :   atomic
-    |   ^(AND atomic+)
-    |   ^(EXISTS VAR_ID+ atomic)
+    |   ^(AND head+)
+    |   ^(EXISTS VAR_ID+ head)
     ;
     
 formula
