@@ -2,7 +2,7 @@ package org.ruleml.psoa.test;
 
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
-import org.ruleml.psoa.normalizer.*;
+import org.ruleml.psoa.transformer.*;
 import org.ruleml.psoa.parser.*;
 
 public class TreeWalkerTest
@@ -30,7 +30,7 @@ public class TreeWalkerTest
 		
 		System.out.println();
 		System.out.println("Objectification:");
-		transformedTree = (CommonTree)(new DiscriminativeObjectifier(nodes)).document().getTree();
+		transformedTree = (CommonTree)(new DifferentiateObjectifier(nodes)).document().getTree();
 		System.out.println(transformedTree.toStringTree());
 		nodes = createAndPrintNodeStream(transformedTree);
 		nodes.setTokenStream(tokens);
