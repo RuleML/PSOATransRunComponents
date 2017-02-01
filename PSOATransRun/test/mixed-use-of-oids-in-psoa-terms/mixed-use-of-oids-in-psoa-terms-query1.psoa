@@ -1,1 +1,1 @@
-:isFatherOf(?Y ?X)
+:isFatherOf(?X1 ?X2)

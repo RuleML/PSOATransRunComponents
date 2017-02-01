@@ -19,18 +19,19 @@ public class PSOATranslatorUtil {
 	
 	static
 	{
-		builtInMap.put("pred:numeric-equal", "\'=:=\'");
-		builtInMap.put("pred:numeric-not-equal", "\'=\\=\'");
-		builtInMap.put("pred:numeric-greater-than", "\'>\'");
-		builtInMap.put("pred:numeric-greater-than-or-equal", "\'>=\'");
-		builtInMap.put("pred:numeric-less-than", "\'<\'");
-		builtInMap.put("pred:numeric-less-than-or-equal", "\'=<\'");
-		builtInMap.put("func:numeric-add", "\'+\'");
-		builtInMap.put("func:numeric-subtract", "\'-\'");
-		builtInMap.put("func:numeric-multiply", "\'*\'");
-		builtInMap.put("func:numeric-divide", "\'/\'");
-		builtInMap.put("func:numeric-integer-divide", "\'//'");
-		builtInMap.put("func:numeric-mod", "mod");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-equal", "\'=:=\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-not-equal", "\'=\\=\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than", "\'>\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than-or-equal", "\'>=\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than", "\'<\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than-or-equal", "\'=<\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#is-literal-integer", "\'integer\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-add", "\'+\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-subtract", "\'-\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-multiply", "\'*\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-divide", "\'/\'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-integer-divide", "\'//'");
+		builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-mod", "rem");
 	}
 	
 	public static boolean isNull(Object o) 
@@ -59,7 +60,7 @@ public class PSOATranslatorUtil {
 	{
 		String builtIn = buildInStr(iri);
 		if (builtIn == null)
-			b.append("\'").append(iri).append("\'");
+			b.append("\'<").append(iri).append(">\'");
 		else
 			b.append(builtIn);
 	}

@@ -13,6 +13,11 @@ public class TranslatorException extends RuntimeException {
 		super(msg);
 	}
 	
+	public TranslatorException(Throwable e)
+	{
+		super(e);
+	}
+	
 	public TranslatorException(RecognitionException rexp)
 	{
 		super("Paring Error");

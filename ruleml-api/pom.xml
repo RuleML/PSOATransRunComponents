@@ -25,8 +25,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -77,9 +77,41 @@
 			<artifactId>java-getopt</artifactId>
 			<version>1.0.13</version>
 		</dependency>
+	    <dependency>
+	    	<groupId>org.eclipse.rdf4j</groupId>
+	    	<artifactId>rdf4j-rio-api</artifactId>
+	    	<version>2.0.1</version>
+	    	<type>jar</type>
+	    	<scope>compile</scope>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-rio-n3</artifactId>
+		    <version>2.0.1</version>
+		</dependency>
+	    <dependency>
+	    	<groupId>org.slf4j</groupId>
+	    	<artifactId>slf4j-api</artifactId>
+	    	<version>1.7.21</version>
+	    	<type>jar</type>
+	    	<scope>compile</scope>
+	    </dependency>
+	    <dependency>
+	    	<groupId>org.slf4j</groupId>
+	    	<artifactId>slf4j-nop</artifactId>
+	    	<version>1.7.21</version>
+	    	<type>jar</type>
+	    	<scope>compile</scope>
+	    </dependency>
+	    <dependency>
+	    	<groupId>org.apache.directory.studio</groupId>
+	    	<artifactId>org.apache.commons.io</artifactId>
+	    	<version>2.4</version>
+	    	<type>jar</type>
+	    	<scope>compile</scope>
+	    </dependency>
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<main>org.ruleml.Validator</main>
 	</properties>
 </project>

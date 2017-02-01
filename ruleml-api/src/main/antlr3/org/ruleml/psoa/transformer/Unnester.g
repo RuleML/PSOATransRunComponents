@@ -11,7 +11,7 @@ options
 
 @header
 {
-    package org.ruleml.psoa.normalizer;
+    package org.ruleml.psoa.transformer;
     
     import java.util.Set;
     import java.util.HashSet;
@@ -57,7 +57,7 @@ base
     ;
 
 prefix
-    :   ^(PREFIX ID IRI_REF)
+    :   ^(PREFIX NAMESPACE IRI_REF)
     ;
 
 importDecl
@@ -227,22 +227,14 @@ constshort
     |   LITERAL
     |   NUMBER
     |   LOCAL
-        {
-            String lcName = $LOCAL.text;
-            boolean hasNonDigitChar = false;
-            for (int i = lcName.length() - 1; i >= 0; i--)
-            { 
-                if (!Character.isDigit(lcName.charAt(i)))
-                {
-                    hasNonDigitChar = true;
-                    break;
-                }
-            }
-            if (!(hasNonDigitChar || lcName.isEmpty()))
-            {
-                throw new RuntimeException("'_" + lcName + "' is disallowed: the name of local constants cannot have only digits.");
-            }
-        }
     ->  { $LOCAL.text.isEmpty() }? LOCAL[freshConstName()]
     ->  LOCAL
+    
+/*      {
+            String lcName = $LOCAL.text;
+            if (lcName.isEmpty())
+            {
+                throw new RuntimeException("'_' must be renamed before unnesting");
+            }
+        } */
     ;

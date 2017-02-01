@@ -1,3 +1,9 @@
+/* 
+ * PSOA KB 
+ * 
+ * 
+ * */
+
 package org.ruleml.psoa;
 
 import java.io.*;

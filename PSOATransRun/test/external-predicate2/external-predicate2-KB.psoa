@@ -1,9 +1,17 @@
 Document (
+  Prefix(pred: <http://www.w3.org/2007/rif-builtin-predicate#>)
+  
   Group (
     Forall ?X (
       ?X#_highIncomePerson :- And(?X#_Person(_income->?I)
 	                              External(pred:numeric-greater-than-or-equal(?I 100000)))
     )
+    Forall ?X (
+      ?X#_lowIncomePerson :- And(?X#_Person(_income->?I)
+	                              External(pred:numeric-less-than(?I 10000)))
+    )
+    _Tim#_Person(_income->5000)
+    _Jane#_Person(_income->8000)
 	_Jim#_Person(_income->50000)
 	_Gray#_Person(_income->99999)
 	_Mike#_Person(_income->100000)

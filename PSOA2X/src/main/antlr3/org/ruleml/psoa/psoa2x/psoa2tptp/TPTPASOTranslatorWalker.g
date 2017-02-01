@@ -51,7 +51,7 @@ base
     ;
 
 prefix
-    :   ^(PREFIX ID IRI_REF)
+    :   ^(PREFIX NAMESPACE IRI_REF)
     ;
 
 importDecl

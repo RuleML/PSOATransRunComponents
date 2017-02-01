@@ -10,7 +10,8 @@ options
 
 @header
 {
-	package org.ruleml.psoa.normalizer;
+  package org.ruleml.psoa.transformer;
+  
   import java.util.HashMap;
   import java.util.Map;
 }
@@ -56,7 +57,7 @@ base
     ;
 
 prefix
-    :   ^(PREFIX ID IRI_REF)
+    :   ^(PREFIX NAMESPACE IRI_REF)
     ;
 
 importDecl

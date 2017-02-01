@@ -1,4 +1,4 @@
-tree grammar TreeWalkerTemplate;
+tree grammar Renamer;
 
 options 
 {
@@ -10,23 +10,34 @@ options
 
 @header
 {
-	package org.ruleml.psoa;
+	package org.ruleml.psoa.transformer;
+	
+	import java.util.Set;
+	import java.util.HashSet;
+	import java.util.Map;
+	import java.util.HashMap;
+    import static org.ruleml.psoa.FreshNameGenerator.*;
 }
 
 @members
 {
-    private Map<String, String> nameMap = new HashMap<String, String>();
+    private Map<String, String> m_nameMap = new HashMap<String, String>();
+    private Set<String> m_excluded = new HashSet<String>();
     
+    public void setExcluded(Set<String> excluded)
+    {
+    	m_excluded = excluded;
+    }
     
     private String getNewName(String name)
     {
-        String newName = nameMap.get(name);
+        String newName = m_nameMap.get(name);
         if (newName == null)
         {
-            newName = getNewName($LOCAL.text);
+            newName = freshConstName(m_excluded);
             if (!name.isEmpty())
             {
-                nameMap.put(name, newName);
+                m_nameMap.put(name, newName);
             }
         }
         
@@ -43,7 +54,7 @@ base
     ;
 
 prefix
-    :   ^(PREFIX ID IRI_REF)
+    :   ^(PREFIX NAMESPACE IRI_REF)
     ;
 
 importDecl
@@ -139,5 +150,5 @@ constshort
     :   IRI
     |   LITERAL
     |   NUMBER
-    |   LOCAL    ->  LOCAL[getNewName(name)]
+    |   LOCAL    ->  LOCAL[getNewName($LOCAL.text)]
     ;

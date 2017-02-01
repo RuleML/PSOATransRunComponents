@@ -10,43 +10,83 @@ import java.util.Map;
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.ruleml.psoa.parser.*;
-import org.ruleml.psoa.normalizer.*;
+import org.ruleml.psoa.FreshNameGenerator;
+import org.ruleml.psoa.PSOAInput;
+import org.ruleml.psoa.PSOAKB;
+import org.ruleml.psoa.PSOAQuery;
+import org.ruleml.psoa.analyzer.KBInfoCollector;
+import org.ruleml.psoa.transformer.*;
 
 public abstract class ANTLRBasedTranslator extends Translator {
-	abstract protected TranslatorWalker createTranslatorWalker(CommonTreeNodeStream astNodes);
+	abstract protected TranslatorWalker createTranslatorWalker(TreeNodeStream astNodes);
+	abstract protected <T extends PSOAInput<T>> T normalize(T input);
+	protected PSOAKB m_kb;
 	
 	@Override
 	public void translateKB(String kb, OutputStream out) throws TranslatorException {
-		translateKB(new ANTLRStringStream(kb), out);
+		m_kb = new PSOAKB();
+		m_kb.loadFromText(kb);
+		translateKB(m_kb, out);
 	}
 	
 	@Override
 	public void translateKB(InputStream kb, OutputStream out) throws TranslatorException {
 		try {
-			translateKB(new ANTLRInputStream(kb), out);
+			FreshNameGenerator.reset();
+			m_kb = new PSOAKB();
+			m_kb.load(kb);
+			translateKB(m_kb, out);
 		} catch (IOException e) {
-			throw new TranslatorException(e.getMessage());
+			throw new TranslatorException(e);
 		}
 	}
 
-	public void translateKB(CharStream kb, OutputStream out) throws TranslatorException {
-		translate(kb, false, out);
+	public void translateKB(PSOAKB kb, OutputStream out) throws TranslatorException {
+		try {
+			kb.loadImports();
+			kb.setPrintAfterTransformation(debugMode);
+			TreeNodeStream stream = normalize(kb).getTreeNodeStream();
+			TranslatorWalker walker = createTranslatorWalker(stream);
+			walker.setOutputStream(getPrintStream(out));
+			walker.document();
+		} catch (RecognitionException e) {
+			throw new TranslatorException(e);
+		} catch (IOException e) {
+			throw new TranslatorException(e);
+		}
 	}
 	
 	@Override
 	public void translateQuery(String query, OutputStream out) throws TranslatorException {
-		translateQuery(new ANTLRStringStream(query), out);
+		PSOAQuery psoaquery = new PSOAQuery(m_kb);
+		psoaquery.loadFromText(query);
+		translateQuery(psoaquery, out);
 	}
 	
 	@Override
 	public void translateQuery(InputStream query, OutputStream out) throws TranslatorException {
 		try {
-			translateQuery(new ANTLRInputStream(query), out);
+			PSOAQuery psoaquery = new PSOAQuery(m_kb);
+			psoaquery.load(query);
+			translateQuery(psoaquery, out);
 		} catch (IOException e) {
-			throw new TranslatorException(e.getMessage());
+			throw new TranslatorException(e);
 		}
 	}
 	
+	public void translateQuery(PSOAQuery query, OutputStream out) {
+		try {
+			query.setPrintAfterTransformation(debugMode);
+			TreeNodeStream stream = normalize(query).getTreeNodeStream();
+			TranslatorWalker walker = createTranslatorWalker(stream);
+			walker.setOutputStream(getPrintStream(out));
+			_queryVarMap = walker.query();
+		} catch (RecognitionException e) {
+			throw new TranslatorException(e);
+		}
+	}
+	
+	/*
 	public void translateQuery(CharStream query, OutputStream out) throws TranslatorException {
 		translate(query, true, out);
 	}
@@ -113,6 +153,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		if (debugMode)
 			System.out.println(((CommonTree)stream.getTreeSource()).toStringTree());
 	}
+	*/
 	
 	public static abstract class TranslatorWalker extends TreeParser {
 		protected PrintStream _outStream = System.out;

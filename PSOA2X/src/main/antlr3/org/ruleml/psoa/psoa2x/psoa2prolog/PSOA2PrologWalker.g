@@ -48,7 +48,7 @@ base
     ;
 
 prefix
-    :   ^(PREFIX ID IRI_REF)
+    :   ^(PREFIX NAMESPACE IRI_REF)
     ;
 
 importDecl
@@ -157,8 +157,7 @@ atom
 equal
     :   ^(EQUAL t1=term t2=term)
     {
-        if ($t1.type == TermType.VAR && 
-            $t2.type == TermType.FUNC_EXTERNAL)
+        if ($t2.type == TermType.FUNC_EXTERNAL)
         {
             append(_output, "is(", $t1.output, ",", $t2.output, ")");
         }
@@ -295,7 +294,7 @@ slot
     ;
 
 constant
-    :   ^(LITERAL IRI) // { print("\'", $IRI.text, "\'"); }
+    :   ^(LITERAL IRI) { append($term::outputBuilder, "\'\"", $LITERAL.text, "\"^^", $IRI.text, "\'"); }
     |   ^(SHORTCONST constshort)
     |   TOP
     ;
@@ -304,7 +303,7 @@ constshort
     :
         // TODO: Handle special datatypes, e.g. string, int, etc.
         IRI     { appendIRIConst($term::outputBuilder, $IRI.text); }
-    |   LITERAL { append($term::outputBuilder, "\'\"", $LITERAL.text, "\"\'"); }
+    |   LITERAL { append($term::outputBuilder, "\'\"", $LITERAL.text.replace("\'","\'\'"), "\"\'"); }
     |   NUMBER  { $term::outputBuilder.append($NUMBER.text); }
     |   LOCAL   { append($term::outputBuilder, "\'_", $LOCAL.text, "\'"); }
     ;

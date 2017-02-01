@@ -116,7 +116,7 @@ public class PSOATransRunProlog
 					_getAllAnswers = true;
 					break;
 				case 's':
-					_config.dynamicObjectification = false;
+					_config.dynamicObj = false;
 					break;
 				case 'e':
 					_showOrigKB = true;

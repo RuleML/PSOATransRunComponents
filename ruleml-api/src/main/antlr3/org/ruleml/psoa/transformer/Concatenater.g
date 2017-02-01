@@ -11,14 +11,14 @@ options
 
 @header
 {
-	package org.ruleml.psoa;
+	package org.ruleml.psoa.transformer;
 }
 
 @members
 {
 }
 
-documents :
+documents
 scope
 {
     CommonTree docTree;
@@ -27,13 +27,15 @@ scope
 {
     $documents::docTree = (CommonTree)adaptor.create(DOCUMENT, "DOCUMENT");
 }
-    document+ -> ^({ $documents::docTree } ^(GROUP document+))
+    : document+
+	-> ^({ $documents::docTree } ^(GROUP document+)) /* DOCUMENT and GROUP are stripped from document and recreated on the top-level */
+    ;
 
 document
     :   ^(DOCUMENT base? 
         (prefix { adaptor.addChild($documents::docTree, $prefix.tree); })* 
         importDecl* group?)
-    -> group
+    -> group?
     ;
 
 base
@@ -41,7 +43,7 @@ base
     ;
 
 prefix
-    :   ^(PREFIX ID IRI_REF)
+    :   ^(PREFIX NAMESPACE IRI_REF)
     ;
 
 importDecl

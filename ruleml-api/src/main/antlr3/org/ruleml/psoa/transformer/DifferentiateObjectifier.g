@@ -1,8 +1,8 @@
-tree grammar DiscriminativeObjectifier;
+tree grammar DifferentiateObjectifier;
 
 options 
 {
-  output = AST;
+	output = AST;
 	ASTLabelType = CommonTree;
 	tokenVocab = PSOAPS;
 	rewrite = false;
@@ -11,7 +11,7 @@ options
 
 @header
 {
-	package org.ruleml.psoa.normalizer;
+	package org.ruleml.psoa.transformer;
 	
 	import java.util.Set;
 	import java.util.HashSet;
@@ -22,18 +22,13 @@ options
 
 @members
 {
-    private boolean m_isRuleBody = false, m_isGroundFact = false, m_reducedObjectification = false;
+    private boolean m_isRuleBody = false, m_isGroundFact = false, m_dynamic = false;
     private KBInfoCollector m_KBInfo = null;
     
-    public DiscriminativeObjectifier(TreeNodeStream input, KBInfoCollector info)
+    public void setDynamic(boolean b, KBInfoCollector info)
     {
-        this(input);
+        m_dynamic = b;
         m_KBInfo = info;
-    }
-    
-    public void setReducedObjectification(boolean b)
-    {
-        m_reducedObjectification = b;
     }
     
     private String newVarName()
@@ -69,7 +64,7 @@ base
     ;
 
 prefix
-    :   ^(PREFIX ID IRI_REF)
+    :   ^(PREFIX NAMESPACE IRI_REF)
     ;
 
 importDecl
@@ -184,7 +179,7 @@ psoa[boolean isAtomic]
     :   ^(PSOA oid=term? ^(INSTANCE type=term) tuple* slot*)
     -> { oid != null }? ^(PSOA $oid ^(INSTANCE $type) tuple* slot*)
     -> { !isAtomic || 
-         (   m_reducedObjectification 
+         (   m_dynamic 
           && !m_KBInfo.hasHeadOnlyVariables()
           && m_KBInfo.isPurelyRelational($type.tree)) }?
           ^(PSOA ^(INSTANCE $type) tuple* slot*)

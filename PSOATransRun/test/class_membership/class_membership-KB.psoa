@@ -1,5 +1,5 @@
 Document(
-  Prefix(fam <http://example.org/family#>)
+  Prefix(fam: <http://example.org/family#>)
 
   Group ( 
     Forall ?X ?Y ( 

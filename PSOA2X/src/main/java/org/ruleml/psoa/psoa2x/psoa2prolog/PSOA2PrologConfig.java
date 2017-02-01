@@ -1,13 +1,14 @@
 package org.ruleml.psoa.psoa2x.psoa2prolog;
 
-import org.ruleml.psoa.psoa2x.common.RelationalTranslatorConfig;
+import org.ruleml.psoa.transformer.RelationalTransformerConfig;
 
-public class PSOA2PrologConfig extends RelationalTranslatorConfig
+public class PSOA2PrologConfig extends RelationalTransformerConfig
 {
 	public PSOA2PrologConfig()
 	{
 		reproduceClass = false;
 		crossOverAxiom = false;
-		dynamicObjectification = true;
+		differentiateObj = true;
+		dynamicObj = true;
 	}
 }

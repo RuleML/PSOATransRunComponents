@@ -1,5 +1,5 @@
 Document(
-  Prefix(ex <http://example.org/example#>)  
+  Prefix(ex: <http://example.org/example#>)  
   Group(
     Forall ?x ( ex:A(?x) )
   ) 

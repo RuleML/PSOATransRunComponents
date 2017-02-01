@@ -1,4 +1,7 @@
 Document(
+  Prefix(: <http://psoa.ruleml.org/test#>)  
+  Prefix(func: <http://www.w3.org/2007/rif-builtin-function#>)
+  
   Group(
     Forall ?C ?X (
       ?C#:Country(_capital->?X) :-

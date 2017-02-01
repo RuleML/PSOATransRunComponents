@@ -11,7 +11,7 @@ options
 
 @header
 {
-	package org.ruleml.psoa.normalizer;
+	package org.ruleml.psoa.transformer;
 }
 
 @members
@@ -29,7 +29,7 @@ base
     ;
 
 prefix
-    :   ^(PREFIX ID IRI_REF)
+    :   ^(PREFIX NAMESPACE IRI_REF)
     ;
 
 importDecl
@@ -114,7 +114,7 @@ psoa[boolean isAtomic]
     -> { oid != null }? ^(PSOA $oid ^(INSTANCE $type) tuple* slot*)
     -> { !isAtomic }? ^(PSOA ^(INSTANCE $type) tuple* slot*)
     -> { (m_isRule || m_isQuery) && (++m_varID > 0) }?
-        ^(EXISTS VAR_ID["obj"+ String.valueOf(m_varID)]
+        ^(EXISTS VAR_ID["obj" + String.valueOf(m_varID)]
             ^(PSOA VAR_ID["obj" + String.valueOf(m_varID)] ^(INSTANCE $type) tuple* slot*)
         )
     -> ^(PSOA ^(SHORTCONST LOCAL[String.valueOf(++m_localConstID)]) ^(INSTANCE $type) tuple* slot*)

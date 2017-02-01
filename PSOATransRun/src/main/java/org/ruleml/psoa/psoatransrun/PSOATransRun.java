@@ -11,6 +11,7 @@ import org.ruleml.psoa.psoatransrun.prolog.*;
 import org.ruleml.psoa.psoatransrun.tptp.*;
 import org.ruleml.psoa.psoatransrun.test.Watch;
 import org.ruleml.psoa.psoatransrun.utils.PSOATransRunException;
+import org.ruleml.psoa.transformer.TransformerConfig;
 
 public class PSOATransRun {
 	private Translator m_translator;
@@ -43,7 +44,7 @@ public class PSOATransRun {
 		throw new PSOATransRunException("Unknown target language: " + targetLang);
 	}
 	
-	public static PSOATransRun getInstantiation(String targetLang, TranslatorConfig config)
+	public static PSOATransRun getInstantiation(String targetLang, TransformerConfig config)
 	{
 		if (targetLang.equalsIgnoreCase("prolog"))
 		{

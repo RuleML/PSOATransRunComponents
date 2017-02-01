@@ -1,4 +1,6 @@
 Document (
+  Prefix (: <http://psoa.ruleml.org/test#>)
+  
   Group (
     Forall ?X
     (

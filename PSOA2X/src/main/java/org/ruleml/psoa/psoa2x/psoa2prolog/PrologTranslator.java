@@ -2,13 +2,14 @@ package org.ruleml.psoa.psoa2x.psoa2prolog;
 
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.TokenStream;
-import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.antlr.runtime.tree.TreeNodeStream;
 import org.ruleml.psoa.FreshNameGenerator;
+import org.ruleml.psoa.PSOAInput;
+import org.ruleml.psoa.PSOAKB;
+import org.ruleml.psoa.PSOAQuery;
 import org.ruleml.psoa.analyzer.KBInfoCollector;
-import org.ruleml.psoa.normalizer.*;
-import org.ruleml.psoa.psoa2x.common.ANTLRBasedTranslator;
-import org.ruleml.psoa.psoa2x.common.PSOATranslatorUtil;
-import org.ruleml.psoa.psoa2x.common.TranslatorException;
+import org.ruleml.psoa.transformer.*;
+import org.ruleml.psoa.psoa2x.common.*;
 
 public class PrologTranslator extends ANTLRBasedTranslator {
 	PSOA2PrologConfig m_config;
@@ -17,13 +18,18 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 	{
 		m_config = config;
 	}
+
+	@Override
+	protected <T extends PSOAInput<T>> T normalize(T input) {
+		return input.LPnormalize(m_config);
+	}
 	
 	@Override
-	protected TranslatorWalker createTranslatorWalker(
-			CommonTreeNodeStream astNodes) {
+	protected TranslatorWalker createTranslatorWalker(TreeNodeStream astNodes) {
 		return new PSOA2PrologWalker(astNodes, m_config);
 	}
 	
+/*	
 	@Override
 	protected CommonTreeNodeStream preprocess(CommonTreeNodeStream treeNodeStream, boolean isQuery) throws RecognitionException
 	{
@@ -139,7 +145,7 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 		
 		return treeNodeStream;
 	}
-
+*/
 	@Override
 	public String inverseTranslateTerm(String term) {
 		

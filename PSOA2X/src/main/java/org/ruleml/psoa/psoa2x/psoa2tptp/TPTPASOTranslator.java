@@ -1,6 +1,7 @@
 package org.ruleml.psoa.psoa2x.psoa2tptp;
 
-import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.antlr.runtime.tree.TreeNodeStream;
+import org.ruleml.psoa.PSOAInput;
 import org.ruleml.psoa.psoa2x.common.*;
 
 public class TPTPASOTranslator extends ANTLRBasedTranslator {
@@ -10,10 +11,14 @@ public class TPTPASOTranslator extends ANTLRBasedTranslator {
 	{
 		m_config = config;
 	}
+
+	@Override
+	protected <T extends PSOAInput<T>> T normalize(T input) {
+		return input.FOLnormalize(m_config);
+	}
 	
 	@Override
-	protected TranslatorWalker createTranslatorWalker(
-			CommonTreeNodeStream astNodes) {
+	protected TranslatorWalker createTranslatorWalker(TreeNodeStream astNodes) {
 		return new TPTPASOTranslatorWalker(astNodes, m_config);
 	}
 

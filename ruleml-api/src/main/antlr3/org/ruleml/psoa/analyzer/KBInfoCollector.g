@@ -2,7 +2,7 @@ tree grammar KBInfoCollector;
 
 options 
 {
-    output = AST;
+	output = AST;
 	ASTLabelType = CommonTree;
 	tokenVocab = PSOAPS;
 	rewrite = false;
@@ -25,6 +25,7 @@ options
     // private KBInfo m_KBInfo = new KBInfo();
         
     private Map<String, PredicateInfo> m_predicates = new HashMap<String, PredicateInfo>();
+    private List<String> m_importedKBs = new ArrayList<String>();
     private boolean m_hasHeadOnlyVariables = false;
     
     public PredicateInfo getPredInfo(String predicate)
@@ -97,7 +98,7 @@ base
     ;
 
 prefix
-    :   ^(PREFIX ID IRI_REF)
+    :   ^(PREFIX NAMESPACE IRI_REF)
     ;
 
 importDecl
@@ -121,11 +122,14 @@ rule
 scope
 {
     Set<String> headOnlyVars;
-    boolean isRuleHead;
+    Set<String> existVars;
+    boolean isRuleBody;
 }
 @init
 {
     $rule::headOnlyVars = new HashSet<String>();
+    $rule::existVars = new HashSet<String>();
+    $rule::isRuleBody = false;
 }
 @after
 {
@@ -134,28 +138,21 @@ scope
        $rule::headOnlyVars.clear();
        m_hasHeadOnlyVariables = true;
     }
+    $rule::existVars.clear();
 }
     :  ^(FORALL VAR_ID+ clause)
     |   clause -> clause
     ;
 
 clause
-    :   ^(IMPLICATION head formula)
+    :   ^(IMPLICATION head { $rule::isRuleBody = true; } formula { $rule::isRuleBody = false; })
     |   head
     ;
     
 head
-@init
-{
-    $rule::isRuleHead = true;
-}
-@after
-{
-    $rule::isRuleHead = false;
-}
     :   atomic
     |   ^(AND head+)
-    |   ^(EXISTS VAR_ID+ head)
+    |   ^(EXISTS (VAR_ID { $rule::existVars.add($VAR_ID.text); })+ head)
     ;
     
 formula
@@ -190,13 +187,17 @@ subclass
     ;
     
 term
-    :   c=constant
+    :   constant
     |   VAR_ID
     {
-       if ($rule::isRuleHead)
-          $rule::headOnlyVars.add($VAR_ID.text);
+       String varName = $VAR_ID.text;
+       if (!$rule::isRuleBody)
+       {
+       	  if (!$rule::existVars.contains(varName))
+       	     $rule::headOnlyVars.add(varName);
+       }
        else
-          $rule::headOnlyVars.remove($VAR_ID.text);
+          $rule::headOnlyVars.remove(varName);
     }
     |   psoa[false]
     |   external

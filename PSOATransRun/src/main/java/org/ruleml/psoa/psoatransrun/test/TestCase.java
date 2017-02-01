@@ -18,12 +18,13 @@ public class TestCase {
 //	private TestSuite m_testSuite;
 	private File m_dir, m_kb;
 	private Map<File, QueryResult> m_queryAndAns;
-	private PSOATransRun m_engine;
+	private PSOATransRun m_engine = null;
+	private String m_targetLang;
 	
 	public TestCase(File testCaseDir, String targetLang)
 	{
 		m_dir = testCaseDir;
-		m_engine = PSOATransRun.getInstantiation(targetLang);
+		m_targetLang = targetLang;
 		m_kb = null;
 		m_queryAndAns = new HashMap<File, QueryResult>();
 		m_incorrectQueries = new HashMap<String, String[]>();
@@ -69,6 +70,12 @@ public class TestCase {
 		
 		if (m_kb == null)
 			throw new IllegalArgumentException("No KB in folder " + m_dir.getName());
+	}
+	
+	private void startEngine() 
+	{
+		if (m_engine == null)
+			m_engine = PSOATransRun.getInstantiation(m_targetLang);
 	}
 	
 	private boolean runOnce()
@@ -145,6 +152,8 @@ public class TestCase {
 	public boolean run(int times)
 	{
 		boolean isAnswerCorrect = true;
+		startEngine();
+		
 		for (int i = times; i > 0; i--)
 		{
 			isAnswerCorrect = runOnce() && isAnswerCorrect;

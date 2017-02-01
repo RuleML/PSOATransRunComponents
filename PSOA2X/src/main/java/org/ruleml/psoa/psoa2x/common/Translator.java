@@ -20,25 +20,25 @@ public abstract class Translator {
 	abstract public String inverseTranslateTerm(String term);
 	
 	public String translateKB(InputStream kb) throws TranslatorException {
-		OutputStream output = new ByteArrayOutputStream(512);
+		OutputStream output = new ByteArrayOutputStream(1024);
 		translateKB(kb, output);
 		return output.toString();
 	}
 	
 	public String translateQuery(InputStream query) throws TranslatorException {
-		OutputStream output = new ByteArrayOutputStream();
+		OutputStream output = new ByteArrayOutputStream(512);
 		translateQuery(query, output);
 		return output.toString();
 	}
 	
 	public String translateKB(String kb) throws TranslatorException {
-		OutputStream output = new ByteArrayOutputStream(512);
+		OutputStream output = new ByteArrayOutputStream(1024);
 		translateKB(kb, output);
 		return output.toString();
 	}
 	
 	public String translateQuery(String query) throws TranslatorException {
-		OutputStream output = new ByteArrayOutputStream();
+		OutputStream output = new ByteArrayOutputStream(512);
 		_queryVarMap.clear();
 		translateQuery(query, output);
 		return output.toString();

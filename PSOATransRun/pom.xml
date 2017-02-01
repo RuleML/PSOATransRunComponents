@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ruleml.psoa</groupId>
 	<artifactId>PSOATransRun</artifactId>
-	<version>1.0</version>
+	<version>1.2</version>
 	<name>PSOATransRun</name>
 	
 	<properties>

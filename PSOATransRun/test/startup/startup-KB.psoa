@@ -1,4 +1,7 @@
 Document (
+  Prefix(func: <http://www.w3.org/2007/rif-builtin-function#>)
+  Prefix(pred: <http://www.w3.org/2007/rif-builtin-predicate#>)
+  
   Group (
     Forall ?X ?Y ?Z ?EX ?EY (
       _startup(?X ?Y _employee->?Z) :-

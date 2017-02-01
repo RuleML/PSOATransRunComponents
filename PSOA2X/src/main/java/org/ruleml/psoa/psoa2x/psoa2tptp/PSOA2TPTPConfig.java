@@ -1,8 +1,8 @@
 package org.ruleml.psoa.psoa2x.psoa2tptp;
 
-import org.ruleml.psoa.psoa2x.common.RelationalTranslatorConfig;
+import org.ruleml.psoa.transformer.RelationalTransformerConfig;
 
-public class PSOA2TPTPConfig extends RelationalTranslatorConfig
+public class PSOA2TPTPConfig extends RelationalTransformerConfig
 {
 	
 }

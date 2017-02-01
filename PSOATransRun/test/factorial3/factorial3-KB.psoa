@@ -1,4 +1,7 @@
 Document(
+  Prefix(func: <http://www.w3.org/2007/rif-builtin-function#>)
+  Prefix(pred: <http://www.w3.org/2007/rif-builtin-predicate#>)
+  
   Group(
     _factorial(0 1)
     Forall ?N ?F ?N1 ?F1 (

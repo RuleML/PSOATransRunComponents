@@ -1,4 +1,6 @@
 Document(
+  Prefix (: <http://psoa.ruleml.org/test#>)
+  
   Group (
     Forall ?X ?Y ( 
       :isFatherOf(?Y ?X) :- And ( :isChildOf(?X ?Y) ?Y#:Male )
@@ -12,6 +14,6 @@ Document(
       :isMotherOf(?Y ?X) :- And ( ?C#:isChildOf(?X ?Y) ?Y#:Female )
     )
     :isChildOf(:Adrian :Emily)
-    :Jane#:Female
+    :Emily#:Female
   )
 )
