@@ -1,4 +1,8 @@
-tree grammar DifferentiateObjectifier;
+/**
+ *  This grammar file is used to generate a transformer for differentiated objectification.
+ **/
+
+tree grammar DifferentiatedObjectifier;
 
 options 
 {
@@ -177,17 +181,22 @@ psoa[boolean isAtomic]
   String varName;
 }
     :   ^(PSOA oid=term? ^(INSTANCE type=term) tuple* slot*)
+    // keep oidful psoa term unchanged
     -> { oid != null }? ^(PSOA $oid ^(INSTANCE $type) tuple* slot*)
+    // dynamic objectification for an atom using a relational predicate 
     -> { !isAtomic || 
          (   m_dynamic 
           && !m_KBInfo.hasHeadOnlyVariables()
           && m_KBInfo.isPurelyRelational($type.tree)) }?
           ^(PSOA ^(INSTANCE $type) tuple* slot*)
+    // static objectification for psoa terms in rule conditions
     -> { m_isRuleBody }?
           ^(PSOA VAR_ID[newVarName()] ^(INSTANCE $type) tuple* slot*)
+    // static objectification for psoa terms used as ground facts
     -> { m_isGroundFact }?
           ^(PSOA ^(SHORTCONST LOCAL[freshConstName()]) ^(INSTANCE $type) tuple* slot*)
-    ->  // Rule head or query
+    // static objectification for psoa terms used in rule conclusions or queries
+    ->
         ^(EXISTS VAR_ID[varName = newVarName()]
             ^(PSOA VAR_ID[varName] ^(INSTANCE $type) tuple* slot*)
         )

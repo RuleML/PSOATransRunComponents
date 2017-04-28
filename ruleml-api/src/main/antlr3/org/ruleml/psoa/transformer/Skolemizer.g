@@ -1,3 +1,7 @@
+/**
+ * This grammar file is used to generate a transformer for performing Skolemization.
+ **/
+
 tree grammar Skolemizer;
 
 options 
@@ -108,7 +112,8 @@ head
     :   atomic
     |   ^(AND head+)
     |   ^(EXISTS 
-            (VAR_ID 
+            (VAR_ID
+              // Create Skolems for each variable
               { $rule::existVarMap.put($VAR_ID.text, createSkolemTermTree()); }
             )+
             head
@@ -153,7 +158,9 @@ term
 }
     :   constant
     |   VAR_ID
-    ->  { (streamTree = $rule::existVarMap.get($VAR_ID.text)) != null }? { (CommonTree)adaptor.dupTree(streamTree) } 
+    // If a Skolem is generated for the variable, replace the variable with the Skolem
+    ->  { (streamTree = $rule::existVarMap.get($VAR_ID.text)) != null }? { (CommonTree)adaptor.dupTree(streamTree) }
+    // Keep the variable unchanged otherwise 
     ->  VAR_ID
     |   psoa
     |   external

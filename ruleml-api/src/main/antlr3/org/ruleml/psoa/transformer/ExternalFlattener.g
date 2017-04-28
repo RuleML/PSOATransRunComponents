@@ -1,3 +1,8 @@
+/**
+ * This grammar file is used to generate a transformer for flattening nested external 
+ * function applications.
+ **/
+
 tree grammar ExternalFlattener;
 
 options 
@@ -199,9 +204,11 @@ scope
     |   ^(EXISTS VAR_ID+ formula)
     |   atomic
     -> { $formula::externalInfoMap.isEmpty() }? atomic
+    // Create a conjunction if there exists a nested external function application
     -> ^(AND { getExtEquals() } atomic)
     |   external
     -> { $formula::externalInfoMap.isEmpty() }? external
+    // Create a conjunction if there exists a nested external function application
     -> ^(AND { getExtEquals() } external)
     ;
 
@@ -232,8 +239,10 @@ term[boolean isTopLevelEqualTerm]
     |   VAR_ID
     |   psoa
     |   external
+    // Keep external function application unchanged if it is on the top level of an equality
     -> { isTopLevelEqualTerm }? external
-    -> { getVarNodeForExternal($external.tree) } // Replace external function application with a new variable
+    // Replace external function application with a new variable
+    -> { getVarNodeForExternal($external.tree) }
     ;
 
 external

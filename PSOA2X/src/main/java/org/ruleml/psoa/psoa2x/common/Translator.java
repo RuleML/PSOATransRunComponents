@@ -19,6 +19,10 @@ public abstract class Translator {
 	abstract public void translateQuery(InputStream query, OutputStream out) throws TranslatorException;
 	abstract public String inverseTranslateTerm(String term);
 	
+	/**
+	 * Translates input KB
+	 * 
+	 * */
 	public String translateKB(InputStream kb) throws TranslatorException {
 		OutputStream output = new ByteArrayOutputStream(1024);
 		translateKB(kb, output);

@@ -6,8 +6,8 @@ import java.io.*;
 import java.util.*;
 
 import org.apache.commons.exec.OS;
-import org.ruleml.psoa.psoatransrun.Binding;
-import org.ruleml.psoa.psoatransrun.Bindings;
+import org.ruleml.psoa.psoatransrun.Substitution;
+import org.ruleml.psoa.psoatransrun.SubstitutionSet;
 import org.ruleml.psoa.psoatransrun.QueryResult;
 import org.ruleml.psoa.psoatransrun.engine.ReusableKBEngine;
 import org.ruleml.psoa.psoatransrun.test.Watch;
@@ -23,6 +23,8 @@ public class XSBEngine extends ReusableKBEngine {
 	private XSBSubprocessEngine m_engine;
 	
 	public XSBEngine(XSBEngineConfig config) {
+		
+		// Configure xsb installation folder
 		m_xsbFolder = config.xsbFolderPath;
 
 		if (m_xsbFolder == null || !(new File(m_xsbFolder)).exists())
@@ -35,6 +37,7 @@ public class XSBEngine extends ReusableKBEngine {
 		if (!(f.exists() && f.isDirectory()))
 			throw new PSOATransRunException("XSB installation folder " + m_xsbFolder + " does not exist");
 		
+		// Find the path of XSB binary
 		if (OS.isFamilyUnix() || OS.isFamilyMac())
 		{
 			f = new File(f, "config");
@@ -68,24 +71,10 @@ public class XSBEngine extends ReusableKBEngine {
 			throw new PSOATransRunException("Unsupported operating system.");
 		}
 		
-//		String cmd = "bash -c unset HOME && " + m_xsbBinPath;
-//		String cmd = "bash -c export HOME=" + m_xsbFolder +" && " + m_xsbBinPath;
-//		System.out.println("Cmd: " + cmd);
-//		XSBSubprocessEngine engine = new XSBSubprocessEngine(cmd, true, false);
-//		System.out.println(AbstractPrologEngine.class);
-//		try
-//		{
-//			ServerSocket serverSocket = new ServerSocket(0);
-//		} catch (IOException e)
-//		{
-//			// TODO Auto-generated catch block
-//			throw new RuntimeException(e);
-//		}
-//		m_engine = new XSBSubprocessEngine(m_xsbBinPath, true);
-		
+		// Start XSB engine
 		m_engine = new XSBSubprocessEngine(m_xsbBinPath);
-//		System.out.println("Successfully starting XSB.");
 		
+		// Set transated KB
 		String transKBPath = config.transKBPath;
 		try
 		{
@@ -120,10 +109,14 @@ public class XSBEngine extends ReusableKBEngine {
 		writer.println(":- table(memterm/2).");
 		writer.println(":- table(sloterm/3).");
 		writer.println(":- table(sloterm/4).");
+		
+		// Assume a maximum tuple length of 10 
 		for (int i = 2; i < 11; i++)
 		{
 			writer.println(":- table(tupterm/" + i + ").");
 		}
+		
+		// Configure XSB to return false for (sub)queries using unknown predicates
 		writer.println(":- set_prolog_flag(unknown,fail).");
 		writer.print(kb);
 		writer.close();
@@ -148,6 +141,7 @@ public class XSBEngine extends ReusableKBEngine {
 	}
 
 	Watch exeWatch = new Watch("Real execution time");
+	
 	@Override
 	public QueryResult executeQuery(String query, List<String> queryVars) {
 		TermModel result;
@@ -180,29 +174,33 @@ public class XSBEngine extends ReusableKBEngine {
 				return new QueryResult(false);
 			else
 			{				
-				Bindings bindings = new Bindings();
+				SubstitutionSet answers = new SubstitutionSet();
 				for (TermModel binding : result.flatList())
 				{
 					Iterator<String> queryVarIter = queryVars.iterator();
-					Binding b = new Binding();
+					Substitution b = new Substitution();
 					
 					for (TermModel term : binding.flatList())
 					{
 						b.addPair(queryVarIter.next(), term.toString());
 					}
-					bindings.add(b);
+					answers.add(b);
 				}
 				
-				r = new QueryResult(true, bindings);
+				r = new QueryResult(true, answers);
 			}
 			
 		}
 		return r;
 	}
 	
+	public class 
+	
+	
 //	public SolutionIterator executeQuery(String query, List<String> queryVars) {
 //		
 //	}
+	
 	
 	public long getTime()
 	{

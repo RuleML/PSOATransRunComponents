@@ -1,3 +1,7 @@
+/**
+ * This grammar file is used to generate the converter from a normalized PSOA input to Prolog
+*/
+
 tree grammar PSOA2PrologWalker;
 
 options 
@@ -61,6 +65,7 @@ group
 
 group_element
     :   rule
+    // output translated clause
     { println(_output.toString(), "."); _output.setLength(0); }
     |   group
     ;

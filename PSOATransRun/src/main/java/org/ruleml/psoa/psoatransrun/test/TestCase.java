@@ -7,6 +7,10 @@ import java.util.Map.Entry;
 import org.ruleml.psoa.psoatransrun.PSOATransRun;
 import org.ruleml.psoa.psoatransrun.QueryResult;
 
+/**
+ * Class for running one test case
+ * 
+ * */
 public class TestCase {
 	private int m_numAnsQueries,  // # of queries that have standard answers 
 				m_numStandardAns, // Total # of standard answers for all queries 
@@ -15,7 +19,6 @@ public class TestCase {
 	private int m_numKBAxioms, m_numTransKBAxioms, m_numCorrectQueries;
 	private long m_totalKBTransTime, m_totalQueryTransTime, m_totalQueryTime;
 	private Map<String, String[]> m_incorrectQueries;
-//	private TestSuite m_testSuite;
 	private File m_dir, m_kb;
 	private Map<File, QueryResult> m_queryAndAns;
 	private PSOATransRun m_engine = null;
@@ -35,9 +38,6 @@ public class TestCase {
 				continue;
 			
 			String fname =  f.getName();
-//			int dotIndex = fname.lastIndexOf('.');
-//			if (dotIndex > 0)
-//				fname = fname.substring(0, dotIndex);
 			if (fname.endsWith("-KB.psoa"))
 				m_kb = f;
 			else if (fname.matches(".+-query.+\\.psoa"))
@@ -53,7 +53,7 @@ public class TestCase {
 						QueryResult result = QueryResult.parse(ans);
 						m_queryAndAns.put(f, result);
 						m_numAnsQueries++;
-						m_numStandardAns += result.numBindings();
+						m_numStandardAns += result.numAnswers();
 					}
 					catch (FileNotFoundException e) {
 						e.printStackTrace();
@@ -105,8 +105,8 @@ public class TestCase {
 				{
 					if (result.binaryResult())
 					{
-						int numTotal = result.numBindings(),
-							numSound = result.numCommonBindings(stdResult);
+						int numTotal = result.numAnswers(),
+							numSound = result.numCommonAnswers(stdResult);
 						m_numEngineAns += numTotal;
 						m_numSoundAns += numSound;
 						
@@ -123,7 +123,7 @@ public class TestCase {
 						isSound = true;
 					}
 					else
-						m_numEngineAns += result.numBindings();
+						m_numEngineAns += result.numAnswers();
 				}
 				
 				if (isSound && isComplete)

@@ -1,3 +1,7 @@
+/**
+ * The grammar file is used to generate a transformer for performing slotribution/tupribution.
+ **/
+ 
 tree grammar SlotTupributor;
 
 options 

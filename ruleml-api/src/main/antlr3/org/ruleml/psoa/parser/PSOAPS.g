@@ -1,6 +1,5 @@
 /*
- * This is a grammar file for PSOA RuleML. Use ANTLR 2.7.x to generate 
- * the parser code.
+ * Grammar for parsing PSOA RuleML presentation syntax.
  */
 
 grammar PSOAPS;
@@ -8,7 +7,7 @@ grammar PSOAPS;
 options
 {
     output = AST;
-    k = 1;
+    k = 1;  // limit to one-step look ahead for efficient parsing
     ASTLabelType = CommonTree;
     // backtrack=true;
     // Potential performance problem! 
@@ -51,6 +50,9 @@ tokens
 	private Set<String> m_localConsts = new HashSet<String>();
     private Map<String, String> m_namespaceTable = new HashMap<String, String>();
     
+    /** 
+     * Get the full IRI form of an IRI prefix
+    */
     protected String getNamespace(String prefix)
     {
     	String ns = m_namespaceTable.get(prefix);
@@ -59,7 +61,10 @@ tokens
     		
     	return ns;
     }
-    
+        
+    /** 
+     * Set the full IRI of an IRI prefix
+    */
 	protected void setNamespace(String ns, String iri) {
 		String oldIRI = m_namespaceTable.put(ns, iri);
 		if (oldIRI != null && !oldIRI.equals(iri))
@@ -68,6 +73,9 @@ tokens
 		}
 	}
 	
+	/** 
+     * Get full IRI from a namespace-prefixed IRI
+    */
 	protected String getFullIRI(String ns, String localName)
 	{
 		return getNamespace(ns) + localName;

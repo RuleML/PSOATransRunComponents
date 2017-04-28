@@ -1,3 +1,9 @@
+/**
+ * This grammar file is the template for all transformers. The grammar rules corresponds
+ * to PSOA's EBNF grammar.
+ * 
+ **/
+
 tree grammar TreeWalkerTemplate;
 
 options 

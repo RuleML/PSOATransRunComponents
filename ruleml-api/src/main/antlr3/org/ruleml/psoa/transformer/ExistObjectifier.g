@@ -1,3 +1,7 @@
+/**
+ * This grammar file is used to generate a transformer for undifferentiated objectification.
+ **/
+
 tree grammar ExistObjectifier;
 
 options 

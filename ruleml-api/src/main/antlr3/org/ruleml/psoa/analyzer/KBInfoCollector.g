@@ -1,3 +1,8 @@
+/**
+ * This grammar file is used to generate a static analyzer that collects predicate 
+ * information from KB.  
+ **/
+ 
 tree grammar KBInfoCollector;
 
 options 

@@ -1,3 +1,8 @@
+/**
+ * This grammar file is used to generate a transformer for renaming the local constants 
+ * in a KB.
+ **/
+ 
 tree grammar Renamer;
 
 options 

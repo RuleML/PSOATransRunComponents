@@ -1,3 +1,8 @@
+/**
+ * The grammar file is used to generate a transformer for query rewriting in static/dynamic 
+ * objectification.
+ **/
+
 tree grammar QueryRewriter;
 
 options 

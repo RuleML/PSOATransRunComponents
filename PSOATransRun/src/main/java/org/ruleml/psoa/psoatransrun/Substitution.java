@@ -5,16 +5,22 @@ import java.util.Map.Entry;
 
 import org.ruleml.psoa.psoa2x.common.Translator;
 
-public class Binding {
+/**
+ * The class is used for operating on substitutions. Each instance of the class is 
+ * a substitution that maps variables to terms, which is used to represent a query
+ * answer in PSOATransRun.
+ * 
+ * */
+public class Substitution {
 	private Map<String, String> m_binding = new HashMap<String, String>();
 
 	public void addPair(String var, String value) {
 		m_binding.put(var, value);
 	}
 	
-	public static Binding parse(String result) {
+	public static Substitution parse(String result) {
 		// TODO: Handle special cases, e.g. ',' or '=' in constants, syntactic errors
-		Binding b = new Binding();
+		Substitution b = new Substitution();
 		String[] pairs = result.split("\\ \\?");
 		boolean first = true;
 		
@@ -39,7 +45,7 @@ public class Binding {
 	public boolean equals(Object obj) {
 		try
 		{
-			return ((Binding)obj).m_binding.equals(m_binding);
+			return ((Substitution)obj).m_binding.equals(m_binding);
 		} catch (ClassCastException e)
 		{
 			return false;

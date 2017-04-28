@@ -11,7 +11,7 @@ public class TestSuite {
 	private int m_engineAnswers, m_standardAnswers, m_correctEngineAnswers;
 	private int m_translationFailures, m_executionFailures;
 	private long m_kbTranslateTime, m_queryTranslateTime, m_queryTime;
-	private static final int s_runsEachTestCase = 100;
+	private static final int s_runsEachTestCase = 1;
 	
 	public TestSuite(String path, String targetLang)
 	{
@@ -24,7 +24,8 @@ public class TestSuite {
 		m_testCases = new ArrayList<TestCase>(testCases.length);
 		for (File testCaseDir : testCases)
 		{
-			m_testCases.add(new TestCase(testCaseDir, targetLang));
+			if (testCaseDir.isDirectory())
+				m_testCases.add(new TestCase(testCaseDir, targetLang));
 		}
 	}
 	

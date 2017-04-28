@@ -1,3 +1,8 @@
+/* 
+ * Java class for operating PSOA queries.
+ * 
+ * */
+
 package org.ruleml.psoa;
 import org.antlr.runtime.ParserRuleReturnScope;
 import org.antlr.runtime.RecognitionException;
@@ -101,6 +106,15 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 		}
 	}
 	
+	
+	/**
+	 * Perform FOL-targeting normalization of a PSOA query
+	 * 
+	 * @param config   transformer configuration
+	 * 
+	 * @return the FOL-normalized PSOA query
+	 * 
+	 * */
 	@Override
 	public PSOAQuery FOLnormalize(RelationalTransformerConfig config) {
 		return unnest().
@@ -108,6 +122,15 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 			   slotTupribute(config.reproduceClass);
 	}
 
+	
+	/**
+	 * Perform LP-targeting normalization of a PSOA query
+	 * 
+	 * @param config   transformer configuration
+	 * 
+	 * @return   the LP-normalized PSOA query
+	 * 
+	 * */
 	@Override
 	public PSOAQuery LPnormalize(RelationalTransformerConfig config) {
 		return FOLnormalize(config).

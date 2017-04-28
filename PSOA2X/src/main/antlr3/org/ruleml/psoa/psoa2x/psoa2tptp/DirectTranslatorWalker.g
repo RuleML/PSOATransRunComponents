@@ -1,3 +1,8 @@
+/*
+ * Tree walker that generates TPTP syntax directly from PSOA AST 
+ * 
+*/
+
 tree grammar DirectTranslatorWalker;
 
 options 

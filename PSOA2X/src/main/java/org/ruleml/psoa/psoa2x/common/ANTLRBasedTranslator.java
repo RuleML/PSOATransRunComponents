@@ -28,7 +28,15 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		m_kb.loadFromText(kb);
 		translateKB(m_kb, out);
 	}
-	
+
+
+	/**
+	 * Translate the input KB and write the results into an output stream 
+	 * 
+	 * @param kb   input stream of KB
+	 * @param out   output stream for the translation output
+	 * 
+	 * */
 	@Override
 	public void translateKB(InputStream kb, OutputStream out) throws TranslatorException {
 		try {
@@ -41,14 +49,18 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		}
 	}
 
+	/**
+	 * Translate the input KB and write the results into an output stream 
+	 * 
+	 * */
 	public void translateKB(PSOAKB kb, OutputStream out) throws TranslatorException {
 		try {
 			kb.loadImports();
 			kb.setPrintAfterTransformation(debugMode);
 			TreeNodeStream stream = normalize(kb).getTreeNodeStream();
-			TranslatorWalker walker = createTranslatorWalker(stream);
-			walker.setOutputStream(getPrintStream(out));
-			walker.document();
+			TranslatorWalker converter = createTranslatorWalker(stream);
+			converter.setOutputStream(getPrintStream(out));
+			converter.document();
 		} catch (RecognitionException e) {
 			throw new TranslatorException(e);
 		} catch (IOException e) {

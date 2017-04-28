@@ -1,3 +1,8 @@
+/**
+ * This grammar file is used to generate a transformer for splitting rules 
+ * with conjunctive conclusions (rule heads).
+ **/
+
 tree grammar ConjunctiveHeadSplitter;
 
 options 
@@ -165,6 +170,7 @@ scope
             if (!inExists)
                 $rule::hasConjuctiveHead = true;
        }
+    // Keep conjunction inside a existential quantification 
     -> { inExists }? ^(AND head+)
     -> head+
     |   ^(EXISTS (VAR_ID { $head::existVars.add($VAR_ID.text); })+ head[true])

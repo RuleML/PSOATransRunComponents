@@ -1,3 +1,7 @@
+/*
+ * Prolog translator.
+ * */
+
 package org.ruleml.psoa.psoa2x.psoa2prolog;
 
 import org.antlr.runtime.RecognitionException;

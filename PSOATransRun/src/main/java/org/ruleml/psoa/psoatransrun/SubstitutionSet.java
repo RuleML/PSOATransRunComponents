@@ -6,7 +6,13 @@ import java.util.*;
 
 import org.ruleml.psoa.psoa2x.common.Translator;
 
-public class Bindings extends HashSet<Binding> {
+/**
+ * The class is used for operating on substitution sets. 
+ * Each instance of the class is a set of substitutions, 
+ * which is used to represent a set of query answers in PSOATransRun.
+ * 
+ * */
+public class SubstitutionSet extends HashSet<Substitution> {
 
 	/**
 	 * Generated serialization UID
@@ -16,7 +22,7 @@ public class Bindings extends HashSet<Binding> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (Binding b : this)
+		for (Substitution b : this)
 		{
 			sb.append(b).append(System.getProperty("line.separator"));
 		}
@@ -24,18 +30,18 @@ public class Bindings extends HashSet<Binding> {
 		return sb.toString();
 	}
 	
-	public static Bindings parseBindings(File f) throws FileNotFoundException
+	public static SubstitutionSet parseBindings(File f) throws FileNotFoundException
 	{
 		Scanner sc = new Scanner(f);
-		Bindings bindings = parseBindings(sc);
+		SubstitutionSet bindings = parseBindings(sc);
 		sc.close();
 		return bindings;
 	}
 	
-	public int numCommonBindings(Bindings cmp)
+	public int numCommonBindings(SubstitutionSet cmp)
 	{
 		int common = 0;
-		for (Binding b : this)
+		for (Substitution b : this)
 		{
 			if (cmp.contains(b))
 				common++;
@@ -44,19 +50,19 @@ public class Bindings extends HashSet<Binding> {
 		return common;
 	}
 	
-	public static Bindings parseBindings(Scanner sc)
+	public static SubstitutionSet parseBindings(Scanner sc)
 	{
-		Bindings bindings = new Bindings();
+		SubstitutionSet bindings = new SubstitutionSet();
 		while (sc.hasNext())
 		{
-			bindings.add(Binding.parse(sc.nextLine()));
+			bindings.add(Substitution.parse(sc.nextLine()));
 		}
 		
 		return bindings;
 	}
 
 	public void inverseTranslate(Translator translator) {
-		for (Binding bd : this)
+		for (Substitution bd : this)
 		{
 			bd.inverseTranslate(translator);
 		}

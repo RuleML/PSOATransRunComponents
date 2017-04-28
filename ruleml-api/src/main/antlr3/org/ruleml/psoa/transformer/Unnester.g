@@ -1,3 +1,16 @@
+/**
+ *  This grammar file is used to generate a transformer for unnesting.
+ *  Each grammar rule will become a Java method for reading and transforming 
+ *  a subtree corresponding to a PSOA non-terminal.
+ *
+ *  Since one non-terminal can be used in different contexts while sharing
+ *  the same transformation method, e.g. a psoa term can be used both
+ *  on the top-level and embedded inside an atom, we use input parameters
+ *  of certain rules to provide necessary context information and the transformation 
+ *  is performed differently according to these parameters.
+ *
+ */
+
 tree grammar Unnester;
 
 options 
@@ -47,7 +60,7 @@ options
         return name;
     }
 }
-
+ 
 document
     :   ^(DOCUMENT base? prefix* importDecl* group?)
     ;
@@ -171,7 +184,7 @@ term
 external
     :   ^(EXTERNAL psoa[false])
     ;
-    
+
 psoa[boolean isTopLevel]
 @after
 {
@@ -204,7 +217,9 @@ psoa[boolean isTopLevel]
     }
 }
     :   ^(PSOA oid=term? ^(INSTANCE type=term) tuples+=tuple* slots+=slot*)
+    // Keep the psoa term unchanged if it is oidless or on the top level 
     -> { oid == null || isTopLevel }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
+    // Leave behind the OID otherwise
     -> $oid
     ;
 

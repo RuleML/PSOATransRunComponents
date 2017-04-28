@@ -5,7 +5,7 @@ import gnu.getopt.LongOpt;
 
 import java.io.*;
 
-public class X2PSOAMain
+public class X2PSOACmdLine
 {
 	public static void main(String[] args) throws IOException {		
 		LongOpt[] opts = new LongOpt[]

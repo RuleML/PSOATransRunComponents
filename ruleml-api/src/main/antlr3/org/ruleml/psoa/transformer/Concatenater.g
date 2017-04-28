@@ -1,3 +1,8 @@
+/**
+ * This grammar file is used to generate a Java class for concatenating multiple KBs 
+ * into one KB.
+ **/
+
 tree grammar Concatenater;
 
 options 
@@ -14,10 +19,8 @@ options
 	package org.ruleml.psoa.transformer;
 }
 
-@members
-{
-}
 
+// documents is the root non-terminal representing multiple PSOA KBs
 documents
 scope
 {
@@ -25,10 +28,12 @@ scope
 }
 @init
 {
+    // root node of new document tree
     $documents::docTree = (CommonTree)adaptor.create(DOCUMENT, "DOCUMENT");
 }
     : document+
-	-> ^({ $documents::docTree } ^(GROUP document+)) /* DOCUMENT and GROUP are stripped from document and recreated on the top-level */
+    // DOCUMENT and GROUP are stripped from document and recreated on the top-level
+	-> ^({ $documents::docTree } ^(GROUP document+))
     ;
 
 document

@@ -2,6 +2,10 @@ package org.ruleml.psoa.analyzer;
 
 import java.util.*;
 
+/** 
+ * Class for storing predicate information in KB.
+ *  
+ * */
 public class PredicateInfo
 {
 	private String m_name;
@@ -14,7 +18,7 @@ public class PredicateInfo
 		m_positionalArities = new TreeSet<Integer>();
 		m_hasOID = false;
 		m_hasSlot = false;
-	} 
+	}
 	
 	public boolean isPurelyRelational()
 	{

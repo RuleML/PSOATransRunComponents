@@ -56,7 +56,7 @@ public class VampirePrimeEngine extends ExecutionEngine {
 	{
 		 Scanner reader = new Scanner(out);
 		 String line = null, nextLine = null;
-		 Bindings bindings = new Bindings();
+		 SubstitutionSet bindings = new SubstitutionSet();
 	 
 		 do
 		 {
@@ -93,9 +93,9 @@ public class VampirePrimeEngine extends ExecutionEngine {
 		 return new QueryResult(bindings);
 	}
 	
-	private static Binding parseVPBinding(String str)
+	private static Substitution parseVPBinding(String str)
 	{
-		Binding b = new Binding();
+		Substitution b = new Substitution();
 		String[] splits = str.split(",");
 		
 		for (int i = 0; i < splits.length; i += 2)

@@ -83,7 +83,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.ruleml.psoa</groupId>
-			<artifactId>ruleml-api</artifactId>
+			<artifactId>PSOACore</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
