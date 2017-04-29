@@ -9,7 +9,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 <modules>
     <module>tptp-parser</module>
-    <module>ruleml-api</module>
+    <module>PSOACore</module>
     <module>PSOA2X</module>
     <module>PSOATransRun</module>
     <module>PSOATransRunWebService</module>
