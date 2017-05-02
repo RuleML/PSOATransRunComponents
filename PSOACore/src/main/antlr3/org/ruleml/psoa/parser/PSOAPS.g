@@ -26,6 +26,7 @@ tokens
     NUMBER;
     LOCAL;
     FALSITY;
+    DEPSIGN;
 }
 
 @header
@@ -241,19 +242,20 @@ tuples_and_slots
     :   tuple+ slot* -> tuple+ slot*
     |   terms+=term+ { boolean hasSlot = false; }
         (SLOT_ARROW first_slot_value=term { hasSlot = true; } slot* )? // Syntactic sugar for psoa terms which has only one tuple
-    -> {!hasSlot}? ^(TUPLE {getTupleTree($terms, $terms.size()) } ) // single tuple
+    -> {!hasSlot}? ^(TUPLE DEPSIGN["+"] {getTupleTree($terms, $terms.size()) } ) // single tuple
     -> {$terms.size() == 1}?
-        ^(SLOT {$terms.get(0)} $first_slot_value) slot* // slot only
-    ->  ^(TUPLE {getTupleTree($terms, $terms.size() - 1)}) ^(SLOT {$terms.get($terms.size() - 1)} $first_slot_value) slot* // tuples and slots
+        ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get(0)} $first_slot_value) slot* // slot only
+    ->  ^(TUPLE {getTupleTree($terms, $terms.size() - 1)}) ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get($terms.size() - 1)} $first_slot_value) slot* // tuples and slots
     ;
 
 tuple
-    :   LSQBR term+ RSQBR -> ^(TUPLE term+)
+    :   DEPSIGN LSQBR term+ RSQBR -> ^(TUPLE DEPSIGN term+)
+    |   LSQBR term+ RSQBR -> ^(TUPLE DEPSIGN["+"] term+)
     ;
 
 slot
     :
-        name=term SLOT_ARROW value=term -> ^(SLOT $name $value)
+        name=term SLOT_ARROW value=term -> ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] $name $value)
     ;
 
 /*
@@ -334,7 +336,7 @@ IMPLICATION : ':-';
 EQUAL : '=';
 SUBCLASS : '##';
 INSTANCE : '#';
-SLOT_ARROW : '->';
+SLOT_ARROW : '->' | '+>';
 SYMSPACE_OPER : '^^';
 
 //   Punctuation:
@@ -342,6 +344,7 @@ LPAR : '(' ;
 RPAR : ')' ;
 LESS : '<' ;
 GREATER : '>' ;
+DEPSIGN: '+' | '-';
 LSQBR : '[' ;
 RSQBR : ']' ;
 

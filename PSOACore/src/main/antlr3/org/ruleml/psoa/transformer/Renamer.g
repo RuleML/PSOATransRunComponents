@@ -138,11 +138,11 @@ psoa
     ;
 
 tuple
-    :   ^(TUPLE term+)
+    :   ^(TUPLE DEPSIGN term+)
     ;
     
 slot
-    :   ^(SLOT term term)
+    :   ^(SLOT DEPSIGN term term)
     ;
 
 constant

@@ -241,7 +241,7 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 			
 			if (differentiated)
 			{	
-				DifferentiateObjectifier objectifier = new DifferentiateObjectifier(stream);
+				DifferentiatedObjectifier objectifier = new DifferentiatedObjectifier(stream);
 				objectifier.setDynamic(dynamic, m_kbInfo);
 				return objectifier.document();
 			}

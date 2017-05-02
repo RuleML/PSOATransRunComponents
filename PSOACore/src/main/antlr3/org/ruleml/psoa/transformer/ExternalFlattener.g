@@ -254,11 +254,11 @@ psoa
     ;
 
 tuple
-    :   ^(TUPLE term[false]+)
+    :   ^(TUPLE DEPSIGN term[false]+)
     ;
     
 slot
-    :   ^(SLOT term[false] term[false])
+    :   ^(SLOT DEPSIGN term[false] term[false])
     ;
 
 constant

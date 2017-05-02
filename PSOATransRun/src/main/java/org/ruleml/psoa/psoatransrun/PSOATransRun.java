@@ -181,7 +181,7 @@ public class PSOATransRun {
 		else
 			return m_executionWatch.totalMicroSeconds();
 	}
-	
+	/*
 	private static void executeQuery(String transQuery, PrologTranslator translator)
 	{
 		Set<Entry<String, String>> varMapEntries;
@@ -287,7 +287,7 @@ public class PSOATransRun {
 				input = sc.nextLine();
 			} while (true);
 		}
-
+*/
 		public void shutdown() {
 			// TODO Auto-generated method stub
 			

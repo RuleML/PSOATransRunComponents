@@ -221,7 +221,7 @@ scope
 }
 @init
 {
-  boolean hasTupleOrSlot = false;
+   boolean hasTupleOrSlot = false;
 }
     :   ^(PSOA (o=term { $psoa::oid = $o.output; })?
            ^(INSTANCE t=term
@@ -242,6 +242,7 @@ scope
         if (!hasTupleOrSlot)
         {
 	        if ($t.output.equals("TOP"))
+	          // Tautology, o#Top
               append(_output, "true");
 	        else if (o == null)
 	          // Nullary predicate
@@ -258,26 +259,30 @@ tuple
 {
   String oid = $psoa::oid;
   StringBuilder b;
-  if (oid == null)
-  {
-    if ($term.size() > 0)
-      // Function application 
-      b = $term::outputBuilder;
-    else
-      // External predicate application
-      b = _output;
-    append(b, $psoa::func, "(");
-  }
-  else
-  {
-    b = _output;
-    if (m_config.reproduceClass)
-      append(b, "tupterm(", oid, ",", $psoa::type, ",");
-    else
-      append(b, "tupterm(", oid, ",");
-  }
 }
-    :   ^(TUPLE (term { append(b, $term.output, ","); })+)
+    :   ^(TUPLE DEPSIGN
+           {	
+			  if (oid == null)
+			  {
+			    if ($term.size() > 0)
+			      // Function application 
+			      b = $term::outputBuilder;
+			    else
+			      // External predicate application
+			      b = _output;
+			    append(b, $psoa::func, "(");
+			  }
+			  else
+			  {
+			    b = _output;
+			    if ($DEPSIGN.text.equals("+"))
+			      append(b, "prdtupterm(", oid, ",", $psoa::type, ",");
+			    else
+			      append(b, "tupterm(", oid, ",");
+			  }
+           }
+           (term { append(b, $term.output, ","); })+
+         )
     {
         int len = b.length();
         b.replace(len - 1, len, ")");
@@ -285,13 +290,13 @@ tuple
     ;
     
 slot
-    :   ^(SLOT s=term v=term)
+    :   ^(SLOT DEPSIGN s=term v=term)
     {
         String oid;
         if ((oid = $psoa::oid) != null)
         {
-          if (m_config.reproduceClass)
-            append(_output, "sloterm(", oid, ",", $psoa::type, ",", $s.output, ",", $v.output, ")");
+          if ($DEPSIGN.text.equals("+"))
+            append(_output, "prdsloterm(", oid, ",", $psoa::type, ",", $s.output, ",", $v.output, ")");
           else
             append(_output, "sloterm(", oid, ",", $s.output, ",", $v.output, ")");
         }

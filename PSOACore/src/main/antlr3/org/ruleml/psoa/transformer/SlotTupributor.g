@@ -32,52 +32,66 @@ options
         m_reproduceClass = reproduceClass;
     }
     
-    private CommonTree getSlotTupributorTree(CommonTree oid, CommonTree type, List list_tuples, List list_slots)
+    private CommonTree getSlotTupributorTree(CommonTree oid, CommonTree pred, List list_tuples, List list_slots)
     {
 		CommonTree root = (CommonTree)adaptor.nil();
-		CommonTree typeTree, memberTree;
+		CommonTree predTree, topPredTree, memberTree;
+		boolean isPredTop = (pred.getToken().getType() != TOP);
 		
 		memberTree = (CommonTree)adaptor.create(PSOA, "PSOA");
 		adaptor.addChild(memberTree, oid);
-		typeTree = (CommonTree)adaptor.create(INSTANCE, "#");
-		adaptor.addChild(typeTree, type);
-		adaptor.addChild(memberTree, typeTree);
+		predTree = (CommonTree)adaptor.create(INSTANCE, "#");
+		adaptor.addChild(predTree, pred);
+		adaptor.addChild(memberTree, predTree);
 		
-        if (!m_reproduceClass)
-        {
-		   typeTree = (CommonTree)adaptor.create(INSTANCE, "#");
-		   adaptor.addChild(typeTree, (CommonTree)adaptor.create(TOP, "TOP"));
-        }
+	    topPredTree = (CommonTree)adaptor.create(INSTANCE, "#");
+	    adaptor.addChild(topPredTree, (CommonTree)adaptor.create(TOP, "TOP"));
   
         if (list_slots != null)
         {
-            CommonTree slot;
+            CommonTree slot, sloterm;
         
             for (int i = 0; i < list_slots.size(); i++)
             {
-               slot = (CommonTree)adaptor.create(PSOA, "PSOA");
-               adaptor.addChild(slot, adaptor.dupTree(oid));
-               adaptor.addChild(slot, adaptor.dupTree(typeTree));
-               adaptor.addChild(slot, list_slots.get(i));
-               adaptor.addChild(root, slot);
+               sloterm = (CommonTree)adaptor.create(PSOA, "PSOA");
+               slot = (CommonTree)list_slots.get(i);
+               adaptor.addChild(sloterm, adaptor.dupTree(oid));
+               if (slot.getChild(0).getText().equals("+") || isPredTop)
+               {
+               	  adaptor.addChild(sloterm, adaptor.dupTree(predTree));               	  
+               } 
+               else
+               {
+                  adaptor.addChild(sloterm, adaptor.dupTree(topPredTree));
+               }
+               adaptor.addChild(sloterm, slot);
+               adaptor.addChild(root, sloterm);
             }
         }
 		
 		if (list_tuples != null)
 		{
-		    CommonTree tuple;
+		    CommonTree tuple, tupleterm;
 		    
 		    for (int i = 0; i < list_tuples.size(); i++)
 		    {
-		       tuple = (CommonTree)adaptor.create(PSOA, "PSOA");
-		       adaptor.addChild(tuple, adaptor.dupTree(oid));
-		       adaptor.addChild(tuple, adaptor.dupTree(typeTree));
-		       adaptor.addChild(tuple, list_tuples.get(i));
-		       adaptor.addChild(root, tuple);
+		       tuple = (CommonTree)list_tuples.get(i);
+		       tupleterm = (CommonTree)adaptor.create(PSOA, "PSOA");
+		       adaptor.addChild(tupleterm, adaptor.dupTree(oid));
+               if (tuple.getChild(0).getText().equals("+") || isPredTop)
+               {
+               	  adaptor.addChild(tupleterm, adaptor.dupTree(predTree));               	  
+               } 
+               else
+               {
+                  adaptor.addChild(tupleterm, adaptor.dupTree(topPredTree));
+               }
+		       adaptor.addChild(tupleterm, tuple);
+		       adaptor.addChild(root, tupleterm);
 		    }
 		}
     
-        if (type.getToken().getType() != TOP)
+        if (isPredTop)
         {
             adaptor.addChild(root, memberTree);
         }
@@ -189,20 +203,9 @@ scope
     $psoa::isAtomic = isAtomicFormula;
 }
     :   ^(PSOA oid=term? ^(INSTANCE type=term) tuples+=tuple* slots+=slot*)
-//    {
-//       if ($psoa::isAtomic && oid == null)
-//           throw new RuntimeException("Psoa formulas must be objectified before slotribution and tupribution");
-//    }
     -> { !$psoa::isAtomic || oid == null }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
-//    -> { $oid == null }? ^(PSOA ^(INSTANCE $type) tuple* slot*)
     -> { getSlotTupributorTree($oid.tree, $type.tree, $tuples, $slots) }
 
-//    :   ^(PSOA oid=term? ^(INSTANCE type=term) tuple* slot*)    
-//    {
-//       if ($psoa::isAtomic && oid == null)
-//           throw new RuntimeException("Psoa formulas must be objectified before slotribution and tupribution");
-//    }
-//    -> { !$psoa::isAtomic }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
 //    -> ^(AND 
 //          ^(PSOA $oid ^(INSTANCE $type))
 //          ^(PSOA $oid ^(INSTANCE TOP) tuple)*
@@ -211,11 +214,11 @@ scope
     ;
 
 tuple
-    :   ^(TUPLE term+)
+    :   ^(TUPLE DEPSIGN term+)
     ;
     
 slot
-    :   ^(SLOT term term)
+    :   ^(SLOT DEPSIGN term term)
     ;
 
 constant

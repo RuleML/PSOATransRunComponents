@@ -63,7 +63,7 @@ options
         return pi == null || pi.isPurelyRelational();
     }
     
-    public void addPsoaTermInfo(String pred, Collection<Integer> positionalArities, boolean hasOID, boolean hasSlot)
+    public void addPsoaTermInfo(String pred, Collection<Integer> positionalArities, boolean hasOID, boolean hasIndepTuple, boolean hasSlot)
     {
         PredicateInfo pi = getPredInfo(pred, true);
         
@@ -80,6 +80,9 @@ options
             
         if (hasSlot)
             pi.setHasSlot(hasSlot);
+            
+        if (hasIndepTuple)
+        	pi.setHasIndepTuple(hasIndepTuple);
     }
     
     public void addPredInSubclassFormula(String pred)
@@ -215,27 +218,28 @@ external
 psoa[boolean isAtomicFormula]
 @init
 {
-    boolean hasSlot = false;
+    boolean hasSlot = false, hasIndepTuple = false;
     ArrayList<Integer> arities = new ArrayList<Integer>();
 }
     :   ^(PSOA oid=term? ^(INSTANCE pred=term)
-            (t=tuple { arities.add($t.length); })* (slot { hasSlot = true; })*)
+            (t=tuple { arities.add($t.length); hasIndepTuple = hasIndepTuple || !$t.dep; })* 
+            (slot { hasSlot = true; })*)
     {
         if (isAtomicFormula)
-            addPsoaTermInfo($pred.tree.toStringTree(), arities, oid != null, hasSlot);
+            addPsoaTermInfo($pred.tree.toStringTree(), arities, oid != null, hasIndepTuple, hasSlot);
     }
     ;
 
-tuple returns [int length]
+tuple returns [int length, boolean dep]
 @init
 {
     $length = 0;
 }
-    :   ^(TUPLE (term { $length++; })+)
+    :   ^(TUPLE DEPSIGN { $dep = $DEPSIGN.text.equals("+"); } (term { $length++; })+)
     ;
     
 slot
-    :   ^(SLOT term term)
+    :   ^(SLOT DEPSIGN term term)
     ;
 
 constant

@@ -194,7 +194,7 @@ public class XSBEngine extends ReusableKBEngine {
 		return r;
 	}
 	
-	public class 
+	// public class 
 	
 	
 //	public SolutionIterator executeQuery(String query, List<String> queryVars) {

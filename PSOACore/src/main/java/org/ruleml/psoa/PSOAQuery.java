@@ -52,7 +52,7 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 		return q.transform("static objectification", stream -> {			
 			if (differentiate)
 			{
-				DifferentiateObjectifier objectifier = new DifferentiateObjectifier(stream);
+				DifferentiatedObjectifier objectifier = new DifferentiatedObjectifier(stream);
 				objectifier.setDynamic(dynamic, m_kb.getKBInfo());
 				return objectifier.query();
 			}
