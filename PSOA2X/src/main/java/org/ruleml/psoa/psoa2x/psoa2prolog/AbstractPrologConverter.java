@@ -35,6 +35,7 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		super(input, state);
 	}
 	
+	@Override
 	protected void convertIRIConst(String iri) {
 		String builtIn = s_builtInMap.get(iri);
 		if (builtIn == null)
@@ -47,11 +48,12 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		}
 	}
 	
-	/*
-	 * This implementation is specifically for XSB, whose returned terms
-	 * via the InterProlog interface has already gotten rid off single quotes
-	 * (used in the conversion) around Prolog symbols and the escaped characters
-	 * are unescaped.
-	 * 
-	 */
+	@Override
+	protected String inverseTranslateUnquotedConst(String symbol)
+	{
+		// For the inverse translation of specific Prolog symbols used in 
+		// answers returned by engines, e.g. date-related function names
+		
+		return symbol;
+	}
 }

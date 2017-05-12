@@ -1,4 +1,4 @@
-package org.ruleml.psoa.psoatransrun.utils;
+package org.ruleml.psoa.psoatransrun;
 
 public class PSOATransRunException extends RuntimeException
 {

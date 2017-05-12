@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.exec.*;
+import org.ruleml.psoa.psoatransrun.PSOATransRunException;
 
 public class ShellUtil
 {
