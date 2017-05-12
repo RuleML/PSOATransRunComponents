@@ -3,13 +3,12 @@ package org.ruleml.psoa.psoatransrun.test;
 import java.io.*;
 import java.util.ArrayList;
 
-import static org.ruleml.psoa.psoatransrun.utils.IOUtil.*;
+import static org.ruleml.psoa.utils.IOUtil.*;
 
 public class TestSuite {
 	private ArrayList<TestCase> m_testCases;
 	private int m_correctTestCases, m_totalQueries, m_correctQueries;
 	private int m_engineAnswers, m_standardAnswers, m_correctEngineAnswers;
-	private int m_translationFailures, m_executionFailures;
 	private long m_kbTranslateTime, m_queryTranslateTime, m_queryTime;
 	private static final int s_runsEachTestCase = 1;
 	

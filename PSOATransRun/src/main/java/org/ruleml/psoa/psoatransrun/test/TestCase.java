@@ -169,8 +169,8 @@ public class TestCase {
 		m_numEngineAns /= times;
 		m_numSoundAns /= times;
 		m_numCorrectQueries /= times;
-		m_totalKBTransTime = m_engine.kbTranslationTime() / times;
-		m_totalQueryTransTime = m_engine.queryTranslationTime() / times;
+		m_totalKBTransTime = m_engine.kbTransTime() / times;
+		m_totalQueryTransTime = m_engine.queryTransTime() / times;
 		m_totalQueryTime = m_engine.executionTime() / times;
 		return isAnswerCorrect;
 	}

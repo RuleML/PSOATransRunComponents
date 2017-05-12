@@ -1,11 +1,13 @@
 package org.ruleml.psoa.psoa2x.common;
 
 import org.antlr.runtime.RecognitionException;
+import org.ruleml.psoa.transformer.PSOARuntimeException;
 
-public class TranslatorException extends RuntimeException {
-	/**
-	 * 
-	 */
+/**
+ * Translator exceptions
+ * 
+ */
+public class TranslatorException extends PSOARuntimeException {
 	private static final long serialVersionUID = 8112315044970881572L;
 
 	public TranslatorException(String msg)
@@ -20,6 +22,6 @@ public class TranslatorException extends RuntimeException {
 	
 	public TranslatorException(RecognitionException rexp)
 	{
-		super("Paring Error");
+		super("Parsing Error");
 	}
 }

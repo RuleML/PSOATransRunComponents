@@ -6,13 +6,13 @@ import java.io.IOException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import org.ruleml.psoa.psoatransrun.PSOATransRunException;
 import org.ruleml.psoa.psoatransrun.engine.ExecutionEngine;
 import org.ruleml.psoa.psoatransrun.prolog.XSBEngine;
 import org.ruleml.psoa.psoatransrun.prolog.XSBEngineConfig;
 import org.ruleml.psoa.psoatransrun.restful.models.ExecutionRequest;
 import org.ruleml.psoa.psoatransrun.tptp.VampirePrimeEngine;
 import org.ruleml.psoa.psoatransrun.tptp.VampirePrimeEngineConfig;
-import org.ruleml.psoa.psoatransrun.utils.PSOATransRunException;
 
 import static org.ruleml.psoa.psoatransrun.utils.IOUtil.*;
 

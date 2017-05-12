@@ -222,7 +222,7 @@ simple_term
 
 external_term
     :   EXTERNAL LPAR simple_term LPAR term* RPAR RPAR
-    -> ^(EXTERNAL ^(PSOA ^(INSTANCE simple_term) ^(TUPLE term*)))
+    -> ^(EXTERNAL ^(PSOA ^(INSTANCE simple_term) ^(TUPLE DEPSIGN["+"] term*)))
     ;
 
 internal_term returns [boolean isSimple]
@@ -245,7 +245,7 @@ tuples_and_slots
     -> {!hasSlot}? ^(TUPLE DEPSIGN["+"] {getTupleTree($terms, $terms.size()) } ) // single tuple
     -> {$terms.size() == 1}?
         ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get(0)} $first_slot_value) slot* // slot only
-    ->  ^(TUPLE {getTupleTree($terms, $terms.size() - 1)}) ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get($terms.size() - 1)} $first_slot_value) slot* // tuples and slots
+    ->  ^(TUPLE DEPSIGN["+"] {getTupleTree($terms, $terms.size() - 1)}) ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get($terms.size() - 1)} $first_slot_value) slot* // tuples and slots
     ;
 
 tuple

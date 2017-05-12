@@ -9,8 +9,7 @@ import java.util.Set;
  * */
 public class FreshNameGenerator
 {
-	private static int m_constID = 0, m_varID = 0;
-
+	private static int s_constID = 0, s_varID = 0;
 	
 	/**
 	 * Generate fresh constant name
@@ -20,7 +19,7 @@ public class FreshNameGenerator
 	 */
 	public static String freshConstName()
 	{
-		return String.valueOf(++m_constID);
+		return String.valueOf(++s_constID);
 	}
 	
 	/**
@@ -31,7 +30,7 @@ public class FreshNameGenerator
 	 */
 	public static String freshVarName()
 	{
-		return String.valueOf(++m_varID);
+		return String.valueOf(++s_varID);
 	}
 	
 	/**
@@ -46,7 +45,7 @@ public class FreshNameGenerator
 	{
 		while (true)
 		{
-			String name = String.valueOf(++m_constID);
+			String name = String.valueOf(++s_constID);
 			if (!excludedNames.contains(name))
 				return name;
 		}
@@ -65,25 +64,28 @@ public class FreshNameGenerator
 	{
 		while (true)
 		{
-			String name = String.valueOf(++m_varID);
+			String name = String.valueOf(++s_varID);
 			if (!excludedNames.contains(name))
 				return name;
 		}
 	}
 	
-	
 	/**
-	 * Reset global counters for constant and variable generation
+	 * Reset constant and variable generator states (global counters)
 	 * 
 	 * */
 	public static void reset()
 	{
-		m_constID = 0;
-		m_varID = 0;
+		s_constID = 0;
+		resetVarGen();
 	}
 	
-	public static void resetVarCounter()
+	/**
+	 * Reset variable generator state (global counter)
+	 * 
+	 * */
+	public static void resetVarGen()
 	{
-		m_varID = 0;
+		s_varID = 0;
 	}
 }

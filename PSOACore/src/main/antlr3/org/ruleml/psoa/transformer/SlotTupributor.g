@@ -20,23 +20,24 @@ options
 
 @members
 {
-    private boolean m_isQuery = false, m_reproduceClass, m_omitMemtermInRuleBody;
+    private boolean m_isQuery = false, m_omitMemtermInNegtiveAtoms;
     
-    public boolean getReproduceClass()
+    public boolean getOmitMemtermInNegtiveAtoms()
     {
-        return m_reproduceClass;
+        return m_omitMemtermInNegtiveAtoms;
     }
     
-    public void setReproduceClass(boolean reproduceClass)
+    public void setOmitMemtermInNegtiveAtoms(boolean omitMemtermInNegtiveAtoms)
     {
-        m_reproduceClass = reproduceClass;
+        m_omitMemtermInNegtiveAtoms = omitMemtermInNegtiveAtoms;
     }
     
-    private CommonTree getSlotTupributorTree(CommonTree oid, CommonTree pred, List list_tuples, List list_slots)
+    private CommonTree getSlotTupributorTree(CommonTree oid, CommonTree pred, 
+    		List list_tuples, List list_slots)
     {
 		CommonTree root = (CommonTree)adaptor.nil();
 		CommonTree predTree, topPredTree, memberTree;
-		boolean isPredTop = (pred.getToken().getType() != TOP);
+		boolean isPredTop = (pred.getToken().getType() == TOP);
 		
 		memberTree = (CommonTree)adaptor.create(PSOA, "PSOA");
 		adaptor.addChild(memberTree, oid);
@@ -56,14 +57,20 @@ options
                sloterm = (CommonTree)adaptor.create(PSOA, "PSOA");
                slot = (CommonTree)list_slots.get(i);
                adaptor.addChild(sloterm, adaptor.dupTree(oid));
-               if (slot.getChild(0).getText().equals("+") || isPredTop)
+               if (slot.getChild(0).getText().equals("-"))
                {
-               	  adaptor.addChild(sloterm, adaptor.dupTree(predTree));               	  
-               } 
+               	   adaptor.addChild(sloterm, adaptor.dupTree(topPredTree));
+               }
+               else if (isPredTop)
+               {
+                   slot.setChild(0, (Tree)adaptor.create(DEPSIGN, "-"));
+                   adaptor.addChild(sloterm, adaptor.dupTree(topPredTree));
+               }
                else
                {
-                  adaptor.addChild(sloterm, adaptor.dupTree(topPredTree));
+               	  adaptor.addChild(sloterm, adaptor.dupTree(predTree));               	  
                }
+               
                adaptor.addChild(sloterm, slot);
                adaptor.addChild(root, sloterm);
             }
@@ -78,20 +85,26 @@ options
 		       tuple = (CommonTree)list_tuples.get(i);
 		       tupleterm = (CommonTree)adaptor.create(PSOA, "PSOA");
 		       adaptor.addChild(tupleterm, adaptor.dupTree(oid));
-               if (tuple.getChild(0).getText().equals("+") || isPredTop)
+               if (tuple.getChild(0).getText().equals("-"))
                {
-               	  adaptor.addChild(tupleterm, adaptor.dupTree(predTree));               	  
-               } 
+               	   adaptor.addChild(tupleterm, adaptor.dupTree(topPredTree));
+               }
+               else if (isPredTop)
+               {
+                   tuple.setChild(0, (Tree)adaptor.create(DEPSIGN, "-"));
+                   adaptor.addChild(tupleterm, adaptor.dupTree(topPredTree));
+               }
                else
                {
-                  adaptor.addChild(tupleterm, adaptor.dupTree(topPredTree));
+               	  adaptor.addChild(tupleterm, adaptor.dupTree(predTree));           	  
                }
+               
 		       adaptor.addChild(tupleterm, tuple);
 		       adaptor.addChild(root, tupleterm);
 		    }
 		}
     
-        if (isPredTop)
+        if (!isPredTop && !(getOmitMemtermInNegtiveAtoms() && $head.size() == 0))
         {
             adaptor.addChild(root, memberTree);
         }
@@ -150,6 +163,10 @@ clause
     ;
     
 head
+scope
+{
+	int a;  // Create a scope for head, using a dummy scope variable
+}
     :   atomic
     |   ^(AND head+)
     |   ^(EXISTS VAR_ID+ head)
@@ -204,8 +221,8 @@ scope
 }
     :   ^(PSOA oid=term? ^(INSTANCE type=term) tuples+=tuple* slots+=slot*)
     -> { !$psoa::isAtomic || oid == null }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
-    -> { getSlotTupributorTree($oid.tree, $type.tree, $tuples, $slots) }
-
+	-> { getSlotTupributorTree($oid.tree, $type.tree, $tuples, $slots) }
+	
 //    -> ^(AND 
 //          ^(PSOA $oid ^(INSTANCE $type))
 //          ^(PSOA $oid ^(INSTANCE TOP) tuple)*

@@ -1,6 +1,6 @@
 Document(
   Group(
-    _o1#_c1(_a1 _a2)
+    _o1#_c1(-[_a1 _a2])
     _o2#_c1(_p->_v)
     _c1##_c2
   )

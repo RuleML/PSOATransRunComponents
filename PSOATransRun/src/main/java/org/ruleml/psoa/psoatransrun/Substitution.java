@@ -59,6 +59,9 @@ public class Substitution {
 	
 	@Override
 	public String toString() {
+		if (m_binding.isEmpty())
+			return "Yes";
+		
 		StringBuilder sb = new StringBuilder();
 		for (Map.Entry<String, String> entry : m_binding.entrySet())
 		{
@@ -68,6 +71,17 @@ public class Substitution {
 		
 		sb.setLength(sb.length() - 1);
 		return sb.toString();
+	}
+	
+	/**
+	 * Check whether this is an empty substitution, which denotes a "yes" answer
+	 * 
+	 * @return   whether the substitution is an empty set
+	 * 
+	 * */
+	public boolean isEmpty()
+	{
+		return m_binding.isEmpty();
 	}
 	
 	public void inverseTranslate(Translator t) {

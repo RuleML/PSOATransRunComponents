@@ -6,6 +6,9 @@ import java.io.File;
 
 public class VampirePrimeEngineConfig {
 	public String binPath, answerPredicatePath;
+	/**
+	 * timeout in seconds
+	 * */
 	public long timeout = 300;
 	
 	public VampirePrimeEngineConfig()

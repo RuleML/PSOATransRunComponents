@@ -5,7 +5,7 @@ import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.ruleml.psoa.parser.*;
 import org.ruleml.psoa.transformer.*;
-import org.ruleml.psoa.util.ANTLRTreeStreamConsumer;
+import org.ruleml.psoa.utils.ANTLRTreeStreamConsumer;
 
 /**
  * Abstract Java class for operating PSOA inputs, superclass 

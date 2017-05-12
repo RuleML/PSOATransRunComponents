@@ -2,48 +2,65 @@ package org.ruleml.psoa.psoatransrun;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Iterator;
 import java.util.Scanner;
 
 import org.ruleml.psoa.psoa2x.common.Translator;
 
-public class QueryResult implements Iterable<Substitution>
+/**
+ * Query result from engines
+ * 
+ * */
+public class QueryResult
 {
-	private boolean m_result;
 	private SubstitutionSet m_answers;
-	private AnswerIterator m_ansIter;
+	private IteratorWrapper m_ansIter;
 	
+	/**
+	 * Construct a query result with a boolean value
+	 * 
+	 * @param result   a boolean query result
+	 * 
+	 * */
 	public QueryResult(boolean result)
 	{
-		m_result = result;
-		if (m_result)
-			m_answers = new SubstitutionSet();
+		m_answers = new SubstitutionSet();
+		  
+		if (result)
+		{
+			// Create an empty substitution for the "Yes" answer
+			m_answers.add(new Substitution());
+		}
 	}
 	
-	public QueryResult(boolean result, SubstitutionSet substitutionSets)
-	{
-		if (!result)
-		{
-			if (substitutionSets != null)
-				throw new IllegalArgumentException("Substitutions must be null if the query result is false");
-		}
-		else if (substitutionSets == null)
-		{
-			substitutionSets = new SubstitutionSet();
-		}
-		
-		m_result = result;
+	/**
+	 * Construct a query result from a set of substitutions 
+	 * 
+	 * @param substitutionSets    a set of substitutions
+	 * 
+	 * */
+	public QueryResult(SubstitutionSet substitutionSets) {
 		m_answers = substitutionSets;
 	}
-	
-	public QueryResult(SubstitutionSet substitutionSets) {
-		m_result = !substitutionSets.isEmpty(); 
-		if (m_result)
-		{
-			m_answers = substitutionSets;
-		}
-	}
 
+	
+	/**
+	 * Construct a query result from an answer iterator 
+	 * 
+	 * @param iter    an answer iterator
+	 * 
+	 * */
+	public QueryResult(AnswerIterator iter) {
+		m_ansIter = this.new IteratorWrapper(iter);
+	}
+	
+	
+	/**
+	 * Add a new answer to the existing set of answers. This only works if the 
+	 * query result was not constructed from an answer iterator. 
+	 * 
+	 * @param s    the substitution to be added
+	 * 
+	 * */
 	public void addAnswer(Substitution s)
 	{
 		m_answers.add(s);
@@ -51,40 +68,59 @@ public class QueryResult implements Iterable<Substitution>
 	
 	public boolean binaryResult()
 	{
-		return m_result;
+		return m_ansIter != null? m_ansIter.hasNext() : !m_answers.isEmpty();
+	}
+
+	/**
+	 * Get an iterator to iterate over the answers
+	 * */
+	public AnswerIterator iterator() {
+		if (m_ansIter != null)
+			return m_ansIter;
+		else
+			return new SimpleAnswerIterator(m_answers.iterator());
 	}
 	
 	public void inverseTranslate(Translator translator)
 	{
-		if (m_result)
+		if (m_answers != null)
 		{
 			m_answers.inverseTranslate(translator);
+		}
+		else
+		{
+			m_ansIter.setInverseTranslator(translator);
 		}
 	}
 	
 	public SubstitutionSet getAnswers()
 	{
+		if (m_answers == null)
+		{
+			m_answers = new SubstitutionSet();
+			
+			while (m_ansIter.hasNext())
+			{
+				m_answers.add(m_ansIter.next());
+			}
+		}
+		
 		return m_answers;
 	}
 	
 	public int numAnswers()
 	{
-		return m_answers == null? 0 : m_answers.size();
+		return getAnswers().size();
 	}
 	
 	public int numCommonAnswers(QueryResult r)
 	{
-		if (!m_result || !r.m_result)
-			return 0;
-		else
-			return m_answers.numCommonBindings(r.m_answers);
+		return getAnswers().numCommonBindings(r.m_answers);
 	}
 	
 	public static QueryResult parse(File f) throws FileNotFoundException
 	{
-		Scanner sc = new Scanner(f);
-		try
-		{
+		try (Scanner sc = new Scanner(f)) {
 			String s = sc.nextLine();
 			if (s.equalsIgnoreCase("yes"))
 				return new QueryResult(true);
@@ -97,43 +133,41 @@ public class QueryResult implements Iterable<Substitution>
 				return new QueryResult(answers);
 			}
 		}
-		finally
-		{
-			sc.close();
-		}
-	}
-	
-	public static class AnswerIterator implements Iterator<Substitution> {
-
-		@Override
-		public boolean hasNext() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public Substitution next() {
-			// TODO Auto-generated method stub
-			return null;
-		}
 	}
 	
 	@Override
 	public String toString() {
-		if (m_answers == null)
-			return "no";
-		
-		if (m_answers.isEmpty())
-			return m_result? "yes" : "no";
-					
-		return m_answers.toString();
+		return getAnswers().toString();
 	}
+	
+	private class IteratorWrapper extends SimpleAnswerIterator {
+		private Translator m_invTranslator = null;
+		
+		public IteratorWrapper(AnswerIterator iter) {
+			super(iter);
+		}
 
-	@Override
-	public Iterator<Substitution> iterator() {
-		if (m_ansIter == null)
-			return m_ansIter;
+		public void setInverseTranslator(Translator t)
+		{
+			m_invTranslator = t;
+		}
 		
-		return m_answers.iterator();
-	}
+		@Override
+		public Substitution next() {
+			Substitution subs = m_iter.next();
+			if (m_invTranslator != null)
+				subs.inverseTranslate(m_invTranslator);
+			if (m_answers == null)
+				m_answers = new SubstitutionSet();
+			m_answers.add(subs);
+			return subs;
+		}
+
+		@Override
+		public void dispose() {
+			((AnswerIterator) m_iter).dispose();
+			m_iter = null;
+			m_invTranslator = null;
+		}
+	} 
 }

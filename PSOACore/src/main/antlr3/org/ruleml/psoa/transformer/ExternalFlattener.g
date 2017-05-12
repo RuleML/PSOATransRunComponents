@@ -5,7 +5,7 @@
 
 tree grammar ExternalFlattener;
 
-options 
+options
 {
 	output = AST;
 	ASTLabelType = CommonTree;
@@ -21,86 +21,70 @@ options
   import java.util.Set;
   import java.util.HashSet;
   import java.util.Map;
-  import java.util.LinkedHashMap;
+  import java.util.HashMap;
+  
+  import static org.ruleml.psoa.FreshNameGenerator.*;
 }
 
 @members
 {
-	private static class ExternalRewriteInfo
-	{
-		public RewriteRuleSubtreeStream streamVar;
-		public CommonTree externalTree; 
-	}
-  
-	private String getNewVarName()
-	{    
-		Set<String> forallVars = $rule::forallVars,
-		            existVars = $rule::existsVars;
-		int i = 1;
-		String var;
-		
-		do
-		{
-		  var = String.valueOf(i++);
-		} while (existVars.contains(var) || !forallVars.add(var));
-		
-		return var;
-	}
+    // New / old variables in the current KB clause or query formula
+    private Map<String, CommonTree> m_newVarNodes = new HashMap<String, CommonTree>();
+    private Set<String> m_clauseVars = new HashSet<String>();
+    
+    // Equalities generated from externals in the current formula.
+    private List<CommonTree> m_extEqs = new ArrayList<CommonTree>();
 	
 	private CommonTree getVarNodeForExternal(CommonTree external)
 	{
-		String extStr = external.toStringTree();
-		Map<String, ExternalRewriteInfo> externalInfoMap = $formula.size() > 0? $formula::externalInfoMap : $rule::externalInfoMap;
-		ExternalRewriteInfo extInfo = externalInfoMap.get(extStr);
-		CommonTree varNode;
-		
-		if (extInfo == null)
-		{
-		   varNode = (CommonTree)adaptor.create(VAR_ID, getNewVarName());
-		    
-		  extInfo = new ExternalRewriteInfo();
-		  extInfo.streamVar = new RewriteRuleSubtreeStream(adaptor, "NewVar", varNode);
-		  extInfo.externalTree = external;
-		  externalInfoMap.put(extStr, extInfo);
-		}
-		 
-		return (CommonTree) extInfo.streamVar.nextTree();
+	   // Generate a fresh variable name using an incomplete set of 
+	   // clause variables. The name may be modified later in newVarsTree(). 
+	   String var = freshVarName(m_clauseVars);
+	   CommonTree varNode = (CommonTree)adaptor.create(VAR_ID, var);
+	   m_newVarNodes.put(var, varNode);
+	   
+	   CommonTree equal = (CommonTree)adaptor.create(EQUAL, "EQUAL");
+	   adaptor.addChild(equal, adaptor.dupNode(varNode));
+	   adaptor.addChild(equal, external);
+	   m_extEqs.add(equal);
+	   
+	   return (CommonTree)adaptor.dupNode(varNode);
 	}
 	
 	private CommonTree getExtEquals()
-	{
-		Map<String, ExternalRewriteInfo> externalInfoMap = $formula.size() > 0? $formula::externalInfoMap : $rule::externalInfoMap;
+	{	    
+		CommonTree root = (CommonTree)adaptor.nil();
 		
-		assert !externalInfoMap.isEmpty();
-		
-		CommonTree root = (CommonTree)adaptor.nil(),
-		           rootNewVars = (CommonTree)adaptor.nil();
-		
-		for (ExternalRewriteInfo rewriteInfo : externalInfoMap.values())
+		for (CommonTree equal : m_extEqs)
 		{
-			CommonTree equal = (CommonTree)adaptor.create(EQUAL, "EQUAL");
-			
-			adaptor.addChild(equal, rewriteInfo.streamVar.nextTree());
-			adaptor.addChild(equal, rewriteInfo.externalTree);
 			adaptor.addChild(root, equal);
-			adaptor.addChild(rootNewVars, rewriteInfo.streamVar.nextTree());
 		}
 		
-		$rule::newVarsTree = rootNewVars;
+		// Clear the list of equalities once done
+		m_extEqs.clear();
 		return root;
 	}
 	
-//	private CommonTree newVarsTree()
-//	{
-//    Map<String, ExternalRewriteInfo> externalInfoMap = $rule::externalInfoMap;
-//	  
-//	  for (ExternalRewriteInfo rewriteInfo : externalInfoMap.values())
-//    {
-//      adaptor.addChild(root, rewriteInfo.streamVar.nextTree());
-//    }
-//    
-//    return root;
-//	}
+  	private CommonTree newVarsTree()
+  	{
+        CommonTree root = (CommonTree)adaptor.nil();
+  	    
+  	    for (Map.Entry<String, CommonTree> entry : m_newVarNodes.entrySet())
+        {
+           String var = entry.getKey();
+           CommonTree node = entry.getValue();
+           
+           // Rename the variable name if it has been used in the clause
+           if (m_clauseVars.contains(var))
+           {
+              node.getToken().setText(freshVarName(m_clauseVars));  
+           }
+           adaptor.addChild(root, node);
+        }
+        
+        m_newVarNodes.clear();
+        return root;
+  	}
 }
 
 document
@@ -129,85 +113,66 @@ group_element
     ;
 
 query
+@after
+{
+    m_clauseVars.clear();
+    resetVarGen();
+}
     :   formula
+    ->  { m_newVarNodes.isEmpty() }? formula
+    ->  ^(EXISTS { newVarsTree() } formula)
     ;
     
 rule
-scope
-{
-   Set<String> forallVars;
-   Set<String> existsVars;
-   Map<String, ExternalRewriteInfo> externalInfoMap;
-   CommonTree newVarsTree;
-}
-@init
-{
-   Set<String> forallVars, existsVars;
-   Map<String, ExternalRewriteInfo> externalInfoMap;
-   
-   $rule::forallVars = (forallVars = new HashSet<String>());
-   $rule::existsVars = (existsVars = new HashSet<String>());
-   // Use LinkedHashMap to preserve order
-   $rule::externalInfoMap = (externalInfoMap = new LinkedHashMap<String, ExternalRewriteInfo>());
-}
 @after
 {
-    forallVars.clear();
-    existsVars.clear();
-    externalInfoMap.clear();
+    m_clauseVars.clear();
+    resetVarGen();
 }
-    :   ^(FORALL (VAR_ID { forallVars.add($VAR_ID.text); })+ clause)
-    -> { externalInfoMap.isEmpty() }? ^(FORALL VAR_ID+ clause)
-    -> ^(FORALL VAR_ID+ { $rule::newVarsTree } clause)
+    :   ^(FORALL (VAR_ID { m_clauseVars.add($VAR_ID.text); })+ clause)
+    -> { m_newVarNodes.isEmpty() }? ^(FORALL VAR_ID+ clause)
+    // Add new variables to a non-ground clause
+    -> ^(FORALL VAR_ID+ { newVarsTree() } clause)
     |   clause
-    -> { externalInfoMap.isEmpty() }? clause
-    -> ^(FORALL { $rule::newVarsTree } clause)
+    -> { m_newVarNodes.isEmpty() }? clause
+    // Add new variables to a ground clause, generating new FORALL wrapper
+    -> ^(FORALL { newVarsTree() } clause)
     ;
 
+// Handle external calls in rule conclusion
 clause
-@init
-{
-  Map<String, ExternalRewriteInfo> externalInfoMap = $rule::externalInfoMap;
-}
     :  ^(IMPLICATION head formula)
-    -> { externalInfoMap.isEmpty() }? ^(IMPLICATION head formula)
-    -> ^(IMPLICATION head ^(AND formula { getExtEquals() }))
+    -> { $head.numExts == 0 }? ^(IMPLICATION head formula)
+    -> ^(IMPLICATION head ^(AND formula { $head.eqTree }))
     |  head
-    -> { externalInfoMap.isEmpty() }? head
-    -> { externalInfoMap.size() == 1 }? ^(IMPLICATION head { getExtEquals() } )
-    -> ^(IMPLICATION head ^(AND { getExtEquals() } ))
+    -> { $head.numExts == 0 }? head
+    -> { $head.numExts == 1 }? ^(IMPLICATION head { $head.eqTree })
+    -> ^(IMPLICATION head ^(AND { $head.eqTree }))
     ;
-    
-head
+
+head returns [CommonTree eqTree, int numExts]
+@after
+{
+   $numExts = m_extEqs.size();
+   $eqTree = m_extEqs.isEmpty()? null : getExtEquals();
+}
     :   atomic
     |   ^(AND head+)
-    |   ^(EXISTS 
-          (VAR_ID { $rule::existsVars.add($VAR_ID.text); } )+ head)
+    |   ^(EXISTS
+          (VAR_ID { m_clauseVars.add($VAR_ID.text); } )+ head)
     ;
     
 formula
-scope
-{
-  Map<String, ExternalRewriteInfo> externalInfoMap;
-}
-@init
-{
-  $formula::externalInfoMap = new LinkedHashMap<String, ExternalRewriteInfo>();
-}
-@after
-{
-  $formula::externalInfoMap = null;
-}
     :   ^(AND formula+)
     |   ^(OR formula+)
     |   FALSITY
-    |   ^(EXISTS VAR_ID+ formula)
+    |   ^(EXISTS (VAR_ID { m_clauseVars.add($VAR_ID.text); } )+ formula)
     |   atomic
-    -> { $formula::externalInfoMap.isEmpty() }? atomic
+    -> { m_extEqs.isEmpty() }? atomic
     // Create a conjunction if there exists a nested external function application
     -> ^(AND { getExtEquals() } atomic)
     |   external
-    -> { $formula::externalInfoMap.isEmpty() }? external
+    -> { m_extEqs.isEmpty() }? external
     // Create a conjunction if there exists a nested external function application
     -> ^(AND { getExtEquals() } external)
     ;
@@ -236,7 +201,7 @@ term[boolean isTopLevelEqualTerm]
     String newVar = null;
 }
     :   constant
-    |   VAR_ID
+    |   VAR_ID { m_clauseVars.add($VAR_ID.text); }
     |   psoa
     |   external
     // Keep external function application unchanged if it is on the top level of an equality

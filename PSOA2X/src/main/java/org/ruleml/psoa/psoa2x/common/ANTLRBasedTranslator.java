@@ -1,27 +1,27 @@
 package org.ruleml.psoa.psoa2x.common;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
+import static org.ruleml.psoa.utils.IOUtil.*;
+
+import java.io.*;
+import java.util.*;
 
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
-import org.ruleml.psoa.parser.*;
-import org.ruleml.psoa.FreshNameGenerator;
-import org.ruleml.psoa.PSOAInput;
-import org.ruleml.psoa.PSOAKB;
-import org.ruleml.psoa.PSOAQuery;
-import org.ruleml.psoa.analyzer.KBInfoCollector;
-import org.ruleml.psoa.transformer.*;
+import org.ruleml.psoa.*;
 
 public abstract class ANTLRBasedTranslator extends Translator {
-	abstract protected TranslatorWalker createTranslatorWalker(TreeNodeStream astNodes);
+	abstract protected Converter createTranslatorWalker(TreeNodeStream astNodes);
 	abstract protected <T extends PSOAInput<T>> T normalize(T input);
 	protected PSOAKB m_kb;
-	
+	protected Converter m_queryConverter;
+
+	/**
+	 * Translate the input KB and write the outcome into an output stream 
+	 * 
+	 * @param kb   KB input string
+	 * @param out   translation output stream
+	 * 
+	 * */
 	@Override
 	public void translateKB(String kb, OutputStream out) throws TranslatorException {
 		m_kb = new PSOAKB();
@@ -31,10 +31,10 @@ public abstract class ANTLRBasedTranslator extends Translator {
 
 
 	/**
-	 * Translate the input KB and write the results into an output stream 
+	 * Translate the input KB and write the outcome into an output stream 
 	 * 
-	 * @param kb   input stream of KB
-	 * @param out   output stream for the translation output
+	 * @param kb   KB input stream
+	 * @param out   translation output stream
 	 * 
 	 * */
 	@Override
@@ -49,8 +49,12 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		}
 	}
 
+
 	/**
-	 * Translate the input KB and write the results into an output stream 
+	 * Translate the input KB and write the outcome into an output stream 
+	 * 
+	 * @param kb   input PSOAKB object 
+	 * @param out   translation output stream
 	 * 
 	 * */
 	public void translateKB(PSOAKB kb, OutputStream out) throws TranslatorException {
@@ -58,7 +62,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 			kb.loadImports();
 			kb.setPrintAfterTransformation(debugMode);
 			TreeNodeStream stream = normalize(kb).getTreeNodeStream();
-			TranslatorWalker converter = createTranslatorWalker(stream);
+			Converter converter = createTranslatorWalker(stream);
 			converter.setOutputStream(getPrintStream(out));
 			converter.document();
 		} catch (RecognitionException e) {
@@ -68,6 +72,15 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		}
 	}
 	
+	/**
+	 * Translate the input query and write the outcome into an output stream. 
+	 * The translation assumes the query is posed to the most recent KB 
+	 * translated by the translator object.
+	 * 
+	 * @param query   input query string
+	 * @param out   translation output stream
+	 * 
+	 * */
 	@Override
 	public void translateQuery(String query, OutputStream out) throws TranslatorException {
 		PSOAQuery psoaquery = new PSOAQuery(m_kb);
@@ -75,6 +88,15 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		translateQuery(psoaquery, out);
 	}
 	
+	/**
+	 * Translate the input query and write the outcome into an output stream. 
+	 * The translation assumes the query is posed to the most recent KB 
+	 * translated by the translator object.
+	 * 
+	 * @param query   input query stream
+	 * @param out   translation output stream
+	 * 
+	 * */
 	@Override
 	public void translateQuery(InputStream query, OutputStream out) throws TranslatorException {
 		try {
@@ -86,131 +108,160 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		}
 	}
 	
+	/**
+	 * Translate the input query and write the outcome into an output stream. 
+	 * The translation assumes the query is posed to the most recent KB 
+	 * translated by the translator object.
+	 * 
+	 * @param query   input PSOAQuery object
+	 * @param out   translation output stream
+	 * 
+	 * */
 	public void translateQuery(PSOAQuery query, OutputStream out) {
 		try {
 			query.setPrintAfterTransformation(debugMode);
 			TreeNodeStream stream = normalize(query).getTreeNodeStream();
-			TranslatorWalker walker = createTranslatorWalker(stream);
-			walker.setOutputStream(getPrintStream(out));
-			_queryVarMap = walker.query();
+			m_queryConverter = createTranslatorWalker(stream);
+			m_queryConverter.setOutputStream(getPrintStream(out));
+			m_queryVarMap = m_queryConverter.query();
 		} catch (RecognitionException e) {
 			throw new TranslatorException(e);
 		}
 	}
 	
-	/*
-	public void translateQuery(CharStream query, OutputStream out) throws TranslatorException {
-		translate(query, true, out);
+	@Override
+	public String inverseTranslateTerm(String term) {
+		return m_queryConverter.inverseTranslateTerm(term);
 	}
 	
-	public void translate(CharStream input, boolean isQuery, OutputStream out) throws TranslatorException
-	{
-		try {
-			CommonTreeNodeStream parseTreeStream = parse(input, isQuery);
-			debugPrintTree(parseTreeStream);
-			CommonTreeNodeStream astStream = preprocess(parseTreeStream, isQuery);
-			TranslatorWalker walker = createTranslatorWalker(astStream);
-			walker.setOutputStream(getPrintStream(out));
-			if (isQuery)
-				_queryVarMap = walker.query();
-			else
-				walker.document();
-		} catch (RecognitionException e) {
-			throw new TranslatorException(e);
-		}
-	}
-	
-	public static CommonTreeNodeStream parse(CharStream input, boolean isQuery) throws RecognitionException
-	{
-		PSOAPSLexer lexer = new PSOAPSLexer(input);
-		TokenRewriteStream tokens = new TokenRewriteStream(lexer);
-		PSOAPSParser parser = new PSOAPSParser(tokens);
-		Object tree;
+	public static abstract class Converter extends TreeParser {
+		protected PrintStream m_outStream = System.out;
+		protected Map<String, String> m_queryVarMap = new HashMap<String, String>();
+		protected StringBuilder m_buffer = new StringBuilder(256);
+		private static SortedSet<BufferIndex> s_index = new TreeSet<BufferIndex>();
 		
-		if (isQuery)
-		{
-			tree = parser.query().getTree();
-		}
-		else {
-			tree = parser.top_level_item().getTree();
-		}
-		
-		CommonTreeNodeStream stream = new CommonTreeNodeStream((CommonTree) tree);
-		stream.setTokenStream(tokens);
-		return stream;
-	}
-	
-	protected CommonTreeNodeStream preprocess(CommonTreeNodeStream treeNodeStream, boolean isQuery) throws RecognitionException
-	{
-		ExistObjectifier objectifier;
-		CommonTreeNodeStream newTreeNodeStream;
-		
-		if (isQuery)
-		{
-			objectifier = new ExistObjectifier(treeNodeStream);
-			newTreeNodeStream = new CommonTreeNodeStream(objectifier.query().getTree());
-			newTreeNodeStream.setTokenStream(treeNodeStream.getTokenStream());
-		}
-		else {
-			objectifier = new ExistObjectifier(treeNodeStream);
-			newTreeNodeStream = new CommonTreeNodeStream(objectifier.document().getTree());
-			newTreeNodeStream.setTokenStream(treeNodeStream.getTokenStream());
-		}
-		
-		return newTreeNodeStream;
-	}
-	
-	protected static void debugPrintTree(CommonTreeNodeStream stream)
-	{
-		if (debugMode)
-			System.out.println(((CommonTree)stream.getTreeSource()).toStringTree());
-	}
-	*/
-	
-	public static abstract class TranslatorWalker extends TreeParser {
-		protected PrintStream _outStream = System.out;
-		protected Map<String, String> _queryVarMap = new HashMap<String, String>();
-		
-		public TranslatorWalker(TreeNodeStream input,
+		public Converter(TreeNodeStream input,
 				RecognizerSharedState state) {
 			super(input, state);
 		}
 		
 		public void setOutputStream(PrintStream out)
 		{
-			_outStream = getPrintStream(out);
+			m_outStream = getPrintStream(out);
 		}
 		
+		protected void flush()
+		{
+			if (!s_index.isEmpty())
+				throw new TranslatorException("Active buffer indices must be discarded before flushing.");
+			m_outStream.print(m_buffer);
+			m_buffer.setLength(0);
+		}
+		
+		protected void flushln()
+		{
+			flush();
+			m_outStream.println();
+		}
+		
+		protected BufferIndex getBufferIndex()
+		{
+			BufferIndex index = new BufferIndex(m_buffer.length());
+			s_index.add(index);
+			return index;
+		}
+		
+		protected void replace(BufferIndex startIndex, int offset, String s) {
+			int end = startIndex.value + offset;
+			m_buffer.replace(startIndex.value, end, s);
+			
+			BufferIndex endIndex = new BufferIndex(end);
+			for(BufferIndex index :
+				  s_index.subSet(new BufferIndex(startIndex.value + 1), endIndex))
+			{
+				index.value = m_buffer.length();
+			}
+			
+			int indOffset = s.length() - offset;
+			if (indOffset != 0)
+			{	
+				for(BufferIndex index : s_index.tailSet(endIndex))
+				{
+					index.offset(indOffset);
+				}
+			}
+		}
+		
+		protected void replace(BufferIndex startIndex, String s) {
+			int end = m_buffer.length();
+			m_buffer.replace(startIndex.value, end, s);
+			for(BufferIndex index : s_index.tailSet(new BufferIndex(startIndex.value + 1)))
+			{
+				index.value = end;
+			}
+		}
+		
+		protected void trimEnd(int len)
+		{
+			int newLen = m_buffer.length() - len;
+			BufferIndex endIndex = new BufferIndex(newLen);
+			for(BufferIndex index : s_index.tailSet(endIndex))
+			{
+				index.value = newLen;
+			}
+			
+			m_buffer.setLength(newLen);
+		}
+		
+		protected void append(String str)
+		{
+			m_buffer.append(str);
+		}
+		
+		protected void append(String... strs) {
+			for (String str : strs)
+			{
+				m_buffer.append(str);
+			}
+	    }
+		
+		protected void append(Object... objs) {
+			for (Object obj : objs)
+			{
+				m_buffer.append(obj);
+			}
+	    }
+		
 		protected void print(Object obj) {
-	        _outStream.print(obj);
+	        m_outStream.print(obj);
 	    }
 		
 		protected void print(String str) {
-	        _outStream.print(str);
+	        m_outStream.print(str);
 	    }
 		
 		protected void print(Object... objs) {
 			for (Object obj : objs)
 			{
-		        _outStream.print(obj);
+		        m_outStream.print(obj);
 			}
 	    }
 		
 		protected void print(String... strs) {
 			for (String s : strs)
 			{
-		        _outStream.print(s);
+		        m_outStream.print(s);
 			}
 	    }
 		
 	    protected void println(Object obj) {
-	        _outStream.println(obj);
+	        m_outStream.println(obj);
 	    }
 		
 		protected void println(Object... objs) {
 			for (Object obj : objs)
 			{
-		        _outStream.print(obj);
+		        m_outStream.print(obj);
 			}
 			println();
 	    }
@@ -218,16 +269,61 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		protected void println(String... strs) {
 			for (String s : strs)
 			{
-		        _outStream.print(s);
+		        m_outStream.print(s);
 			}
 			println();
 	    }
 	    
 	    protected void println() {
-	        _outStream.println();
+	        m_outStream.println();
 	    }
-		
+
+	    public static class BufferIndex implements Comparable<BufferIndex> {
+	    	private int value;
+	    	
+	    	public BufferIndex(int index)
+	    	{
+	    		this.value = index;
+	    	}
+	    	
+	    	public void offset(int x)
+	    	{
+	    		value += x;
+	    	}
+
+	    	public void dispose()
+	    	{
+	    		s_index.remove(this);
+	    	}
+	    	
+			@Override
+			public int compareTo(BufferIndex o) {
+				return Integer.compare(this.value, o.value);
+			}
+	    }
+	    
+	    /**
+	     * Translate KB 
+	     * 
+	     * */
 		abstract public void document() throws RecognitionException;
+		
+	    /**
+	     * Translate query 
+	     * 
+	     * @return   a map from the original free query variables to 
+	     * variables in the target language
+	     * 
+	     * */
 		abstract public Map<String, String> query() throws RecognitionException;
+		
+		/**
+		 * Inverse translation of terms
+		 * 
+		 * @param term   a term in the target language
+		 * @return   the translated term in PSOA
+		 * 
+		 * */
+		abstract public String inverseTranslateTerm(String term);
 	}
 }

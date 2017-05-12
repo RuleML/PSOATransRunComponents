@@ -4,7 +4,6 @@ import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.Map.Entry;
 import java.util.*;
 
@@ -12,10 +11,10 @@ import org.apache.commons.exec.OS;
 import org.ruleml.psoa.psoa2x.common.TranslatorException;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PSOA2PrologConfig;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PrologTranslator;
-import org.ruleml.psoa.psoatransrun.PSOATransRun;
 
 import com.declarativa.interprolog.*;
 
+import static org.ruleml.psoa.utils.IOUtil.*;
 import static org.ruleml.psoa.psoatransrun.utils.IOUtil.*;
 
 public class PSOATransRunProlog
@@ -97,9 +96,9 @@ public class PSOATransRunProlog
 						printErrln("Unable to read query file ", arg, ". Read from console.");
 					}
 					break;
-				case 'r':
-					_config.reproduceClass = true;
-					break;
+//				case 'r':
+//					_config.reproduceClass = true;
+//					break;
 				case 'p':
 					_outputTrans = true;
 					break;
@@ -180,10 +179,8 @@ public class PSOATransRunProlog
 			transKBFile = tmpFile("tmp-", ".pl");
 		PrintWriter writer = new PrintWriter(transKBFile);
 		writer.println(":- table(memterm/2).");
-		if (_config.reproduceClass)
-			writer.println(":- table(sloterm/4).");
-		else
-			writer.println(":- table(sloterm/3).");
+		writer.println(":- table(sloterm/3).");
+		writer.println(":- table(prdsloterm/4).");
 		
 		for (int i = 2; i < 11; i++)
 		{

@@ -9,7 +9,7 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
 import org.ruleml.psoa.parser.PSOAPSParser;
 import org.ruleml.psoa.transformer.*;
-import org.ruleml.psoa.util.ANTLRTreeStreamConsumer;
+import org.ruleml.psoa.utils.ANTLRTreeStreamConsumer;
 
 public class PSOAQuery extends PSOAInput<PSOAQuery>
 {
@@ -58,18 +58,18 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 			}
 			else
 			{
-				ExistObjectifier objectifier = new ExistObjectifier(stream);
+				UndifferentiatedObjectifier objectifier = new UndifferentiatedObjectifier(stream);
 				return objectifier.query();
 			}
 		});
 	}
 	
-	public PSOAQuery slotTupribute(boolean reproduceClass)
+	public PSOAQuery slotTupribute(boolean omitMemtermInNegtiveAtoms)
 	{
 		return transform("slotribution/tupribution", stream -> {
 			SlotTupributor slotTupributor = new SlotTupributor(stream);
-			slotTupributor.setReproduceClass(reproduceClass);
-			return slotTupributor.query();			
+			slotTupributor.setOmitMemtermInNegtiveAtoms(omitMemtermInNegtiveAtoms);
+			return slotTupributor.query();
 		});
 	}
 	
@@ -119,7 +119,7 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 	public PSOAQuery FOLnormalize(RelationalTransformerConfig config) {
 		return unnest().
 			   objectify(config.differentiateObj, config.dynamicObj).
-			   slotTupribute(config.reproduceClass);
+			   slotTupribute(config.omitMemtermInNegtiveAtoms);
 	}
 
 	

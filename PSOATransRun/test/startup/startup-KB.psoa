@@ -4,7 +4,7 @@ Document (
   
   Group (
     Forall ?X ?Y ?Z ?EX ?EY (
-      _startup(?X ?Y _employee->?Z) :-
+      _startup(-[?X ?Y] _employee->?Z) :-
          And(_cofounders(?X ?Y) _hire(?X ?Z)
              _equity(?X ?EX) _equity(?Y ?EY)
              External(

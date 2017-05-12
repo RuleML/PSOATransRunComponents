@@ -8,19 +8,28 @@ import java.util.*;
 import org.apache.commons.exec.OS;
 import org.ruleml.psoa.psoatransrun.Substitution;
 import org.ruleml.psoa.psoatransrun.SubstitutionSet;
+import org.ruleml.psoa.psoatransrun.AnswerIterator;
+import org.ruleml.psoa.psoatransrun.PSOATransRunException;
 import org.ruleml.psoa.psoatransrun.QueryResult;
 import org.ruleml.psoa.psoatransrun.engine.ReusableKBEngine;
 import org.ruleml.psoa.psoatransrun.test.Watch;
-import org.ruleml.psoa.psoatransrun.utils.PSOATransRunException;
 
 import com.declarativa.interprolog.SolutionIterator;
 import com.declarativa.interprolog.TermModel;
 import com.declarativa.interprolog.XSBSubprocessEngine;
 
+/**
+ * XSB Engine
+ * 
+ * */
 public class XSBEngine extends ReusableKBEngine {
 	private String m_xsbBinPath, m_xsbFolder;
 	private File m_transKBFile;
 	private XSBSubprocessEngine m_engine;
+
+	public XSBEngine() {
+		this(new XSBEngineConfig());
+	}
 	
 	public XSBEngine(XSBEngineConfig config) {
 		
@@ -96,37 +105,32 @@ public class XSBEngine extends ReusableKBEngine {
 
 	@Override
 	public void loadKB(String kb) {
-		PrintWriter writer;
-		try
-		{
-			writer = new PrintWriter(m_transKBFile);
+		try {
+			try(PrintWriter writer = new PrintWriter(m_transKBFile))
+			{
+				writer.println(":- table(memterm/2).");
+				writer.println(":- table(sloterm/3).");
+				writer.println(":- table(prdsloterm/4).");
+				
+				// Assume a maximum tuple length of 10 
+				for (int i = 2; i < 11; i++)
+				{
+					writer.println(":- table(tupterm/" + i + ").");
+					writer.println(":- table(prdtupterm/" + (i + 1) + ").");
+				}
+				
+				// Configure XSB to return false for (sub)queries using unknown predicates
+				writer.println(":- set_prolog_flag(unknown,fail).");
+				writer.print(kb);
+			}
 		}
 		catch (FileNotFoundException e)
 		{
 			throw new PSOATransRunException(e);
 		}
 		
-		writer.println(":- table(memterm/2).");
-		writer.println(":- table(sloterm/3).");
-		writer.println(":- table(sloterm/4).");
-		
-		// Assume a maximum tuple length of 10 
-		for (int i = 2; i < 11; i++)
-		{
-			writer.println(":- table(tupterm/" + i + ").");
-		}
-		
-		// Configure XSB to return false for (sub)queries using unknown predicates
-		writer.println(":- set_prolog_flag(unknown,fail).");
-		writer.print(kb);
-		writer.close();
-		
-//		System.out.println(m_transKBFile);
-		
 		if (m_engine.consultAbsolute(m_transKBFile))
 		{
-//			println("KB Loaded");
-			
 			String path = m_transKBFile.getPath();
 			path = path.substring(0, path.length() - 2).concat("xwam");			
 			File xwamFile = new File(path);
@@ -140,75 +144,138 @@ public class XSBEngine extends ReusableKBEngine {
 		}
 	}
 
-	Watch exeWatch = new Watch("Real execution time");
+	private Watch m_exeWatch = new Watch("Real execution time");
 	
 	@Override
-	public QueryResult executeQuery(String query, List<String> queryVars) {
+	public QueryResult executeQuery(String query, List<String> queryVars, boolean getAllAnswers) {
 		TermModel result;
 		QueryResult r;
+		
 		if (queryVars.isEmpty())
 		{
-			exeWatch.start();
+			m_exeWatch.start();
 			r = new QueryResult(m_engine.deterministicGoal(query));
-			exeWatch.stop();
+			m_exeWatch.stop();
 		}
 		else
 		{
-			StringBuilder prologQueryBuilder = new StringBuilder("findall([");
-			for (String queryVar : queryVars)
+			StringBuilder prologQueryBuilder;
+			
+			if (getAllAnswers)
 			{
-				prologQueryBuilder.append(queryVar).append(",");
-			}
-			prologQueryBuilder.setCharAt(prologQueryBuilder.length() - 1, ']');
-			prologQueryBuilder.append(",(").append(query).append("),AS),buildTermModel(AS,LM)");
-			
-			exeWatch.start();
-			result = (TermModel)m_engine.deterministicGoal(prologQueryBuilder.toString(), "[LM]")[0];
-			exeWatch.stop();
-//			result = engine.deterministicGoal("findall([Q1],member(lo1,Q1),AS),buildTermModel(AS,LM)", "[LM]")[0];
-			
-			prologQueryBuilder.setLength(0);
-			prologQueryBuilder = null;
-			
-			if (result.getChildCount() == 0)
-				return new QueryResult(false);
-			else
-			{				
+				/*
+				 * build a prolog query having the form
+				 * findall([{Q1},...,{Qn}],({query}),AS),buildTermModel(AS,LM)
+				 * 
+				 * where {Q1}, ..., {Qn} is the list of returned variables and {query} is 
+				 * the query string
+				 *  
+				 * */
+				prologQueryBuilder = new StringBuilder("findall([");
+				appendVars(prologQueryBuilder, queryVars, ",");
+				prologQueryBuilder.append("],(").append(query).append("),AS),buildTermModel(AS,LM)");
+				
+				m_exeWatch.start();
+				result = (TermModel)m_engine.deterministicGoal(prologQueryBuilder.toString(), "[LM]")[0];
+				m_exeWatch.stop();
+				
 				SubstitutionSet answers = new SubstitutionSet();
-				for (TermModel binding : result.flatList())
+				
+				for (TermModel bindings : result.flatList())
 				{
-					Iterator<String> queryVarIter = queryVars.iterator();
-					Substitution b = new Substitution();
-					
-					for (TermModel term : binding.flatList())
-					{
-						b.addPair(queryVarIter.next(), term.toString());
-					}
-					answers.add(b);
+					answers.add(createSubstitution(queryVars, bindings));
 				}
 				
-				r = new QueryResult(true, answers);
+				r = new QueryResult(answers);
+			}
+			else {
+				/*
+				 * build a prolog query having the form
+				 * {query},buildTermModel([{Q1},...,{Qn}],LM)
+				 * 
+				 * where {Q1}, ..., {Qn} is the list of returned variables and {query} is 
+				 * the query string
+				 *  
+				 * */
+				prologQueryBuilder = new StringBuilder(query);
+				prologQueryBuilder.append(",buildTermModel([");
+				appendVars(prologQueryBuilder, queryVars, ",");
+				prologQueryBuilder.append("],LM)");
+
+				m_exeWatch.start();
+				SolutionIterator iter = m_engine.goal(prologQueryBuilder.toString(), "[LM]");
+				m_exeWatch.stop();
+				
+				r = new QueryResult(new PrologAnswerIterator(iter, queryVars));
 			}
 			
+			// cleanup the builder
+			prologQueryBuilder.setLength(0);
+			prologQueryBuilder = null;
 		}
+		
 		return r;
 	}
 	
-	// public class 
+	private static Substitution createSubstitution(List<String> queryVars, TermModel bindings)
+	{
+		Iterator<String> queryVarIter = queryVars.iterator();
+		Substitution answer = new Substitution();
+		
+		for (TermModel term : bindings.flatList())
+		{
+			answer.addPair(queryVarIter.next(), term.toString(true));
+		}
+		
+		return answer;
+	}
 	
+	private static StringBuilder appendVars(StringBuilder b, List<String> vars, String sep)
+	{
+		Iterator<String> iter = vars.iterator();
+		if (iter.hasNext())
+		{
+			b.append(iter.next());
+			while(iter.hasNext()) {
+				b.append(sep).append(iter.next());
+			}
+		}
+		
+		return b;
+	}
 	
-//	public SolutionIterator executeQuery(String query, List<String> queryVars) {
-//		
-//	}
-	
+	private static class PrologAnswerIterator extends AnswerIterator {
+		private SolutionIterator m_iter = null;
+		private List<String> m_vars;
+		
+		public PrologAnswerIterator(SolutionIterator iter, List<String> vars) {
+			m_iter = iter;
+			m_vars = vars;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return m_iter.hasNext();
+		}
+
+		@Override
+		public Substitution next() {
+			return createSubstitution(m_vars, (TermModel)m_iter.next()[0]);
+		}
+
+		@Override
+		public void dispose() {
+			m_iter.cancel();
+		}
+	}	
 	
 	public long getTime()
 	{
-		return exeWatch.totalMicroSeconds();
+		return m_exeWatch.totalMicroSeconds();
 	}
 	
 	@Override
-	public void dispose() {
+	public void shutdown() {
 		if (m_engine != null)
 			m_engine.shutdown();
 	}

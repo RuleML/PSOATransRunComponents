@@ -55,7 +55,7 @@ query
     
 rule
     :  ^(FORALL VAR_ID+ clause)
-    |   clause -> clause
+    |   clause
     ;
 
 clause

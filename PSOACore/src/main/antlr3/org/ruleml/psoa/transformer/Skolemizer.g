@@ -36,6 +36,7 @@ options
     adaptor.addChild(typeTree, skolemShortConstTree);
     adaptor.addChild(skolemShortConstTree, skolemFunc);
     adaptor.addChild(skolemTermTree, typeTree);
+    adaptor.addChild(tupleTree, adaptor.create(DEPSIGN, "+"));
     
     for (String s : $rule::forAllVarList)
     {

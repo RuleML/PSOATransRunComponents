@@ -1,14 +1,9 @@
 package org.ruleml.psoa.psoatransrun;
 
-import static org.ruleml.psoa.psoatransrun.utils.IOUtil.println;
+import static org.ruleml.psoa.utils.IOUtil.println;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.ruleml.psoa.psoa2x.common.*;
 import org.ruleml.psoa.psoa2x.psoa2prolog.*;
@@ -17,11 +12,7 @@ import org.ruleml.psoa.psoatransrun.engine.*;
 import org.ruleml.psoa.psoatransrun.prolog.*;
 import org.ruleml.psoa.psoatransrun.tptp.*;
 import org.ruleml.psoa.psoatransrun.test.Watch;
-import org.ruleml.psoa.psoatransrun.utils.PSOATransRunException;
 import org.ruleml.psoa.transformer.TransformerConfig;
-
-import com.declarativa.interprolog.SolutionIterator;
-import com.declarativa.interprolog.TermModel;
 
 /**
  * PSOATransRun system for question answering in PSOA RuleML
@@ -34,7 +25,13 @@ public class PSOATransRun {
 	private Watch m_translateKBWatch, m_translateQueryWatch, m_executionWatch;
 	private boolean m_printTrans;
 	
-
+	/***
+	 * Construct PSOATransRun instantiation from a translator and an engine
+	 * 
+	 * @param t   translator from PSOA to a target language L
+	 * @param e   execution engine for language L
+	 * 
+	 * */
 	public PSOATransRun(Translator t, ExecutionEngine e)
 	{
 		m_translator = t;
@@ -45,25 +42,35 @@ public class PSOATransRun {
 		m_executionWatch = new Watch("Execution Watch");
 	}
 	
-	public void setPrintTrans(boolean printTrans)
-	{
-		m_printTrans = printTrans;
-	}
-	
+	/***
+	 * Create PSOATransRun engine from the name of the target language
+	 * (currently support "prolog" and "tptp")
+	 * 
+	 * @param targetLang   target language name
+	 * */
 	public static PSOATransRun getInstantiation(String targetLang)
 	{
 		if (targetLang.equalsIgnoreCase("prolog"))
 		{
-			return new PSOATransRun(new PrologTranslator(new PSOA2PrologConfig()), new XSBEngine(new XSBEngineConfig()));
+			return new PSOATransRun(new PrologTranslator(), new XSBEngine());
 		}
 		else if (targetLang.equalsIgnoreCase("tptp"))
 		{
-			return new PSOATransRun(new TPTPASOTranslator(new PSOA2TPTPConfig()), new VampirePrimeEngine(new VampirePrimeEngineConfig()));
+			return new PSOATransRun(new ASOTPTPTranslator(), new VampirePrimeEngine());
 		}
 		
 		throw new PSOATransRunException("Unknown target language: " + targetLang);
 	}
+
 	
+	/***
+	 * Create PSOATransRun engine from the name of the target language
+	 * (currently support "prolog" and "tptp") and a configuration object
+	 * 
+	 * @param targetLang   target language name
+	 * @param config   configuration of the translator
+	 * 
+	 * */
 	public static PSOATransRun getInstantiation(String targetLang, TransformerConfig config)
 	{
 		if (targetLang.equalsIgnoreCase("prolog"))
@@ -72,26 +79,56 @@ public class PSOATransRun {
 		}
 		else if (targetLang.equalsIgnoreCase("tptp"))
 		{
-			return new PSOATransRun(new TPTPASOTranslator((PSOA2TPTPConfig)config), new VampirePrimeEngine(new VampirePrimeEngineConfig()));
+			return new PSOATransRun(new ASOTPTPTranslator((PSOA2TPTPConfig)config), new VampirePrimeEngine(new VampirePrimeEngineConfig()));
 		}
 		
 		throw new PSOATransRunException("Unknown target language: " + targetLang);
 	}
 	
+	/***
+	 * Set whether to print translator output for KBs and queries
+	 * 
+	 * @param printTrans   if set to true, print translator output for KBs and queries
+	 * 
+	 * */
+	public void setPrintTrans(boolean printTrans)
+	{
+		m_printTrans = printTrans;
+	}
+	
+	/**
+	 * Load an input PSOA KB into PSOATransRun. The KB is translated 
+	 * into the corresponding target language and prepared in the engine.
+	 * 
+	 * @param in   input KB stream
+	 * 
+	 * */
 	public void loadKB(InputStream in)
 	{
 		loadKB(in, false);
 	}
 	
 	/**
-	 * Load an input PSOA KB into PSOATransRun. The input KB is translated 
+	 * Load an input PSOA KB into PSOATransRun. The KB is translated 
+	 * into the corresponding target language and prepared in the engine.
+	 * 
+	 * @param in   input KB string
+	 * 
+	 * */
+	public void loadKB(String kb)
+	{
+		loadKB(kb, false);
+	}
+	
+	/**
+	 * Load an input PSOA KB into PSOATransRun. The KB is translated 
 	 * into the corresponding target language and prepared in the engine. 
 	 * 
 	 * @param in   input KB stream
-	 * @param keepKB   whether to keep translated KB in the memory
+	 * @param keepTransKB   whether to keep translated KB in the memory
 	 * 
 	 * */
-	public void loadKB(InputStream in, boolean keepKB)
+	public void loadKB(InputStream in, boolean keepTransKB)
 	{
 		String transKB;
 
@@ -99,22 +136,26 @@ public class PSOATransRun {
 		transKB = m_translator.translateKB(in);
 		m_translateKBWatch.stop();
 		
-		if (m_printTrans)
-		{
-			System.out.println("Translated KB:");
-			System.out.println(transKB);
-		}
+		loadTranslatedKB(transKB, keepTransKB);
+	}
+	
+	/**
+	 * Load an input PSOA KB into PSOATransRun. The input KB is translated 
+	 * into the corresponding target language and prepared in the engine. 
+	 * 
+	 * @param kb   input KB string
+	 * @param keepTransKB   whether to keep translated KB in the memory
+	 * 
+	 * */
+	public void loadKB(String kb, boolean keepTransKB)
+	{
+		String transKB;
+
+		m_translateKBWatch.start();
+		transKB = m_translator.translateKB(kb);
+		m_translateKBWatch.stop();
 		
-		if (m_engine instanceof ReusableKBEngine)
-		{
-			((ReusableKBEngine) m_engine).loadKB(transKB);
-			if (keepKB)
-			{
-				m_transKB = transKB;
-			}
-		}
-		else
-			m_transKB = transKB;
+		loadTranslatedKB(transKB, keepTransKB);
 	}
 	
 	/**
@@ -128,24 +169,74 @@ public class PSOATransRun {
 		return m_transKB;
 	}
 	
+	private void loadTranslatedKB(String transKB, boolean keepTransKB)
+	{
+		if (m_printTrans)
+		{
+			System.out.println("Translated KB:");
+			System.out.println(transKB);
+		}
+		
+		if (m_engine instanceof ReusableKBEngine)
+		{
+			((ReusableKBEngine) m_engine).loadKB(transKB);
+			if (keepTransKB)
+			{
+				m_transKB = transKB;
+			}
+		}
+		else
+			m_transKB = transKB;
+	}
+	
 	/**
-	 * Execute PSOA query and return all answers
+	 * Execute PSOA query
 	 * 
 	 * @param query   input stream of PSOA query
 	 * 
-	 * @return   query result containing all answers
+	 * @return   query result
 	 * 
 	 * */
 	public QueryResult executeQuery(InputStream query)
 	{
 		String transQuery;
-		List<String> queryVars;
-		QueryResult result;
 		
 		m_translateQueryWatch.start();
 		transQuery = m_translator.translateQuery(query);
-		queryVars = m_translator.getQueryVars();
 		m_translateQueryWatch.stop();
+		
+		return executeTransQuery(transQuery, m_translator.getQueryVars());
+	}
+	
+	/**
+	 * Execute PSOA query
+	 * 
+	 * @param query   PSOA query string
+	 * 
+	 * @return   query result
+	 * 
+	 * */
+	public QueryResult executeQuery(String query)
+	{
+		String transQuery;
+		
+		m_translateQueryWatch.start();
+		transQuery = m_translator.translateQuery(query);
+		m_translateQueryWatch.stop();
+		
+		return executeTransQuery(transQuery, m_translator.getQueryVars());
+	}
+	
+	private QueryResult executeTransQuery(String transQuery, List<String> queryVars)
+	{
+		QueryResult result;
+		
+		if (m_printTrans)
+		{
+			println("Translated Query:");
+			println(transQuery, ".");
+			println();
+		}
 		
 		m_executionWatch.start();
 		if (m_engine instanceof ReusableKBEngine)
@@ -158,22 +249,39 @@ public class PSOATransRun {
 		return result;
 	}
 	
-	
 	public void dispose()
 	{
-		m_engine.dispose();
+		m_engine.shutdown();
 	}
 	
-	public long kbTranslationTime()
+	/**
+	 * Get KB translation time in milliseconds
+	 * 
+	 * @return   KB translation time
+	 * 
+	 * */
+	public long kbTransTime()
 	{
 		return m_translateKBWatch.totalMicroSeconds();
 	}
 	
-	public long queryTranslationTime()
+	/**
+	 * Get query translation time in milliseconds
+	 * 
+	 * @return   query translation time
+	 * 
+	 * */
+	public long queryTransTime()
 	{
 		return m_translateQueryWatch.totalMicroSeconds();
 	}
 	
+	/**
+	 * Get execution time in milliseconds
+	 * 
+	 * @return   execution time
+	 * 
+	 * */
 	public long executionTime()
 	{
 		if (m_engine instanceof XSBEngine)
@@ -181,115 +289,12 @@ public class PSOATransRun {
 		else
 			return m_executionWatch.totalMicroSeconds();
 	}
-	/*
-	private static void executeQuery(String transQuery, PrologTranslator translator)
-	{
-		Set<Entry<String, String>> varMapEntries;
-		TermModel result;
-		
-		if (m_outputTrans)
-		{
-			println("Translated Query:");
-			println(transQuery + ".");
-			println();
-		}
-		varMapEntries = translator.getQueryVarMap().entrySet();
-		
-		println("Answer(s):");
-		if (varMapEntries.isEmpty())
-		{	
-			println(_engine.deterministicGoal(transQuery)? "Yes" : "No");
-		}
-		else if (_getAllAnswers)
-		{
-			StringBuilder outputBuilder = new StringBuilder("findall([");
-			for (Entry<String, String> entry : varMapEntries)
-			{
-				outputBuilder.append("\'?").append(entry.getValue()).append("=\',");
-				outputBuilder.append(entry.getKey()).append(",");
-			}
-			outputBuilder.setCharAt(outputBuilder.length() - 1, ']');
-			outputBuilder.append(",(").append(transQuery).append("),AS),buildTermModel(AS,LM)");
-			
-			result = (TermModel)_engine.deterministicGoal(outputBuilder.toString(), "[LM]")[0];
-//			result = engine.deterministicGoal("findall([Q1],member(lo1,Q1),AS),buildTermModel(AS,LM)", "[LM]")[0];
-			
-			if (result.getChildCount() > 0)
-			{
-				Set<String> answers = new HashSet<String>();
-				StringBuilder ansBuilder = new StringBuilder();
-				boolean separator = false;
-				for (TermModel bindings : result.flatList())
-				{					
-					for (TermModel term : bindings.flatList())
-					{
-						ansBuilder.append(translator.inverseTranslateTerm(term.toString()));
-						if (separator)
-							ansBuilder.append(",");
-						separator = !separator;
-					}
-					ansBuilder.setLength(ansBuilder.length() - 1);
-					
-					String ans = ansBuilder.toString();
-					if (answers.add(ans))
-						println(ans);
-					ansBuilder.setLength(0);
-				}
-			}
-			println();
-		}
-		else
-		{
-			StringBuilder queryBuilder = new StringBuilder(transQuery);
-			queryBuilder.append(",buildTermModel([");
-			for (Entry<String, String> entry : varMapEntries)
-			{
-				queryBuilder.append("\'?").append(entry.getValue()).append("=\',");
-				queryBuilder.append(entry.getKey()).append(",");
-			}
-			queryBuilder.setCharAt(queryBuilder.length() - 1, ']');
-			queryBuilder.append(",LM)");
-
-			String input = ";";
-			Scanner sc = new Scanner(System.in);
-			SolutionIterator iter = _engine.goal(queryBuilder.toString(), "[LM]");
-			
-			do
-			{
-				if (input.equals(";"))
-				{
-					if (!iter.hasNext())
-					{
-						System.out.println("No");
-						break;
-					}
-					TermModel m = (TermModel)iter.next()[0];
-					
-					StringBuilder ansBuilder = new StringBuilder();
-					boolean separator = false;
-					for (TermModel term : m.flatList())
-					{
-						ansBuilder.append(translator.inverseTranslateTerm(term.toString()));
-						if (separator)
-							ansBuilder.append(",");
-						separator = !separator;
-					}
-					ansBuilder.setCharAt(ansBuilder.length() - 1, '\t');
-					
-					System.out.print(ansBuilder);
-				}
-				else if (input.equals(""))
-				{
-					iter.cancel();
-					break;
-				}
-				
-				input = sc.nextLine();
-			} while (true);
-		}
-*/
-		public void shutdown() {
-			// TODO Auto-generated method stub
-			
-		}
+	
+	/**
+	 * Shutdown execution engine
+	 * 
+	 * */
+	public void shutdown() {
+		m_engine.shutdown();
+	}
 }

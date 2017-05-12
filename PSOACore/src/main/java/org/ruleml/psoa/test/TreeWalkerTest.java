@@ -1,70 +1,21 @@
 package org.ruleml.psoa.test;
 
-import org.antlr.runtime.*;
-import org.antlr.runtime.tree.*;
 import org.ruleml.psoa.transformer.*;
-import org.ruleml.psoa.parser.*;
+import org.ruleml.psoa.PSOAKB;
 
 public class TreeWalkerTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ANTLRStringStream fileInput = new ANTLRFileStream("E:\\Program\\Execution\\testKB.psoa");
-//		ANTLRStringStream fileInput = new ANTLRFileStream("D:\\Programs\\PSOATools\\PSOATransRun\\test\\class_membership\\class_membership-KB.psoa");
-		PSOAPSLexer lexer = new PSOAPSLexer(fileInput);
-		TokenRewriteStream tokens = new TokenRewriteStream(lexer);
-		PSOAPSParser parser = new PSOAPSParser(tokens);
-
-		System.err.flush();
-		CommonTree parserTree = (CommonTree) parser.top_level_item().getTree(); // get tree from parser
-
-		System.out.println("Before Transformation:");
-		System.out.println(parserTree.toStringTree());
+		String path = "E:\\Program\\Execution\\testKB.psoa";
 		
-		// Create a tree node stream from resulting tree
-		CommonTreeNodeStream nodes;
-		CommonTree transformedTree = parserTree;
+		PSOAKB kb = new PSOAKB();
 		
-		nodes = createAndPrintNodeStream(parserTree);
-		nodes.setTokenStream(tokens);
-		
-		System.out.println();
-		System.out.println("Objectification:");
-		transformedTree = (CommonTree)(new DifferentiatedObjectifier(nodes)).document().getTree();
-		System.out.println(transformedTree.toStringTree());
-		nodes = createAndPrintNodeStream(transformedTree);
-		nodes.setTokenStream(tokens);
-		
-		System.out.println();
-		System.out.println("Skolemization:");
-		transformedTree = (CommonTree)(new Skolemizer(nodes)).document().getTree();
-		System.out.println(transformedTree.toStringTree());
-		nodes = createAndPrintNodeStream(transformedTree);
-		nodes.setTokenStream(tokens);
-		
-		System.out.println();
-		System.out.println("Slotribution and Tupribution:");
-		SlotTupributor st = new SlotTupributor(nodes);
-		st.setReproduceClass(true);
-		transformedTree = (CommonTree)st.document().getTree();
-		System.out.println(transformedTree.toStringTree());
-		nodes = createAndPrintNodeStream(transformedTree);
-		nodes.setTokenStream(tokens);
-		
-		System.out.println();
-		System.out.println("External Flattening:");
-		transformedTree = (CommonTree)(new ExternalFlattener(nodes)).document().getTree();
-		System.out.println(transformedTree.toStringTree());		
-		nodes = createAndPrintNodeStream(transformedTree);
-		nodes.setTokenStream(tokens);
-		
-		System.out.println();
-		System.out.println("Conjunctive Head Splitting:");
-		transformedTree = (CommonTree)(new ConjunctiveHeadSplitter(nodes)).document().getTree();
-		System.out.println(transformedTree.toStringTree());
-		printTreeAsNodeStream(transformedTree);
+		kb.loadFromFile(path);
+		kb.setPrintAfterTransformation(true);
+		kb.LPnormalize(new RelationalTransformerConfig());
 	}
-	
+/*	
 	public static void printNodeStream(CommonTreeNodeStream nodes)
 	{
 		Object o;
@@ -111,4 +62,5 @@ public class TreeWalkerTest
 		printNodeStream(nodes);
 		return nodes;
 	}
+*/
 }

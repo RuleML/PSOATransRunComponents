@@ -6,8 +6,7 @@ public class PSOA2PrologConfig extends RelationalTransformerConfig
 {
 	public PSOA2PrologConfig()
 	{
-		reproduceClass = false;
-		crossOverAxiom = false;
+		omitMemtermInNegtiveAtoms = false;
 		differentiateObj = true;
 		dynamicObj = true;
 	}

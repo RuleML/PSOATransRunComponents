@@ -10,7 +10,6 @@ options
 	output = AST;
 	ASTLabelType = CommonTree;
 	tokenVocab = PSOAPS;
-	rewrite = false;
 	k = 1;
 }
 
@@ -149,7 +148,7 @@ scope
     $rule::existVars.clear();
 }
     :  ^(FORALL VAR_ID+ clause)
-    |   clause -> clause
+    |   clause
     ;
 
 clause

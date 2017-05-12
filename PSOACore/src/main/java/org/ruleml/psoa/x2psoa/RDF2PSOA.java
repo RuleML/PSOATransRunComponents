@@ -1,7 +1,6 @@
 package org.ruleml.psoa.x2psoa;
 
 import java.io.*;
-import java.util.*;
 
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;

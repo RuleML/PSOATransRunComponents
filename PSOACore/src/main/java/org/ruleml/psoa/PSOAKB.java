@@ -9,7 +9,7 @@ import org.antlr.runtime.tree.*;
 import org.ruleml.psoa.analyzer.KBInfoCollector;
 import org.ruleml.psoa.parser.PSOAPSParser;
 import org.ruleml.psoa.transformer.*;
-import org.ruleml.psoa.util.ANTLRTreeStreamConsumer;
+import org.ruleml.psoa.utils.ANTLRTreeStreamConsumer;
 import org.ruleml.psoa.x2psoa.*;
 
 /** 
@@ -243,11 +243,12 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 			{	
 				DifferentiatedObjectifier objectifier = new DifferentiatedObjectifier(stream);
 				objectifier.setDynamic(dynamic, m_kbInfo);
+				objectifier.setExcludedLocalConstNames(m_localConsts);
 				return objectifier.document();
 			}
 			else
 			{
-				ExistObjectifier objectifier = new ExistObjectifier(stream);
+				UndifferentiatedObjectifier objectifier = new UndifferentiatedObjectifier(stream);
 				return objectifier.document();
 			}
 		});
@@ -256,7 +257,7 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 	
 	public PSOAKB rewriteSubclass()
 	{
-		return this;
+		return transform("subclass rewriting", stream -> (new SubclassRewriter(stream)).document());
 	}
 	
 	
@@ -271,11 +272,11 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 		return transform("Skolemization", stream -> (new Skolemizer(stream)).document());
 	}
 	
-	public PSOAKB slotTupribute(boolean reproduceClass)
+	public PSOAKB slotTupribute(boolean omitMemtermInNegtiveAtoms)
 	{
 		return transform("slotribution/tupribution", stream -> {
 			SlotTupributor slotTupributor = new SlotTupributor(stream);
-			slotTupributor.setReproduceClass(reproduceClass);
+			slotTupributor.setOmitMemtermInNegtiveAtoms(omitMemtermInNegtiveAtoms);
 			return slotTupributor.document();			
 		});
 	}
@@ -312,7 +313,7 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 				m_tree = (Tree) actor.apply(getTreeNodeStream()).getTree();
 				if (m_printAfterTransformation)
 				{
-					m_printStream.println(String.format("After %s :", name));
+					m_printStream.println(String.format("After %s:", name));
 					printTree();
 				}
 				return this;
@@ -338,7 +339,7 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 		return unnest().
 			   rewriteSubclass().
 			   objectify(config.differentiateObj, config.dynamicObj).
-			   slotTupribute(config.reproduceClass);
+			   slotTupribute(config.omitMemtermInNegtiveAtoms);
 	}
 	
 	/**

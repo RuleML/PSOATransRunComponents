@@ -19,6 +19,8 @@ options
 	
 	import java.util.Set;
 	import java.util.HashSet;
+    import java.util.Map;
+    import java.util.HashMap;
 	import org.ruleml.psoa.analyzer.*;
 	
 	import static org.ruleml.psoa.FreshNameGenerator.*;
@@ -27,6 +29,9 @@ options
 @members
 {
     private boolean m_isRuleBody = false, m_isGroundFact = false, m_dynamic = false;
+    private Set<String> m_localConsts;
+    private Set<String> m_clauseVars = new HashSet<String>();
+    private Map<String, CommonTree> m_newVarNodes = new HashMap<String, CommonTree>();
     private KBInfoCollector m_KBInfo = null;
     
     public void setDynamic(boolean b, KBInfoCollector info)
@@ -35,28 +40,42 @@ options
         m_KBInfo = info;
     }
     
-    private String newVarName()
+    public void setExcludedLocalConstNames(Set<String> excludedConstNames)
     {
-        Set<String> vars;
-        String name;
-        
-		if ($query.size() > 0)
-		{
-		    vars = $query::queryVars;
-		    name = freshVarName(vars);
-		    vars.add(name);
-		}
-		else
-		{
-		    vars = $rule::vars;
-		    name = freshVarName(vars);
-		    vars.add(name);
-		    if (m_isRuleBody)
-		        $rule::newVarsTree.addChild((CommonTree)adaptor.create(VAR_ID, name));
-		}
-		
-		return name;
+        m_localConsts = excludedConstNames;
     }
+    
+    private CommonTree newVarNode()
+    {
+	    // Generate a fresh variable name using an incomplete set of 
+	    // clause variables. The name may be modified later in newVarsTree().
+        String name = freshVarName(m_clauseVars);
+        CommonTree node = (CommonTree)adaptor.create(VAR_ID, name);
+        
+		m_newVarNodes.put(name, node);
+		return (CommonTree)adaptor.dupNode(node);
+    }
+	
+  	private CommonTree newVarsTree()
+  	{
+        CommonTree root = (CommonTree)adaptor.nil();
+  	    
+  	    for (Map.Entry<String, CommonTree> entry : m_newVarNodes.entrySet())
+        {
+           String var = entry.getKey();
+           CommonTree node = entry.getValue();
+           
+           // Rename the variable name if it has been used in the clause
+           if (m_clauseVars.contains(var))
+           {
+              node.getToken().setText(freshVarName(m_clauseVars));  
+           }
+           adaptor.addChild(root, node);
+        }
+        
+        m_newVarNodes.clear();
+        return root;
+  	}
 }
 
 document
@@ -85,46 +104,42 @@ group_element
     ;
 
 query
-scope
-{
-  Set<String> queryVars;
-}
 @init
 {
-   $query::queryVars = new HashSet<String>();
+   // Reset variable generator before processing each query
+   resetVarGen();
 }
 @after
 {
-   $query::queryVars.clear();
-   $query::queryVars = null;
+   m_clauseVars.clear();
+   m_newVarNodes.clear();
 }
     :   formula
     ;
     
 rule
-scope
-{
-  Set<String> vars;
-  CommonTree newVarsTree;
-}
 @init
 {
-  $rule::vars = new HashSet<String>();
-  $rule::newVarsTree = (CommonTree)adaptor.nil();
-  // Reset the counter for generating variable names before processing each rule 
-  resetVarCounter();
+   // Reset variable generator before processing each rule
+   resetVarGen();
 }
-    :  ^(FORALL (VAR_ID { $rule::vars.add($VAR_ID.text); })+ clause)
-      -> ^(FORALL VAR_ID+ { $rule::newVarsTree } clause)
-	  |   clause
-	  -> { $rule::newVarsTree.getChildCount() > 0 }?
-	     ^(FORALL { $rule::newVarsTree } clause)
-	  ->  clause
+@after
+{
+   m_clauseVars.clear();
+}
+    :  ^(FORALL (VAR_ID {  m_clauseVars.add($VAR_ID.text); })+ clause)
+      -> { m_newVarNodes.isEmpty() }? ^(FORALL VAR_ID+ clause)
+      // Add new variables to ForAll wrapper
+      -> ^(FORALL VAR_ID+ { newVarsTree() } clause)
+	  |  clause
+	  -> { m_newVarNodes.isEmpty() }? clause
+	  // Add new variables to ForAll wrapper
+	  ->  ^(FORALL { newVarsTree() } clause)
     ;
 
 clause
     :   ^(IMPLICATION head { m_isRuleBody = true; } formula { m_isRuleBody = false; })
-    |   { m_isGroundFact = $rule::vars.isEmpty(); } head { m_isGroundFact = false; }
+    |   { m_isGroundFact = m_clauseVars.isEmpty(); } head { m_isGroundFact = false; }
     ;
     
 head
@@ -164,8 +179,7 @@ term
     :   constant
     |   VAR_ID
     {
-      if ($query.size() > 0)
-        $query::queryVars.add($VAR_ID.text);
+        m_clauseVars.add($VAR_ID.text);
     }
     |   psoa[false]
     |   external
@@ -178,7 +192,7 @@ external
 psoa[boolean isAtomic]
 @init
 {
-  String varName;
+   CommonTree varNode;
 }
     :   ^(PSOA oid=term? ^(INSTANCE type=term) tuple* slot*)
     // keep oidful psoa term unchanged
@@ -191,14 +205,14 @@ psoa[boolean isAtomic]
           ^(PSOA ^(INSTANCE $type) tuple* slot*)
     // static objectification for psoa terms in rule conditions
     -> { m_isRuleBody }?
-          ^(PSOA VAR_ID[newVarName()] ^(INSTANCE $type) tuple* slot*)
+          ^(PSOA { newVarNode() } ^(INSTANCE $type) tuple* slot*)
     // static objectification for psoa terms used as ground facts
     -> { m_isGroundFact }?
-          ^(PSOA ^(SHORTCONST LOCAL[freshConstName()]) ^(INSTANCE $type) tuple* slot*)
+          ^(PSOA ^(SHORTCONST LOCAL[freshConstName(m_localConsts)]) ^(INSTANCE $type) tuple* slot*)
     // static objectification for psoa terms used in rule conclusions or queries
     ->
-        ^(EXISTS VAR_ID[varName = newVarName()]
-            ^(PSOA VAR_ID[varName] ^(INSTANCE $type) tuple* slot*)
+        ^(EXISTS { (varNode = newVarNode()) }
+            ^(PSOA { varNode.dupNode() } ^(INSTANCE $type) tuple* slot*)
         )
     ;
 

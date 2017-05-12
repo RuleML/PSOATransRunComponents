@@ -28,11 +28,17 @@ options
     
     import java.util.Set;
     import java.util.HashSet;
+    import java.util.Map;
+    import java.util.HashMap;
     import static org.ruleml.psoa.FreshNameGenerator.*;
 }
 
 @members
 {
+    private boolean m_isPositive;
+    private Map<String, CommonTree> m_newVarNodes = new HashMap<String, CommonTree>();
+    private Set<String> m_clauseVars = new HashSet<String>();
+    
     private CommonTree getConjunctionTree(List conjuncts)
     {
         CommonTree and = (CommonTree)adaptor.create(AND, "AND");
@@ -42,23 +48,35 @@ options
         return and;
     }
     
-    private String newVarName()
+    private CommonTree newVarNode()
     {
-        String name;
-        if ($rule.size() > 0)
-        {   
-            name = freshVarName($rule::vars);
-            adaptor.addChild($rule::newVarsTree, adaptor.create(VAR_ID, name));
-        }
-        else
+        String name = freshVarName(m_clauseVars);
+        CommonTree node = (CommonTree)adaptor.create(VAR_ID, name);
+        
+		m_newVarNodes.put(name, node);
+		return (CommonTree)adaptor.dupNode(node);
+    }
+	
+  	private CommonTree newVarsTree()
+  	{
+        CommonTree root = (CommonTree)adaptor.nil();
+  	    
+  	    for (Map.Entry<String, CommonTree> entry : m_newVarNodes.entrySet())
         {
-            // name = freshVarName(query::vars);
-            name = freshVarName();
-            adaptor.addChild($query::newVarsTree, adaptor.create(VAR_ID, name));
+           String var = entry.getKey();
+           CommonTree node = entry.getValue();
+           
+           // Rename the variable name if it has been used in the clause
+           if (m_clauseVars.contains(var))
+           {
+              node.getToken().setText(freshVarName(m_clauseVars));  
+           }
+           adaptor.addChild(root, node);
         }
         
-        return name;
-    }
+        m_newVarNodes.clear();
+        return root;
+  	}
 }
  
 document
@@ -87,35 +105,28 @@ group_element
     ;
 
 query
-scope
+@after
 {
-    CommonTree newVarsTree;
-}
-@init
-{
-    $query::newVarsTree = (CommonTree)adaptor.nil();
+    m_clauseVars.clear();
+    resetVarGen();
 }
     :   formula
-    -> { $query::newVarsTree.getChildCount() > 0 }? ^(EXISTS { $query::newVarsTree } formula)
-    -> formula
+    -> { m_newVarNodes.isEmpty() }? formula
+    -> ^(EXISTS { newVarsTree() } formula)
     ;
     
 rule
-scope
+@after
 {
-    Set<String> vars;
-    CommonTree newVarsTree;
+    m_clauseVars.clear();
+    resetVarGen();
 }
-@init
-{
-    $rule::vars = new HashSet<String>();
-    $rule::newVarsTree = (CommonTree)adaptor.nil();
-}
-    :  ^(FORALL (VAR_ID { $rule::vars.add($VAR_ID.text); })+ clause)
-    -> ^(FORALL VAR_ID+ { $rule::newVarsTree } clause)
+    :   ^(FORALL (VAR_ID { m_clauseVars.add($VAR_ID.text); })+ clause)
+    ->  { m_newVarNodes.isEmpty() }? ^(FORALL VAR_ID+ clause)
+    ->  ^(FORALL VAR_ID+ { newVarsTree() } clause)
     |   clause
-    -> { $rule::newVarsTree.getChildCount() > 0 }? ^(FORALL { $rule::newVarsTree } clause)
-    -> clause
+    ->  { m_newVarNodes.isEmpty() }? clause
+    ->  ^(FORALL { newVarsTree() } clause)
     ;
 
 clause
@@ -124,6 +135,14 @@ clause
     ;
     
 head
+@init
+{
+   m_isPositive = true;
+}
+@after
+{
+   m_isPositive = false;
+}
     :   atomic
     |   ^(AND head+)
     |   ^(EXISTS VAR_ID+ head)
@@ -173,9 +192,26 @@ subclass
     ;
     
 term
+@init
+{
+   boolean isAnonymousVar = false;
+}
     :   constant
     |   VAR_ID
-    ->  { $VAR_ID.text.isEmpty() }? VAR_ID[newVarName()]
+    {
+       String name = $VAR_ID.text;
+       isAnonymousVar = name.isEmpty();
+       if (isAnonymousVar)
+       {
+          if (m_isPositive)
+            throw new PSOARuntimeException("Anonymous variables can only occur in rule conditions or queries.");
+       }
+       else
+       {
+          m_clauseVars.add(name);
+       }
+    }
+    ->  { isAnonymousVar }? { newVarNode() }
     ->  VAR_ID
     |   psoa[false]
     |   external

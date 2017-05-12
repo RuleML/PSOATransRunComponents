@@ -8,15 +8,20 @@ import java.io.File;
 
 import org.apache.commons.exec.CommandLine;
 
+/**
+ * Class for all engines that are started and executed from command line.
+ * The implementation is preliminary and has not completed.  
+ * 
+ * */
 public abstract class CommandLineExecutionEngine extends ExecutionEngine 
 {
 	protected final String[] m_resourcePaths;
 	protected final String m_binPath;
-	protected final CommandLineArgsBuilder m_commBuilder;
+	protected final ArgsBuilder m_commBuilder;
 	protected final long m_exeTimeout;
 	protected final ResultHandler m_resultHandler;
 	
-	public CommandLineExecutionEngine(CommandLineArgsBuilder cBuilder, ResultHandler resultHandler, long exeTimeout, String binPath, String... resources)
+	public CommandLineExecutionEngine(ArgsBuilder cBuilder, ResultHandler resultHandler, long exeTimeout, String binPath, String... resources)
 	{
 		ClassLoader loader = this.getClass().getClassLoader();
 		File binFile = extractFromResource(loader, binPath);
@@ -79,4 +84,28 @@ public abstract class CommandLineExecutionEngine extends ExecutionEngine
 //			return null;
 //		}
 //	}, ResultHandler.IdentityHandler,  5 * 60 * 1000, "");
+	
+	
+	public static class Config extends EngineConfig {
+		public String binPath;	
+	}
+	
+	public static abstract class ResultHandler
+	{
+		public static final ResultHandler IdentityHandler = new ResultHandler()
+		{
+			@Override
+			public String parse(String engineOutput)
+			{
+				return engineOutput;
+			}
+		};
+		
+		public abstract String parse(String engineOutput);
+	}
+
+	public static interface ArgsBuilder
+	{
+		public String[] buildCommandLine(String[] resourcePaths, String inputFilePath);
+	}
 }

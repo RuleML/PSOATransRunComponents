@@ -6,10 +6,5 @@ public class PSOATransRunTest {
 		TestSuite ts = new TestSuite("test", args[0]);
 		ts.run();
 		ts.outputSummary();
-		
-//		ts = new TestSuite("test", "prolog");
-//		System.out.println("Prolog");
-//		ts.run();
-//		ts.outputSummary();
 	}
 }
