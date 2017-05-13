@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>PSOATransRun</name>
+	<name>PSOATransRunWebService</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -55,6 +55,5 @@
 		<nature>org.deved.antlride.core.nature</nature>
 		<nature>org.jboss.tools.ws.jaxrs.nature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
-		<nature>org.hibernate.eclipse.console.hibernateNature</nature>
 	</natures>
 </projectDescription>
