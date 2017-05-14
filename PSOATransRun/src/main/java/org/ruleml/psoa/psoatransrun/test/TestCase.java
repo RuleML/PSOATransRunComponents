@@ -21,13 +21,12 @@ public class TestCase {
 	private Map<String, String[]> m_incorrectQueries;
 	private File m_dir, m_kb;
 	private Map<File, QueryResult> m_queryAndAns;
-	private PSOATransRun m_engine = null;
-	private String m_targetLang;
+	private PSOATransRun m_system = null;
 	
-	public TestCase(File testCaseDir, String targetLang)
+	public TestCase(File testCaseDir, PSOATransRun system)
 	{
 		m_dir = testCaseDir;
-		m_targetLang = targetLang;
+		m_system = system;
 		m_kb = null;
 		m_queryAndAns = new HashMap<File, QueryResult>();
 		m_incorrectQueries = new HashMap<String, String[]>();
@@ -72,12 +71,6 @@ public class TestCase {
 			throw new IllegalArgumentException("No KB in folder " + m_dir.getName());
 	}
 	
-	private void startEngine() 
-	{
-		if (m_engine == null)
-			m_engine = PSOATransRun.getInstantiation(m_targetLang);
-	}
-	
 	private boolean runOnce()
 	{
 		try
@@ -86,7 +79,7 @@ public class TestCase {
 			FileInputStream kbStream = new FileInputStream(m_kb);
 			
 			// Load KB
-			m_engine.loadKB(kbStream);
+			m_system.loadKB(kbStream);
 			kbStream.close();
 			
 			// Execute queries
@@ -95,7 +88,7 @@ public class TestCase {
 //				System.out.println("Execute query " + queryAns.getKey().getName());
 				FileInputStream queryStream = new FileInputStream(queryAns.getKey());
 				QueryResult stdResult = queryAns.getValue(),
-							result = m_engine.executeQuery(queryStream);
+							result = m_system.executeQuery(queryStream);
 				queryStream.close();
 				
 				boolean isSound = false, isComplete = false;
@@ -152,7 +145,6 @@ public class TestCase {
 	public boolean run(int times)
 	{
 		boolean isAnswerCorrect = true;
-		startEngine();
 		
 		for (int i = times; i > 0; i--)
 		{
@@ -169,9 +161,9 @@ public class TestCase {
 		m_numEngineAns /= times;
 		m_numSoundAns /= times;
 		m_numCorrectQueries /= times;
-		m_totalKBTransTime = m_engine.kbTransTime() / times;
-		m_totalQueryTransTime = m_engine.queryTransTime() / times;
-		m_totalQueryTime = m_engine.executionTime() / times;
+		m_totalKBTransTime = m_system.kbTransTime() / times;
+		m_totalQueryTransTime = m_system.queryTransTime() / times;
+		m_totalQueryTime = m_system.executionTime() / times;
 		return isAnswerCorrect;
 	}
 	
@@ -229,9 +221,9 @@ public class TestCase {
 		{
 //			Scanner sc = new Scanner(System.in);
 //			System.out.println(sc.nextLine());
-			Thread.sleep(1000);
-			m_engine.dispose();
-			Thread.sleep(500);
+//			Thread.sleep(1000);
+			m_system.dispose();
+			Thread.sleep(0);
 		} catch (InterruptedException e)
 		{
 			// TODO Auto-generated catch block

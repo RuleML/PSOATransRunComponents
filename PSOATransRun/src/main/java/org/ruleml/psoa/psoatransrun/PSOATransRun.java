@@ -56,7 +56,7 @@ public class PSOATransRun {
 		}
 		else if (targetLang.equalsIgnoreCase("tptp"))
 		{
-			return new PSOATransRun(new ASOTPTPTranslator(), new VampirePrimeEngine());
+			return new PSOATransRun(new TPTPTranslator(), new VampirePrimeEngine());
 		}
 		
 		throw new PSOATransRunException("Unknown target language: " + targetLang);
@@ -75,11 +75,11 @@ public class PSOATransRun {
 	{
 		if (targetLang.equalsIgnoreCase("prolog"))
 		{
-			return new PSOATransRun(new PrologTranslator((PSOA2PrologConfig)config), new XSBEngine(new XSBEngineConfig()));
+			return new PSOATransRun(new PrologTranslator((PSOA2PrologConfig)config), new XSBEngine());
 		}
 		else if (targetLang.equalsIgnoreCase("tptp"))
 		{
-			return new PSOATransRun(new ASOTPTPTranslator((PSOA2TPTPConfig)config), new VampirePrimeEngine(new VampirePrimeEngineConfig()));
+			return new PSOATransRun(new TPTPTranslator((PSOA2TPTPConfig)config), new VampirePrimeEngine());
 		}
 		
 		throw new PSOATransRunException("Unknown target language: " + targetLang);
@@ -234,7 +234,7 @@ public class PSOATransRun {
 		if (m_printTrans)
 		{
 			println("Translated Query:");
-			println(transQuery, ".");
+			println(transQuery);
 			println();
 		}
 		

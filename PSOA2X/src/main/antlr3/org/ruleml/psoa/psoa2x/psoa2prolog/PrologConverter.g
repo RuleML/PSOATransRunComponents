@@ -77,7 +77,12 @@ scope
    $varMap = ($query::freeVarMap = new LinkedHashMap<String, String>());
    $query::existVars = new HashSet<String>();
 }
-    :   formula { flush(); }
+    :   formula
+    // output translated query
+    {
+       append(".");
+       flush();
+    }
     ;
 
 rule
@@ -295,7 +300,6 @@ constant returns [boolean isTop]
 
 constshort
     :
-        // TODO: Handle special datatypes, e.g. string, int, etc.
         IRI     { convertIRIConst($IRI.text); }
     |   LITERAL { convertStringConst($LITERAL.text); }
     |   NUMBER  { append($NUMBER.text); }

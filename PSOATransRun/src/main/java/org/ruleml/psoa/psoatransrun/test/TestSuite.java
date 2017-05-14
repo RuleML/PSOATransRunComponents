@@ -3,6 +3,9 @@ package org.ruleml.psoa.psoatransrun.test;
 import java.io.*;
 import java.util.ArrayList;
 
+import org.ruleml.psoa.psoatransrun.PSOATransRun;
+import org.ruleml.psoa.psoatransrun.PSOATransRunException;
+
 import static org.ruleml.psoa.utils.IOUtil.*;
 
 public class TestSuite {
@@ -10,21 +13,26 @@ public class TestSuite {
 	private int m_correctTestCases, m_totalQueries, m_correctQueries;
 	private int m_engineAnswers, m_standardAnswers, m_correctEngineAnswers;
 	private long m_kbTranslateTime, m_queryTranslateTime, m_queryTime;
-	private static final int s_runsEachTestCase = 1;
+	private final int m_runsEachTestCase;
 	
-	public TestSuite(String path, String targetLang)
+	public TestSuite(String path, PSOATransRun system, int runs)
 	{
-		File dir = new File(path);
+		this(new File(path), system, runs);
+	}
+	
+	public TestSuite(File dir, PSOATransRun system, int runs)
+	{
 		File[] testCases = dir.listFiles();
 		
 		if (testCases == null)
-			System.out.println("No available test cases");
+			throw new PSOATransRunException("The input path does not denote a directory.");
 		
+		m_runsEachTestCase = runs;
 		m_testCases = new ArrayList<TestCase>(testCases.length);
 		for (File testCaseDir : testCases)
 		{
 			if (testCaseDir.isDirectory())
-				m_testCases.add(new TestCase(testCaseDir, targetLang));
+				m_testCases.add(new TestCase(testCaseDir, system));
 		}
 	}
 	
@@ -38,7 +46,7 @@ public class TestSuite {
 			try
 			{
 				println("Run test case ", (++i), ": ", tc.getDirName(), " (", tc.numQueries(), " queries)");
-				if (tc.run(s_runsEachTestCase))
+				if (tc.run(m_runsEachTestCase))
 				{
 					m_correctTestCases++;
 				}

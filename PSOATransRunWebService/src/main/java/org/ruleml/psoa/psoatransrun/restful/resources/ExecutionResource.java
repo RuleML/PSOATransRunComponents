@@ -1,7 +1,6 @@
 package org.ruleml.psoa.psoatransrun.restful.resources;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -9,18 +8,15 @@ import javax.ws.rs.core.*;
 import org.ruleml.psoa.psoatransrun.PSOATransRunException;
 import org.ruleml.psoa.psoatransrun.engine.ExecutionEngine;
 import org.ruleml.psoa.psoatransrun.prolog.XSBEngine;
-import org.ruleml.psoa.psoatransrun.prolog.XSBEngineConfig;
 import org.ruleml.psoa.psoatransrun.restful.models.ExecutionRequest;
 import org.ruleml.psoa.psoatransrun.tptp.VampirePrimeEngine;
-import org.ruleml.psoa.psoatransrun.tptp.VampirePrimeEngineConfig;
 
-import static org.ruleml.psoa.psoatransrun.utils.IOUtil.*;
 
 @Path("/execute")
 public class ExecutionResource
 {
-	private static XSBEngineConfig s_xsbConfig;
-	private static VampirePrimeEngineConfig s_vpConfig;
+	private static XSBEngine.Config s_xsbConfig;
+	private static VampirePrimeEngine.Config s_vpConfig;
 	
 	@POST
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -45,7 +41,7 @@ public class ExecutionResource
 	{
 		if (s_xsbConfig == null)
 		{
-			s_xsbConfig = new XSBEngineConfig();
+			s_xsbConfig = new XSBEngine.Config();
 			File xsbfolder = new File(System.getProperty("user.home"), "git/psoa.git/lib/XSB");
 			
 			s_xsbConfig.xsbFolderPath = xsbfolder.getAbsolutePath();
@@ -58,7 +54,7 @@ public class ExecutionResource
 	{
 		if (s_vpConfig == null)
 		{
-			s_vpConfig = new VampirePrimeEngineConfig();
+			s_vpConfig = new VampirePrimeEngine.Config();
 		}
 		
 		return new VampirePrimeEngine(s_vpConfig);

@@ -38,7 +38,7 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 		return transform("unnesting", stream -> (new Unnester(stream)).query());
 	}
 	
-	public PSOAQuery objectify(boolean differentiate, boolean dynamic)
+	public PSOAQuery objectify(boolean differentiated, boolean dynamic)
 	{
 		PSOAQuery q;
 		
@@ -49,18 +49,11 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 		else
 			q = this;
 		
-		return q.transform("static objectification", stream -> {			
-			if (differentiate)
-			{
-				DifferentiatedObjectifier objectifier = new DifferentiatedObjectifier(stream);
-				objectifier.setDynamic(dynamic, m_kb.getKBInfo());
-				return objectifier.query();
-			}
-			else
-			{
-				UndifferentiatedObjectifier objectifier = new UndifferentiatedObjectifier(stream);
-				return objectifier.query();
-			}
+		return q.transform("static objectification", stream -> {
+			Objectifier objectifier = new Objectifier(stream);
+			objectifier.setDynamic(dynamic, m_kb.getKBInfo());
+			objectifier.setDifferentiated(differentiated);
+			return objectifier.query();
 		});
 	}
 	

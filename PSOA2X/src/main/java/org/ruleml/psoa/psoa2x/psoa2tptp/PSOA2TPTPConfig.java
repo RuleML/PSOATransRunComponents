@@ -4,5 +4,5 @@ import org.ruleml.psoa.transformer.RelationalTransformerConfig;
 
 public class PSOA2TPTPConfig extends RelationalTransformerConfig
 {
-	
+	public boolean useDirect = true;
 }

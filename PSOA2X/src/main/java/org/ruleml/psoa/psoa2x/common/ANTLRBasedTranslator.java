@@ -213,18 +213,37 @@ public abstract class ANTLRBasedTranslator extends Translator {
 			m_buffer.setLength(newLen);
 		}
 		
+		/**
+		 * Append a string to buffer
+		 * 
+		 * @param str   the string to send
+		 * */
 		protected void append(String str)
 		{
 			m_buffer.append(str);
 		}
+
 		
+		/**
+		 * Append strings to buffer
+		 * 
+		 * @param strs   the strings to send
+		 * 
+		 * */
 		protected void append(String... strs) {
 			for (String str : strs)
 			{
 				m_buffer.append(str);
 			}
 	    }
+
 		
+		/**
+		 * Append string representations of objects to buffer
+		 * 
+		 * @param objs   the objects to send
+		 * 
+		 * */
 		protected void append(Object... objs) {
 			for (Object obj : objs)
 			{

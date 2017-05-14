@@ -2,7 +2,7 @@
  *  This grammar file is used to generate a transformer for differentiated objectification.
  **/
 
-tree grammar DifferentiatedObjectifier;
+tree grammar Objectifier;
 
 options 
 {
@@ -28,7 +28,7 @@ options
 
 @members
 {
-    private boolean m_isRuleBody = false, m_isGroundFact = false, m_dynamic = false;
+    private boolean m_isRuleBody = false, m_isGroundFact = false, m_dynamic = false, m_diff;
     private Set<String> m_localConsts;
     private Set<String> m_clauseVars = new HashSet<String>();
     private Map<String, CommonTree> m_newVarNodes = new HashMap<String, CommonTree>();
@@ -38,6 +38,11 @@ options
     {
         m_dynamic = b;
         m_KBInfo = info;
+    }
+    
+    public void setDifferentiated(boolean d)
+    {
+        m_diff = d;
     }
     
     public void setExcludedLocalConstNames(Set<String> excludedConstNames)
@@ -128,13 +133,13 @@ rule
    m_clauseVars.clear();
 }
     :  ^(FORALL (VAR_ID {  m_clauseVars.add($VAR_ID.text); })+ clause)
-      -> { m_newVarNodes.isEmpty() }? ^(FORALL VAR_ID+ clause)
       // Add new variables to ForAll wrapper
-      -> ^(FORALL VAR_ID+ { newVarsTree() } clause)
+      -> { !m_newVarNodes.isEmpty() && m_diff }? ^(FORALL VAR_ID+ { newVarsTree() } clause)
+      -> ^(FORALL VAR_ID+ clause)
 	  |  clause
-	  -> { m_newVarNodes.isEmpty() }? clause
 	  // Add new variables to ForAll wrapper
-	  ->  ^(FORALL { newVarsTree() } clause)
+	  -> { !m_newVarNodes.isEmpty() && m_diff }? ^(FORALL { newVarsTree() } clause)
+	  -> clause
     ;
 
 clause
@@ -203,13 +208,14 @@ psoa[boolean isAtomic]
           && !m_KBInfo.hasHeadOnlyVariables()
           && m_KBInfo.isPurelyRelational($type.tree)) }?
           ^(PSOA ^(INSTANCE $type) tuple* slot*)
-    // static objectification for psoa terms in rule conditions
-    -> { m_isRuleBody }?
+    // differentiated static objectification for psoa terms in rule conditions
+    -> { m_isRuleBody && m_diff }?
           ^(PSOA { newVarNode() } ^(INSTANCE $type) tuple* slot*)
-    // static objectification for psoa terms used as ground facts
-    -> { m_isGroundFact }?
+    // differentiated static objectification for psoa terms used as ground facts
+    -> { m_isGroundFact && m_diff }?
           ^(PSOA ^(SHORTCONST LOCAL[freshConstName(m_localConsts)]) ^(INSTANCE $type) tuple* slot*)
-    // static objectification for psoa terms used in rule conclusions or queries
+    // differentiated static objectification for psoa terms used in 
+    // rule conclusions or queries or undifferentiated static objectification
     ->
         ^(EXISTS { (varNode = newVarNode()) }
             ^(PSOA { varNode.dupNode() } ^(INSTANCE $type) tuple* slot*)

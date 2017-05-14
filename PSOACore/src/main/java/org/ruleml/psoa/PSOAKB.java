@@ -239,18 +239,11 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 				stream.reset();
 			}
 			
-			if (differentiated)
-			{	
-				DifferentiatedObjectifier objectifier = new DifferentiatedObjectifier(stream);
-				objectifier.setDynamic(dynamic, m_kbInfo);
-				objectifier.setExcludedLocalConstNames(m_localConsts);
-				return objectifier.document();
-			}
-			else
-			{
-				UndifferentiatedObjectifier objectifier = new UndifferentiatedObjectifier(stream);
-				return objectifier.document();
-			}
+			Objectifier objectifier = new Objectifier(stream);
+			objectifier.setDynamic(dynamic, m_kbInfo);
+			objectifier.setDifferentiated(differentiated);
+			objectifier.setExcludedLocalConstNames(m_localConsts);
+			return objectifier.document();
 		});
 	}
 	

@@ -11,7 +11,8 @@ import org.ruleml.psoa.psoatransrun.QueryResult;
 public abstract class ExecutionEngine {
 	public abstract QueryResult executeQuery(String kb, String query,
 			List<String> queryVarMap, boolean getAllAnswers);
-
+	public abstract String language();
+	
 	public QueryResult executeQuery(String kb, String query,
 			List<String> queryVarMap) {
 		return executeQuery(kb, query, queryVarMap, true);

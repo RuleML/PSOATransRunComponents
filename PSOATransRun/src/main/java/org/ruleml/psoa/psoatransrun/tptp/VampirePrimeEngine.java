@@ -6,20 +6,44 @@ import java.util.Scanner;
 
 import org.apache.commons.exec.CommandLine;
 import org.ruleml.psoa.psoatransrun.*;
+import org.ruleml.psoa.psoatransrun.engine.EngineConfig;
 import org.ruleml.psoa.psoatransrun.engine.ExecutionEngine;
 
 import static org.ruleml.psoa.psoatransrun.utils.IOUtil.*;
 import static org.ruleml.psoa.psoatransrun.utils.ShellUtil.execute;
 
 public class VampirePrimeEngine extends ExecutionEngine {
-	private VampirePrimeEngineConfig m_config;
+	private Config m_config;
 
+	public static class Config extends EngineConfig {
+		public String binPath, answerPredicatePath;
+	}
+	
+	/**
+	 * VampirePrime engine configuration
+	 * 
+	 * */
 	public VampirePrimeEngine() {
-		this(new VampirePrimeEngineConfig());
+		this(new Config());
 	}
 
-	public VampirePrimeEngine(VampirePrimeEngineConfig config) {
+	public VampirePrimeEngine(Config config) {
 		m_config = config;
+		ClassLoader loader = this.getClass().getClassLoader();
+		if (config.binPath == null)
+		{
+			File bin = extractFromResource(loader, "vampirePrime/vkernel");
+			bin.setExecutable(true, true);
+			config.binPath = bin.getAbsolutePath();
+		}
+		
+		if (config.answerPredicatePath == null)
+			config.answerPredicatePath = extractFromResource(loader, "vampirePrime/answer_predicates.xml").getAbsolutePath();
+	}
+
+	@Override
+	public String language() {
+		return "tptp";
 	}
 
 	@Override

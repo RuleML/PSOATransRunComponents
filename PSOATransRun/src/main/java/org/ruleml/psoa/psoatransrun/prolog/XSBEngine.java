@@ -11,6 +11,7 @@ import org.ruleml.psoa.psoatransrun.SubstitutionSet;
 import org.ruleml.psoa.psoatransrun.AnswerIterator;
 import org.ruleml.psoa.psoatransrun.PSOATransRunException;
 import org.ruleml.psoa.psoatransrun.QueryResult;
+import org.ruleml.psoa.psoatransrun.engine.EngineConfig;
 import org.ruleml.psoa.psoatransrun.engine.ReusableKBEngine;
 import org.ruleml.psoa.psoatransrun.test.Watch;
 
@@ -27,11 +28,19 @@ public class XSBEngine extends ReusableKBEngine {
 	private File m_transKBFile;
 	private XSBSubprocessEngine m_engine;
 
+	/**
+	 * XSB engine configuration
+	 * 
+	 * */
+	public static class Config extends EngineConfig {
+		public String xsbFolderPath;
+	}
+
 	public XSBEngine() {
-		this(new XSBEngineConfig());
+		this(new Config());
 	}
 	
-	public XSBEngine(XSBEngineConfig config) {
+	public XSBEngine(Config config) {
 		
 		// Configure xsb installation folder
 		m_xsbFolder = config.xsbFolderPath;
@@ -104,8 +113,18 @@ public class XSBEngine extends ReusableKBEngine {
 	}
 
 	@Override
+	public String language() {
+		return "prolog";
+	}
+
+	@Override
 	public void loadKB(String kb) {
 		try {
+			if (m_engine.isShutingDown())
+			{
+				m_engine = new XSBSubprocessEngine(m_xsbBinPath);
+			}
+			
 			try(PrintWriter writer = new PrintWriter(m_transKBFile))
 			{
 				writer.println(":- table(memterm/2).");
@@ -154,7 +173,9 @@ public class XSBEngine extends ReusableKBEngine {
 		if (queryVars.isEmpty())
 		{
 			m_exeWatch.start();
-			r = new QueryResult(m_engine.deterministicGoal(query));
+			// Remove trailing dot for InterProlog
+			String queryToSend = query.substring(0, query.length() - 1); 
+			r = new QueryResult(m_engine.deterministicGoal(queryToSend));
 			m_exeWatch.stop();
 		}
 		else
@@ -173,7 +194,10 @@ public class XSBEngine extends ReusableKBEngine {
 				 * */
 				prologQueryBuilder = new StringBuilder("findall([");
 				appendVars(prologQueryBuilder, queryVars, ",");
-				prologQueryBuilder.append("],(").append(query).append("),AS),buildTermModel(AS,LM)");
+				prologQueryBuilder.append("],(").append(query);
+				// Remove trailing dot for InterProlog
+				prologQueryBuilder.setLength(prologQueryBuilder.length() - 1);
+				prologQueryBuilder.append("),AS),buildTermModel(AS,LM)");
 				
 				m_exeWatch.start();
 				result = (TermModel)m_engine.deterministicGoal(prologQueryBuilder.toString(), "[LM]")[0];
@@ -198,6 +222,8 @@ public class XSBEngine extends ReusableKBEngine {
 				 *  
 				 * */
 				prologQueryBuilder = new StringBuilder(query);
+				// Remove trailing dot for InterProlog
+				prologQueryBuilder.setLength(prologQueryBuilder.length() - 1);
 				prologQueryBuilder.append(",buildTermModel([");
 				appendVars(prologQueryBuilder, queryVars, ",");
 				prologQueryBuilder.append("],LM)");

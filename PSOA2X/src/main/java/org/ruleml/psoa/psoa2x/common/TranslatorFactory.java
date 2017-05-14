@@ -1,18 +1,16 @@
 package org.ruleml.psoa.psoa2x.common;
 
-import org.ruleml.psoa.psoa2x.psoa2prolog.PSOA2PrologConfig;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PrologTranslator;
-import org.ruleml.psoa.psoa2x.psoa2tptp.PSOA2TPTPConfig;
-import org.ruleml.psoa.psoa2x.psoa2tptp.ASOTPTPTranslator;
+import org.ruleml.psoa.psoa2x.psoa2tptp.TPTPTranslator;
 
 public class TranslatorFactory {
 	
 	public Translator createTranslator(String targetLanguage)
 	{
 		if (targetLanguage.equalsIgnoreCase("prolog"))
-			return new PrologTranslator(new PSOA2PrologConfig());
+			return new PrologTranslator();
 		else if (targetLanguage.equalsIgnoreCase("tptp"))
-			return new ASOTPTPTranslator(new PSOA2TPTPConfig());
+			return new TPTPTranslator();
 		
 		throw new TranslatorException("Unknown target language: " + targetLanguage);
 	}

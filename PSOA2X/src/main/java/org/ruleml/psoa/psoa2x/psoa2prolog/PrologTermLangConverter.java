@@ -22,6 +22,7 @@ public abstract class PrologTermLangConverter extends ANTLRBasedTranslator.Conve
 	}
 	
 	protected void convertIRIConst(String iri) {
+        // TODO: Handle special datatypes, e.g. string, int, etc.
 		append("\'<", iri, ">\'");
 	}
 

@@ -4,15 +4,15 @@ import org.antlr.runtime.tree.TreeNodeStream;
 import org.ruleml.psoa.PSOAInput;
 import org.ruleml.psoa.psoa2x.common.*;
 
-public class ASOTPTPTranslator extends ANTLRBasedTranslator {
+public class TPTPTranslator extends ANTLRBasedTranslator {
 	private PSOA2TPTPConfig m_config;
 	
-	public ASOTPTPTranslator()
+	public TPTPTranslator()
 	{
 		this(new PSOA2TPTPConfig());
 	}
 	
-	public ASOTPTPTranslator(PSOA2TPTPConfig config)
+	public TPTPTranslator(PSOA2TPTPConfig config)
 	{
 		m_config = config;
 	}
@@ -24,6 +24,9 @@ public class ASOTPTPTranslator extends ANTLRBasedTranslator {
 	
 	@Override
 	protected Converter createTranslatorWalker(TreeNodeStream astNodes) {
-		return new ASOTPTPConverter(astNodes, m_config);
+		if (m_config.useDirect)
+			return new DirectTPTPConverter(astNodes);
+		else
+			return new ASOTPTPConverter(astNodes);
 	}
 }

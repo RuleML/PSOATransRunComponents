@@ -24,6 +24,7 @@ options
 {
   private final String s_skolem = "skolem";
   private int m_skolemCtr = 0;
+  private boolean m_isPositive = true;
   
   private CommonTree createSkolemTermTree()
   {
@@ -110,6 +111,14 @@ clause
     ;
     
 head
+@init
+{
+   m_isPositive = true;
+}
+@after
+{
+   m_isPositive = false;
+}
     :   atomic
     |   ^(AND head+)
     |   ^(EXISTS 
@@ -127,9 +136,6 @@ formula
     |   ^(OR formula+)
     |   FALSITY
     |   ^(EXISTS VAR_ID+ formula)
-    {
-        System.err.println("Body existentials should be removed before Skolemization.");
-    }
     |   atomic
     |   external
     ;
@@ -159,8 +165,9 @@ term
 }
     :   constant
     |   VAR_ID
-    // If a Skolem is generated for the variable, replace the variable with the Skolem
-    ->  { (streamTree = $rule::existVarMap.get($VAR_ID.text)) != null }? { (CommonTree)adaptor.dupTree(streamTree) }
+    // If a Skolem is generated for the positively occurring variable, 
+    // replace it with the Skolem
+    ->  { m_isPositive && (streamTree = $rule::existVarMap.get($VAR_ID.text)) != null }? { (CommonTree)adaptor.dupTree(streamTree) }
     // Keep the variable unchanged otherwise 
     ->  VAR_ID
     |   psoa
