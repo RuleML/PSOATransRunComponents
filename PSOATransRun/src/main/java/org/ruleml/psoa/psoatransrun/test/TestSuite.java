@@ -31,8 +31,17 @@ public class TestSuite {
 		m_testCases = new ArrayList<TestCase>(testCases.length);
 		for (File testCaseDir : testCases)
 		{
-			if (testCaseDir.isDirectory())
-				m_testCases.add(new TestCase(testCaseDir, system));
+			try {
+				if (testCaseDir.isDirectory())
+				{
+					m_testCases.add(new TestCase(testCaseDir, system));
+				}
+			}
+			catch (Exception e)
+			{
+				printErrln("Failed to parse test case ", testCaseDir.getName());
+				e.printStackTrace();
+			}
 		}
 	}
 	

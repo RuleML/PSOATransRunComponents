@@ -7,7 +7,7 @@ public class IOUtil {
 	public static void print(PrintStream output, Object... objs)
 	{
 		for (Object obj : objs) {
-			System.out.print(obj);
+			output.print(obj);
 		}
 	}
 	

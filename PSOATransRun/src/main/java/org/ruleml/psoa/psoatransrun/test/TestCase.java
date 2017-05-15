@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import org.ruleml.psoa.psoatransrun.PSOATransRun;
+import org.ruleml.psoa.psoatransrun.PSOATransRunException;
 import org.ruleml.psoa.psoatransrun.QueryResult;
 
 /**
@@ -68,7 +69,7 @@ public class TestCase {
 		}
 		
 		if (m_kb == null)
-			throw new IllegalArgumentException("No KB in folder " + m_dir.getName());
+			throw new PSOATransRunException("No KB in folder " + m_dir.getName());
 	}
 	
 	private boolean runOnce()
@@ -143,7 +144,7 @@ public class TestCase {
 	}
 
 	public boolean run(int times)
-	{
+	{		
 		boolean isAnswerCorrect = true;
 		
 		for (int i = times; i > 0; i--)

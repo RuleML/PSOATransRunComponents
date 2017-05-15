@@ -1,11 +1,11 @@
 The directory stores a test suite used for the automated testing of 
 PSOA implementations, e.g. by our Java-based PSOATransRun 
-@@@testing program@@@. Each test case is stored under one 
+testing module. Each test case is stored under one 
 subdirectory, which we will call <testCaseName>. Under this 
 subdirectory, there exists one main KB file <testCaseName>-KB.psoa, 
 zero or more imported KB files, e.g. written as 
-<testCaseName>-KB-importedI.psoa, I=1,2,... (the @@@testing 
-program@@@ will ignore all files whose names contain anything 
+<testCaseName>-KB-importedI.psoa, I=1,2,... (the testing 
+module will ignore all files whose names contain anything 
 between "KB" and ".psoa"), one or more query file 
 <testCaseName>-queryJ.psoa, J=1,2,..., and one answer file 
 <testCaseName>-answerJ.psoa for each query 
