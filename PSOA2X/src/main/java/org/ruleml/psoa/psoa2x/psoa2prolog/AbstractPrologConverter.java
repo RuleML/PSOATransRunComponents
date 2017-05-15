@@ -14,6 +14,7 @@ import org.antlr.runtime.tree.TreeNodeStream;
 public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 	private static final Map<String, String> s_builtInMap = new HashMap<String, String>(16);
 	
+	// Table maps PSOA built-ins (e.g. RIF-DTB) to XSB Prolog
 	static
 	{
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-equal", "\'=:=\'");
@@ -23,6 +24,7 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than", "\'<\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than-or-equal", "\'=<\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#is-literal-integer", "\'integer\'");
+		
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-add", "\'+\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-subtract", "\'-\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-multiply", "\'*\'");
