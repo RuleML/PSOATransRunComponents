@@ -14,9 +14,10 @@ import org.antlr.runtime.tree.TreeNodeStream;
 public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 	private static final Map<String, String> s_builtInMap = new HashMap<String, String>(16);
 	
-	// Table maps PSOA built-ins (e.g. RIF-DTB) to XSB Prolog
+	// Table maps PSOA built-ins to XSB Prolog
 	static
 	{
+		// Taken from W3C RIF-DTB library
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-equal", "\'=:=\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-not-equal", "\'=\\=\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than", "\'>\'");
@@ -31,6 +32,16 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-divide", "\'/\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-integer-divide", "\'//'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-mod", "rem");
+		
+		// Taken from ISO Prolog library
+		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#sqrt", "sqrt");	
+		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#abs", "abs");
+		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#ceiling", "ceiling");
+		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#sin", "sin");
+		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#cos", "cos");
+		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#log", "log");
+		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#truncate", "truncate");
+		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#round", "round");
 	}
 
 	public AbstractPrologConverter(TreeNodeStream input, RecognizerSharedState state) {
