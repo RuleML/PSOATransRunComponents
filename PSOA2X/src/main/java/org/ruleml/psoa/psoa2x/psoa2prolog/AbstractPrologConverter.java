@@ -34,14 +34,21 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-mod", "rem");
 		
 		// Taken from ISO Prolog library
-		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#sqrt", "sqrt");	
-		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#abs", "abs");
-		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#ceiling", "ceiling");
-		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#sin", "sin");
-		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#cos", "cos");
-		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#log", "log");
-		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#truncate", "truncate");
-		s_builtInMap.put("http://fsl.cs.illinois.edu/images/9/9c/PrologStandard.pdf#round", "round");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#abs", "abs");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sign", "sign");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#float", "float");//*
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#truncate", "truncate");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#round", "round");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#ceiling", "ceiling");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#power", "\'**\'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sin", "sin");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#cos", "cos");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#atan", "atan");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sqrt", "sqrt");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#exp", "exp");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#log", "log");
+		
+		
 	}
 
 	public AbstractPrologConverter(TreeNodeStream input, RecognizerSharedState state) {
