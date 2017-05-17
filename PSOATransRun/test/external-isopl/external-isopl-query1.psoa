@@ -1,1 +1,1 @@
-And(?X1=External(isopl:abs(-200)) ?X2=External(isopl:abs(50.2)))
+And(?X1=External(isopl:rem(16 10)) ?X2=External(isopl:mod(16 10)))

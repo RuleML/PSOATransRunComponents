@@ -1,1 +1,4 @@
-And(?X1=External(isopl:exp(1)) ?X2=External(isopl:log(?X1)))
+Exists ?X1 ?X2 ?X3 (
+  And(?X1=External(isopl:sin(3.14)) 
+      ?X2=External(isopl:cos(0))
+	  ?X3=External(isopl:atan(1))))

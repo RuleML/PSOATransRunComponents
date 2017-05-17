@@ -34,6 +34,8 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-mod", "rem");
 		
 		// Taken from ISO Prolog library
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#rem", "rem");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#mod", "mod");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#abs", "abs");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sign", "sign");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#float", "float");//*

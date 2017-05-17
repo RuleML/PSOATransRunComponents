@@ -1,4 +1,1 @@
-And(?X1=External(isopl:sign(-200)) 
-    ?X2=External(isopl:sign(25.5))
-	?X3=External(isopl:sign(0))
-	?X4=External(isopl:float(3)))
+And(?X1=External(isopl:abs(-200)) ?X2=External(isopl:abs(50.2)))

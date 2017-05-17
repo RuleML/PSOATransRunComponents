@@ -1,0 +1,1 @@
+And(?X1=External(isopl:exp(1)) ?X2=External(isopl:log(?X1)))
