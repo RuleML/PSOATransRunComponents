@@ -1,0 +1,5 @@
+And(?X1=External(isopl:power(2 4)) 
+    ?X2=External(isopl:power(4 0.5))
+	?X3=External(isopl:power(2 -1))
+	?X4=External(isopl:sqrt(4))
+	?X5=External(isopl:sqrt(110.25)))
