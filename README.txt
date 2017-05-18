@@ -2,8 +2,8 @@ Import Project into Eclipse using Eclipse's built-in Git plugin and Prepare for 
 1. Install JDK 1.8 or higher and Eclipse 4.2 or higher
 2. If you want to submit your changes to this project, you need to fork this project under your own GitHub account
 3. Import project into Eclipse
-  3.1 Open Eclipse, choose File -> Import -> Git -> Project from Git and click "Next"
-  3.2 Choose "Clone URI" and click "Next"
+  * Open Eclipse, choose File -> Import -> Git -> Project from Git and click "Next"
+  * Choose "Clone URI" and click "Next"
   3.3 Input the URL of your forked repository (if changes need to be submitted) or this GitHub repository (if no changes need to be  submitted)
   3.4 Input your GitHub credentials and click "Next"
   3.5 Unselect all branches except the "master" branch and click "Next"
