@@ -1,4 +1,4 @@
-Import Project into Eclipse using Eclipse's built-in Git plugin and Prepare for Compilation
+Import Project into Eclipse using Eclipse's built-in Git plugin and Prepare for Building
 1. Install JDK 1.8 or higher and Eclipse 4.2 or higher
 2. If you want to submit your changes to this project, you need to fork this project under your own GitHub account
 3. Import project into Eclipse
@@ -9,11 +9,19 @@ Import Project into Eclipse using Eclipse's built-in Git plugin and Prepare for 
 * Unselect all branches except the "master" branch and click "Next"
 * Set your local path of the project folder and click "Next"
 * Click "Next" and then "Finish" to import the project into Eclipse
-4. Prepare for compilation
+4. Preparation for building project
 * Expand the dropdown list besides the green run button in the Eclipse toolbar and click "Run Configurations"
 * Expand "Maven Build" menu, choose any one of the "InterPrologInstall" items, and click "Run". This will install the InterProlog library to your local Maven repository.
-* There should be red-cross error icons shown for projects PSOA2X, PSOACore, and tptp-parser. To fix the problem, follow the next steps.
+* There should be red-cross error icons shown for projects PSOA2X, PSOACore, and tptp-parser. If they are not shown, trying building the project once as explained in the Section "Building Project in Eclipse". To fix the problem, follow the next steps.
 * Expand the "PSOACore" project, open pom.xml and choose the "pom.xml" tab.
 * Hover your cursor over the \<execution\> element with a red wavy underline and click the "Discover new m2e connectors" fix option.
 * Click "Finish" and follow the guideline to install m2e connectors for ANTLR. The installation will show a security warning "You are installing software that contains unsigned content." Click "OK" to ignore the warning.
 * Restart Eclipse to finish the preparation process
+
+Building Project in Eclipse
+* Right-click the PSOATools project in the left panel, choose "Run As -> Maven install" to build the project. This does an incremental build of PSOATools and all of its subprojects. The path of the output PSOATransRun jar file is \<project dir\>\PSOATransRun\target\PSOATransRunLocal.jar. In case the building process is successful but Eclipse still shows errors for the projects, right-click the PSOATools project and choose "Maven -> Update Project".
+* For a clean build (may be needed for the last round of testing and release), click "Run As -> Maven clean" before doing "Maven install".
+
+Running Tests
+* To test PSOATransRun, execute the command line, where \<testDir\> is the path to the folder containing test cases:
+ java -jar PSOATransRunLocal.jar --test -i \<testDir\>
