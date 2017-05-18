@@ -27,5 +27,6 @@ Building Project in Eclipse
 * For a clean build (may be needed for the last round of testing and release), click "Run As -> Maven clean" before doing "Maven install".
 
 Running Tests
-* To test PSOATransRun, execute the command line, where \<testDir\> is the path to the folder containing test cases:
- java -jar PSOATransRunLocal.jar --test -i \<testDir\>
+* To test PSOATransRun, execute the following command line, where \<testDir\> is the path to the folder containing test cases:
+
+  java -jar PSOATransRunLocal.jar --test -i \<testDir\>
