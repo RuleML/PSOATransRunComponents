@@ -21,9 +21,9 @@ Import Project into Eclipse using Eclipse's Built-in Git Plugin and Prepare for 
 Building Project in Eclipse
 * Right-click the PSOATools project in the left panel, choose "Run As -> Maven install" to build the project. This does an incremental build of PSOATools and all of its subprojects. The path of the output PSOATransRun jar file is 
 
- \<project dir\>\PSOATransRun\target\PSOATransRunLocal.jar
+  \<project dir\>\PSOATransRun\target\PSOATransRunLocal.jar
  
- In case the building process is successful but Eclipse still shows errors for the projects, right-click the PSOATools project and choose "Maven -> Update Project".
+  In case the building process is successful but Eclipse still shows errors for the projects, right-click the PSOATools project and choose "Maven -> Update Project".
 * For a clean build (may be needed for the last round of testing and release), click "Run As -> Maven clean" before doing "Maven install".
 
 Running Tests
