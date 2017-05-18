@@ -10,13 +10,13 @@ Import Project into Eclipse using Eclipse's built-in Git plugin and Prepare for 
    6. Set your local path of the project folder and click "Next"
    7. Click "Next" and then "Finish" to import the project into Eclipse
 4. Preparation for building project
-* Expand the dropdown list besides the green run button in the Eclipse toolbar and click "Run Configurations"
-* Expand the "Maven Build" menu, choose any one of the "InterPrologInstall" items, and click "Run". This will install the InterProlog library to your local Maven repository.
-* There should be red-cross error icons shown for projects PSOA2X, PSOACore, and tptp-parser. If not, try building the project once as explained in the Section "Building Project in Eclipse". To fix the problem, follow the next steps.
-* Expand the "PSOACore" project, open pom.xml and choose the "pom.xml" tab.
-* Hover your cursor over the \<execution\> element with a red wavy underline and click the "Discover new m2e connectors" fix option.
-* Click "Finish" and follow the guideline to install m2e connectors for ANTLR. The installation will show a security warning "You are installing software that contains unsigned content." Click "OK" to ignore the warning.
-* Restart Eclipse to finish the preparation process
+   1. Expand the dropdown list besides the green run button in the Eclipse toolbar and click "Run Configurations"
+   2. Expand the "Maven Build" menu, choose any one of the "InterPrologInstall" items, and click "Run". This will install the InterProlog library to your local Maven repository.
+   3. There should be red-cross error icons shown for projects PSOA2X, PSOACore, and tptp-parser. If not, try building the project once as explained in the Section "Building Project in Eclipse". To fix the problem, follow the next steps.
+   4. Expand the "PSOACore" project, open pom.xml and choose the "pom.xml" tab.
+   5. Hover your cursor over the \<execution\> element with a red wavy underline and click the "Discover new m2e connectors" fix option.
+   6. Click "Finish" and follow the guideline to install m2e connectors for ANTLR. The installation will show a security warning "You are installing software that contains unsigned content." Click "OK" to ignore the warning.
+   7. Restart Eclipse to finish the preparation process
 
 Building Project in Eclipse
 * Right-click the PSOATools project in the left panel, choose "Run As -> Maven install" to build the project. This does an incremental build of PSOATools and all of its subprojects. The path of the output PSOATransRun jar file is 
