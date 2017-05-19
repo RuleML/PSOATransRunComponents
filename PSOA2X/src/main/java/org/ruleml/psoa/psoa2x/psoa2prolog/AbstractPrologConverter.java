@@ -24,7 +24,8 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than-or-equal", "\'>=\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than", "\'<\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than-or-equal", "\'=<\'");
-		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#is-literal-integer", "\'integer\'");
+		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#is-literal-double", "float");  // Shortcut or xs:double float numbers (single or double) are represented as doubles for XSB
+		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#is-literal-integer", "integer");
 		
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-add", "\'+\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-subtract", "\'-\'");
@@ -34,23 +35,36 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-function#numeric-mod", "rem");
 		
 		// Taken from ISO Prolog library
+		// Functions
+		// @@@: add missing functions (RIF functions that are also in ISO Prolog)
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#rem", "rem");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#mod", "mod");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#abs", "abs");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sign", "sign");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#float", "float");//*
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#float", "float");  // Coerce to shortcut float number (represented as double) from, e.g., integer
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#truncate", "truncate");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#round", "round");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#floor", "floor");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#ceiling", "ceiling");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#power", "\'**\'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#power", "\'**\'");  // Special chars for XSB
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sin", "sin");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#cos", "cos");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#atan", "atan");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sqrt", "sqrt");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#exp", "exp");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#log", "log");
-		
-		
+			
+		// @@@ Predicates
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#integer", "integer"); // * @@@
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#float", "float");  // * Test if shortcut or xs:double float number (represented as double) [Currently redundant because of above same-named coerce]
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#number", "number"); // *	@@@
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-equal", "\'=:=\'"); // @@@ add tests
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-not-equal", "\'=\\=\'"); // @@@ add tests
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-greater-than", "\'>\'"); // @@@ add tests
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-greater-than-or-equal", "\'>=\'"); // @@@ add tests
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-less-than", "\'<\'"); // @@@ add tests
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-less-than-or-equal", "\'=<\'"); // @@@ add tests
+		// @@@
 	}
 
 	public AbstractPrologConverter(TreeNodeStream input, RecognizerSharedState state) {

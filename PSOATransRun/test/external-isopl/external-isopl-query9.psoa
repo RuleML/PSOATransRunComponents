@@ -1,0 +1,4 @@
+And(:inRange(External(isopl:exp(1)) 2.7181 2.7183)
+	:inRange (External(isopl:exp(2)) 7.3889 7.3891)
+    External(isopl:numeric-equal(isopl:log(isopl:exp(1)) 1))
+	:inRange (External(isopl:log(10)) 2.3024 2.3026))
