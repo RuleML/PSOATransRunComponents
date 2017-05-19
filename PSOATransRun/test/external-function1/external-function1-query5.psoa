@@ -1,0 +1,4 @@
+And(
+  ?x1=External(func:numeric-multiply(127 External(func:numeric-subtract(-32 10))))
+  ?x2=External(func:numeric-multiply(12 func:numeric-divide(23 -6)))
+)

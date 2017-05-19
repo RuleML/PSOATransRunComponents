@@ -1,0 +1,11 @@
+Document(
+  Group (
+    _o1#Top(_p+>_v)
+    _o2#_startup(_p+>_v)
+    _o3#Top(_p->_v)
+    _o4#_startup(_p->_v)
+    _o5#_company(_p+>_v)
+    _o6#_company(_p->_v)
+    _startup##_company
+  )
+)

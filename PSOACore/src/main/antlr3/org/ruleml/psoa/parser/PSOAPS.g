@@ -284,7 +284,7 @@ const_string
     : STRING ((SYMSPACE_OPER symspace=iri { isAbbrivated = false; } ) | '@')?
     -> {isAbbrivated}? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
     -> { $symspace.text.equals("http://www.w3.org/2001/XMLSchema#integer") || 
-         $symspace.text.equals("http://www.w3.org/2001/XMLSchema#decimal") || 
+         $symspace.text.equals("http://www.w3.org/2001/XMLSchema#double") || 
          $symspace.text.equals("http://www.w3.org/2001/XMLSchema#long")}? ^(SHORTCONST NUMBER[getStrValue($STRING.text)])
     -> { $symspace.text.equals("http://www.w3.org/2001/XMLSchema#string") }? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
     -> ^(LITERAL[getStrValue($STRING.text)] IRI[$symspace.text])

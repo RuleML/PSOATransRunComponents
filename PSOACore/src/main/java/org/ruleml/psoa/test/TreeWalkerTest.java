@@ -7,7 +7,7 @@ public class TreeWalkerTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		String path = "E:\\Program\\Execution\\testKB.psoa";
+		String path = args[0];
 		
 		PSOAKB kb = new PSOAKB();
 		
