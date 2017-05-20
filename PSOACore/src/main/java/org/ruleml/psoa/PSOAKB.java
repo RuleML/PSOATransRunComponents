@@ -265,11 +265,11 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 		return transform("Skolemization", stream -> (new Skolemizer(stream)).document());
 	}
 	
-	public PSOAKB slotTupribute(boolean omitMemtermInNegtiveAtoms)
+	public PSOAKB slotTupribute(boolean omitMemtermInNegativeAtoms)
 	{
 		return transform("slotribution/tupribution", stream -> {
 			SlotTupributor slotTupributor = new SlotTupributor(stream);
-			slotTupributor.setOmitMemtermInNegtiveAtoms(omitMemtermInNegtiveAtoms);
+			slotTupributor.setOmitMemtermInNegativeAtoms(omitMemtermInNegativeAtoms);
 			return slotTupributor.document();			
 		});
 	}
@@ -332,7 +332,7 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 		return unnest().
 			   rewriteSubclass().
 			   objectify(config.differentiateObj, config.dynamicObj).
-			   slotTupribute(config.omitMemtermInNegtiveAtoms);
+			   slotTupribute(config.omitMemtermInNegativeAtoms);
 	}
 	
 	/**

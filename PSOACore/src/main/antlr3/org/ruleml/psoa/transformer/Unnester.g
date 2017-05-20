@@ -29,14 +29,14 @@ options
     import java.util.Set;
     import java.util.HashSet;
     import java.util.Map;
-    import java.util.HashMap;
+    import java.util.LinkedHashMap;
     import static org.ruleml.psoa.FreshNameGenerator.*;
 }
 
 @members
 {
     private boolean m_isPositive;
-    private Map<String, CommonTree> m_newVarNodes = new HashMap<String, CommonTree>();
+    private Map<String, CommonTree> m_newVarNodes = new LinkedHashMap<String, CommonTree>();
     private Set<String> m_clauseVars = new HashSet<String>();
     
     private CommonTree getConjunctionTree(List conjuncts)
@@ -108,7 +108,6 @@ query
 @after
 {
     m_clauseVars.clear();
-    resetVarGen();
 }
     :   formula
     -> { m_newVarNodes.isEmpty() }? formula
@@ -116,10 +115,13 @@ query
     ;
     
 rule
+@init
+{
+    resetVarGen();
+}
 @after
 {
     m_clauseVars.clear();
-    resetVarGen();
 }
     :   ^(FORALL (VAR_ID { m_clauseVars.add($VAR_ID.text); })+ clause)
     ->  { m_newVarNodes.isEmpty() }? ^(FORALL VAR_ID+ clause)

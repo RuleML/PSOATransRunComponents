@@ -20,7 +20,7 @@ options
 	import java.util.Set;
 	import java.util.HashSet;
     import java.util.Map;
-    import java.util.HashMap;
+    import java.util.LinkedHashMap;
 	import org.ruleml.psoa.analyzer.*;
 	
 	import static org.ruleml.psoa.FreshNameGenerator.*;
@@ -28,10 +28,10 @@ options
 
 @members
 {
-    private boolean m_isRuleBody = false, m_isGroundFact = false, m_dynamic = false, m_diff;
+    private boolean m_isRuleBody = false, m_isQuery = false, m_isGroundFact = false, m_dynamic = false, m_diff;
     private Set<String> m_localConsts;
     private Set<String> m_clauseVars = new HashSet<String>();
-    private Map<String, CommonTree> m_newVarNodes = new HashMap<String, CommonTree>();
+    private Map<String, CommonTree> m_newVarNodes = new LinkedHashMap<String, CommonTree>();
     private KBInfoCollector m_KBInfo = null;
     
     public void setDynamic(boolean b, KBInfoCollector info)
@@ -111,15 +111,16 @@ group_element
 query
 @init
 {
-   // Reset variable generator before processing each query
-   resetVarGen();
+   m_isQuery = true;
 }
 @after
 {
    m_clauseVars.clear();
-   m_newVarNodes.clear();
+   m_isQuery = false;
 }
     :   formula
+    ->  { m_newVarNodes.isEmpty() }? formula
+    ->  ^(EXISTS { newVarsTree() } formula)
     ;
     
 rule
@@ -206,10 +207,11 @@ psoa[boolean isAtomic]
     -> { !isAtomic || 
          (   m_dynamic 
           && !m_KBInfo.hasHeadOnlyVariables()
-          && m_KBInfo.isPurelyRelational($type.tree)) }?
+          && m_KBInfo.isRelational($type.tree)) }?
           ^(PSOA ^(INSTANCE $type) tuple* slot*)
-    // differentiated static objectification for psoa terms in rule conditions
-    -> { m_isRuleBody && m_diff }?
+    // differentiated static objectification for psoa terms in rule conditions or queries
+    // (for queries, existential quantifiers are lifted to the top-level)
+    -> { (m_isRuleBody && m_diff) || m_isQuery }?
           ^(PSOA { newVarNode() } ^(INSTANCE $type) tuple* slot*)
     // differentiated static objectification for psoa terms used as ground facts
     -> { m_isGroundFact && m_diff }?

@@ -6,7 +6,7 @@ public class PSOA2PrologConfig extends RelationalTransformerConfig
 {
 	public PSOA2PrologConfig()
 	{
-		omitMemtermInNegtiveAtoms = false;
+		omitMemtermInNegativeAtoms = false;
 		differentiateObj = true;
 		dynamicObj = true;
 	}

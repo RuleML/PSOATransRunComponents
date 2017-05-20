@@ -5,7 +5,7 @@ import org.ruleml.psoa.psoa2x.psoa2tptp.TPTPTranslator;
 
 public class TranslatorFactory {
 	
-	public Translator createTranslator(String targetLanguage)
+	public static Translator createTranslator(String targetLanguage)
 	{
 		if (targetLanguage.equalsIgnoreCase("prolog"))
 			return new PrologTranslator();

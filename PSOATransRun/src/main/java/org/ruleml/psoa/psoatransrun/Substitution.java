@@ -12,7 +12,7 @@ import org.ruleml.psoa.psoa2x.common.Translator;
  * 
  * */
 public class Substitution {
-	private Map<String, String> m_binding = new HashMap<String, String>();
+	private Map<String, String> m_binding = new LinkedHashMap<String, String>();
 
 	public void addPair(String var, String value) {
 		m_binding.put(var, value);
@@ -85,7 +85,7 @@ public class Substitution {
 	}
 	
 	public void inverseTranslate(Translator t) {
-		Map<String, String> transBinding = new HashMap<String, String>(m_binding.size() * 2);
+		Map<String, String> transBinding = new LinkedHashMap<String, String>(m_binding.size() * 2);
 		for (Entry<String, String> entry : m_binding.entrySet())
 		{
 			String var = t.inverseTranslateTerm(entry.getKey()),

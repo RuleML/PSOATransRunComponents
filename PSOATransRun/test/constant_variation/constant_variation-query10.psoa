@@ -1,0 +1,1 @@
+And(_p3("str1"^^xs:string) _p3("str2"^^xs:string) _p3("str3"^^xs:string))

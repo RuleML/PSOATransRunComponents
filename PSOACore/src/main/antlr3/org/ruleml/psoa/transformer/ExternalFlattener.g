@@ -21,7 +21,7 @@ options
   import java.util.Set;
   import java.util.HashSet;
   import java.util.Map;
-  import java.util.HashMap;
+  import java.util.LinkedHashMap;
   
   import static org.ruleml.psoa.FreshNameGenerator.*;
 }
@@ -29,7 +29,7 @@ options
 @members
 {
     // New / old variables in the current KB clause or query formula
-    private Map<String, CommonTree> m_newVarNodes = new HashMap<String, CommonTree>();
+    private Map<String, CommonTree> m_newVarNodes = new LinkedHashMap<String, CommonTree>();
     private Set<String> m_clauseVars = new HashSet<String>();
     
     // Equalities generated from externals in the current formula.
@@ -116,7 +116,6 @@ query
 @after
 {
     m_clauseVars.clear();
-    resetVarGen();
 }
     :   formula
     ->  { m_newVarNodes.isEmpty() }? formula
@@ -124,10 +123,13 @@ query
     ;
     
 rule
+@init
+{
+    resetVarGen();
+}
 @after
 {
     m_clauseVars.clear();
-    resetVarGen();
 }
     :   ^(FORALL (VAR_ID { m_clauseVars.add($VAR_ID.text); })+ clause)
     -> { m_newVarNodes.isEmpty() }? ^(FORALL VAR_ID+ clause)

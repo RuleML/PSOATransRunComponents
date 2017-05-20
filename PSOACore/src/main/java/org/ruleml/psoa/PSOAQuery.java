@@ -15,9 +15,9 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 {
 	private PSOAKB m_kb;
 	
-	public PSOAQuery() {
-		m_kb = null;
-	}
+//	public PSOAQuery() {
+//		m_kb = null;
+//	}
 	
 	public PSOAQuery(PSOAKB kb) {
 		m_kb = kb;
@@ -44,7 +44,7 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 		
 		if (dynamic)
 		{
-			q = transform("dynamic objectification", stream -> (new QueryRewriter(stream, m_kb.getKBInfo())).query());
+			q = transform("rewriting for dynamic objectification", stream -> (new QueryRewriter(stream, m_kb.getKBInfo())).query());
 		}
 		else
 			q = this;
@@ -57,11 +57,11 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 		});
 	}
 	
-	public PSOAQuery slotTupribute(boolean omitMemtermInNegtiveAtoms)
+	public PSOAQuery slotTupribute(boolean omitMemtermInNegativeAtoms)
 	{
 		return transform("slotribution/tupribution", stream -> {
 			SlotTupributor slotTupributor = new SlotTupributor(stream);
-			slotTupributor.setOmitMemtermInNegtiveAtoms(omitMemtermInNegtiveAtoms);
+			slotTupributor.setOmitMemtermInNegativeAtoms(omitMemtermInNegativeAtoms);
 			return slotTupributor.query();
 		});
 	}
@@ -112,7 +112,7 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 	public PSOAQuery FOLnormalize(RelationalTransformerConfig config) {
 		return unnest().
 			   objectify(config.differentiateObj, config.dynamicObj).
-			   slotTupribute(config.omitMemtermInNegtiveAtoms);
+			   slotTupribute(config.omitMemtermInNegativeAtoms);
 	}
 
 	

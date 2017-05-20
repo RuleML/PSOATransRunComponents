@@ -1,0 +1,5 @@
+And(
+  _p2("3.5"^^<http://www.w3.org/2001/XMLSchema#double>)
+  _p2("4.5"^^<http://www.w3.org/2001/XMLSchema#double>)
+  _p2("5.5"^^<http://www.w3.org/2001/XMLSchema#double>)
+)

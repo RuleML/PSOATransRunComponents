@@ -283,10 +283,10 @@ const_string
 @init { boolean isAbbrivated = true; } 
     : STRING ((SYMSPACE_OPER symspace=iri { isAbbrivated = false; } ) | '@')?
     -> {isAbbrivated}? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
-    -> { $symspace.text.equals("http://www.w3.org/2001/XMLSchema#integer") || 
-         $symspace.text.equals("http://www.w3.org/2001/XMLSchema#double") || 
-         $symspace.text.equals("http://www.w3.org/2001/XMLSchema#long")}? ^(SHORTCONST NUMBER[getStrValue($STRING.text)])
-    -> { $symspace.text.equals("http://www.w3.org/2001/XMLSchema#string") }? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
+    -> { $symspace.fullIRI.equals("http://www.w3.org/2001/XMLSchema#integer") || 
+         $symspace.fullIRI.equals("http://www.w3.org/2001/XMLSchema#double") || 
+         $symspace.fullIRI.equals("http://www.w3.org/2001/XMLSchema#long")}? ^(SHORTCONST NUMBER[getStrValue($STRING.text)])
+    -> { $symspace.fullIRI.equals("http://www.w3.org/2001/XMLSchema#string") }? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
     -> ^(LITERAL[getStrValue($STRING.text)] IRI[$symspace.text])
     //|   STRING '@' ID /* langtag */ -> ^(SHORTCONST LITERAL[$STRING.text])
     ;
@@ -301,15 +301,15 @@ answer
     | (term EQUAL term)+  
     ;
 
-iri
-	: IRI_REF -> IRI[$IRI_REF.text]
-	| curie
+iri returns [String fullIRI]
+	: IRI_REF -> IRI[$fullIRI = $IRI_REF.text]
+	| curie { $fullIRI = $curie.fullIRI; }
 	;
 	
-curie
+curie returns [String fullIRI]
 	: NAMESPACE localName=PN_LOCAL
-	-> { localName == null }? IRI[getFullIRI($NAMESPACE.text, "")]
-	-> IRI[getFullIRI($NAMESPACE.text, $localName.text)]
+	-> { localName == null }? IRI[$fullIRI = getFullIRI($NAMESPACE.text, "")]
+	-> IRI[$fullIRI = getFullIRI($NAMESPACE.text, $localName.text)]
 	;
 
 //--------------------- LEXER: -----------------------

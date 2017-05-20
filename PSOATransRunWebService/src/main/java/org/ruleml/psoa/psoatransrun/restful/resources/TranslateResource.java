@@ -25,7 +25,7 @@ public class TranslateResource {
 			return null;
 		
 		try {
-			Translator translator = (new TranslatorFactory()).createTranslator(req.getTarget());
+			Translator translator = TranslatorFactory.createTranslator(req.getTarget());
 			TranslationResult result = new TranslationResult();
 			
 			if (kb != null)

@@ -119,6 +119,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 	 * */
 	public void translateQuery(PSOAQuery query, OutputStream out) {
 		try {
+			FreshNameGenerator.resetVarGen();
 			query.setPrintAfterTransformation(debugMode);
 			TreeNodeStream stream = normalize(query).getTreeNodeStream();
 			m_queryConverter = createTranslatorWalker(stream);

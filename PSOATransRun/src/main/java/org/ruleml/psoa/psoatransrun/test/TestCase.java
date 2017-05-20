@@ -4,9 +4,12 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import org.ruleml.psoa.psoa2x.common.TranslatorException;
 import org.ruleml.psoa.psoatransrun.PSOATransRun;
 import org.ruleml.psoa.psoatransrun.PSOATransRunException;
 import org.ruleml.psoa.psoatransrun.QueryResult;
+
+import static org.ruleml.psoa.utils.IOUtil.*;
 
 /**
  * Class for running one test case
@@ -29,8 +32,8 @@ public class TestCase {
 		m_dir = testCaseDir;
 		m_system = system;
 		m_kb = null;
-		m_queryAndAns = new HashMap<File, QueryResult>();
-		m_incorrectQueries = new HashMap<String, String[]>();
+		m_queryAndAns = new LinkedHashMap<File, QueryResult>();
+		m_incorrectQueries = new LinkedHashMap<String, String[]>();
 		
 		for (File f : m_dir.listFiles())
 		{
@@ -77,61 +80,71 @@ public class TestCase {
 		try
 		{
 			boolean isTestCasePassed = true;
-			FileInputStream kbStream = new FileInputStream(m_kb);
-			
+
 			// Load KB
-			m_system.loadKB(kbStream);
-			kbStream.close();
+			try (FileInputStream kbStream = new FileInputStream(m_kb)) {
+				m_system.loadKB(kbStream);
+			}
 			
 			// Execute queries
 			for (Map.Entry<File, QueryResult> queryAns : m_queryAndAns.entrySet())
 			{
-//				System.out.println("Execute query " + queryAns.getKey().getName());
-				FileInputStream queryStream = new FileInputStream(queryAns.getKey());
-				QueryResult stdResult = queryAns.getValue(),
-							result = m_system.executeQuery(queryStream);
-				queryStream.close();
-				
-				boolean isSound = false, isComplete = false;
-				
-				// Compare results and update stats
-				if(stdResult.binaryResult())
-				{
-					if (result.binaryResult())
+				try {
+	//				System.out.println("Execute query " + queryAns.getKey().getName());
+					QueryResult stdResult = queryAns.getValue(),
+								result = null;
+
+					try (FileInputStream queryStream = new FileInputStream(queryAns.getKey()))
 					{
-						int numTotal = result.numAnswers(),
-							numSound = result.numCommonAnswers(stdResult);
-						m_numEngineAns += numTotal;
-						m_numSoundAns += numSound;
-						
-						isSound = (numTotal == numSound);
-						isComplete = (numTotal == numSound);
+						result = m_system.executeQuery(queryStream);
 					}
-				}
-				else
-				{
-					isComplete = true;
-					if (!result.binaryResult())
+					
+					boolean isSound = false, isComplete = false;
+					
+					// Compare results and update stats
+					if(stdResult.binaryResult())
 					{
-//						m_numSoundAns += 1;
-						isSound = true;
+						if (result.binaryResult())
+						{
+							int numTotal = result.numAnswers(),
+								numSound = result.numCommonAnswers(stdResult);
+							m_numEngineAns += numTotal;
+							m_numSoundAns += numSound;
+							
+							isSound = (numTotal == numSound);
+							isComplete = (numTotal == numSound);
+						}
 					}
 					else
-						m_numEngineAns += result.numAnswers();
-				}
-				
-				if (isSound && isComplete)
-					m_numCorrectQueries++;
-				else
-				{
-					String queryName = queryAns.getKey().getName(); 
-					if (!m_incorrectQueries.containsKey(queryName))
 					{
-						isTestCasePassed = false;
-						m_incorrectQueries.put(queryName, null);
-//						m_incorrectQueries.put(queryName, new String[] { String.valueOf(result) });
-						// TODO: Collect unsound/incomplete answers
+						isComplete = true;
+						if (!result.binaryResult())
+						{
+	//						m_numSoundAns += 1;
+							isSound = true;
+						}
+						else
+							m_numEngineAns += result.numAnswers();
 					}
+					
+					if (isSound && isComplete)
+						m_numCorrectQueries++;
+					else
+					{
+						String queryName = queryAns.getKey().getName(); 
+						if (!m_incorrectQueries.containsKey(queryName))
+						{
+							isTestCasePassed = false;
+							m_incorrectQueries.put(queryName, null);
+//							m_incorrectQueries.put(queryName, new String[] { String.valueOf(result) });
+							// TODO: Collect unsound/incomplete answers
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					printErrln("Failed to run query " + queryAns.getKey().getName());
+					throw e;
 				}
 			}
 			
@@ -217,18 +230,6 @@ public class TestCase {
 	}
 	
 	public void cleanup() {
-//		System.out.println("Shutdown engine");
-		try
-		{
-//			Scanner sc = new Scanner(System.in);
-//			System.out.println(sc.nextLine());
-//			Thread.sleep(1000);
-			m_system.dispose();
-			Thread.sleep(0);
-		} catch (InterruptedException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		m_system.dispose();
 	}
 }

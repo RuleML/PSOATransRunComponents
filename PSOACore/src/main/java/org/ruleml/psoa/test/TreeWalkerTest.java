@@ -2,18 +2,26 @@ package org.ruleml.psoa.test;
 
 import org.ruleml.psoa.transformer.*;
 import org.ruleml.psoa.PSOAKB;
+import org.ruleml.psoa.PSOAQuery;
 
 public class TreeWalkerTest
 {
 	public static void main(String[] args) throws Exception
-	{
-		String path = args[0];
-		
+	{		
 		PSOAKB kb = new PSOAKB();
 		
-		kb.loadFromFile(path);
+		kb.loadFromFile(args[0]);
 		kb.setPrintAfterTransformation(true);
 		kb.LPnormalize(new RelationalTransformerConfig());
+		
+		if (args.length == 2)
+		{
+			System.out.println();
+			PSOAQuery query = new PSOAQuery(kb);
+			query.loadFromFile(args[1]);
+			query.setPrintAfterTransformation(true);
+			query.LPnormalize(new RelationalTransformerConfig());
+		}
 	}
 /*	
 	public static void printNodeStream(CommonTreeNodeStream nodes)

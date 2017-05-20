@@ -99,7 +99,7 @@ public class XSBEngine extends ReusableKBEngine {
 			if (transKBPath != null)
 			{
 				if (!transKBPath.endsWith(".pl") && !transKBPath.endsWith(".P"))
-					throw new PSOATransRunException("Translation output file name must end with .pl or .P: " + transKBPath);
+					throw new PSOATransRunException("Prolog translation output file name must end with .pl or .P: " + transKBPath);
 				m_transKBFile = new File(transKBPath);
 				m_transKBFile.createNewFile();
 			}
@@ -119,29 +119,27 @@ public class XSBEngine extends ReusableKBEngine {
 
 	@Override
 	public void loadKB(String kb) {
-		try {
-			if (m_engine.isShutingDown())
+		if (m_engine.isShutingDown())
+		{
+			m_engine = new XSBSubprocessEngine(m_xsbBinPath);
+		}
+		
+		try(PrintWriter writer = new PrintWriter(m_transKBFile))
+		{
+			writer.println(":- table(memterm/2).");
+			writer.println(":- table(sloterm/3).");
+			writer.println(":- table(prdsloterm/4).");
+			
+			// Assume a maximum tuple length of 10 
+			for (int i = 2; i < 11; i++)
 			{
-				m_engine = new XSBSubprocessEngine(m_xsbBinPath);
+				writer.println(":- table(tupterm/" + i + ").");
+				writer.println(":- table(prdtupterm/" + (i + 1) + ").");
 			}
 			
-			try(PrintWriter writer = new PrintWriter(m_transKBFile))
-			{
-				writer.println(":- table(memterm/2).");
-				writer.println(":- table(sloterm/3).");
-				writer.println(":- table(prdsloterm/4).");
-				
-				// Assume a maximum tuple length of 10 
-				for (int i = 2; i < 11; i++)
-				{
-					writer.println(":- table(tupterm/" + i + ").");
-					writer.println(":- table(prdtupterm/" + (i + 1) + ").");
-				}
-				
-				// Configure XSB to return false for (sub)queries using unknown predicates
-				writer.println(":- set_prolog_flag(unknown,fail).");
-				writer.print(kb);
-			}
+			// Configure XSB to return false for (sub)queries using unknown predicates
+			writer.println(":- set_prolog_flag(unknown,fail).");
+			writer.print(kb);
 		}
 		catch (FileNotFoundException e)
 		{
