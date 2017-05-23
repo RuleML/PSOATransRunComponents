@@ -274,7 +274,11 @@ public class XSBEngine extends ReusableKBEngine {
 	
 	private static void termToString(StringBuilder b, TermModel m)
 	{
-		if (m.node instanceof String)
+		if (m.isList())
+		{
+			termsToString(b, m.flatList(), "[", "]");
+		}
+		else if (m.node instanceof String)
 		{
 			String s = (String)m.node;
 			boolean quote = !Character.isLowerCase(s.charAt(0));
@@ -293,11 +297,7 @@ public class XSBEngine extends ReusableKBEngine {
 			if (quote)
 				b.append("'");
 			
-			termChildrenToString(b, m, "(", ")");
-		}
-		else if (m.isList())
-		{
-			termChildrenToString(b, m, "[", "]");
+			termsToString(b, m.getChildren(), "(", ")");
 		}
 		else
 		{
@@ -305,16 +305,15 @@ public class XSBEngine extends ReusableKBEngine {
 		}
 	}
 	
-	private static void termChildrenToString(StringBuilder b, TermModel m, 
+	private static void termsToString(StringBuilder b, TermModel[] terms, 
 			String prefix, String suffix) {
-		TermModel[] children = m.getChildren();
-		if (children == null)
+		if (terms == null)
 			return;
 		
 		b.append(prefix);
-		for (TermModel ch: children)
+		for (TermModel t: terms)
 		{
-			termToString(b, ch);
+			termToString(b, t);
 			b.append(",");
 		}
 		b.setLength(b.length() - 1);
