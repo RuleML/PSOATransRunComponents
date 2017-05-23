@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.Scanner;
 
 import org.ruleml.psoa.psoa2x.common.Translator;
+import org.ruleml.psoa.psoa2x.common.TranslatorException;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PSOA2PrologConfig;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PrologTranslator;
 import org.ruleml.psoa.psoa2x.psoa2tptp.PSOA2TPTPConfig;
@@ -246,15 +247,18 @@ public class PSOATransRunCmdLine {
 							break;
 
 						String query = sc.nextLine();
-						QueryResult result = system.executeQuery(query);
-						printQueryResult(result, getAllAnswers, sc);
+						try {
+							QueryResult result = system.executeQuery(query);
+							printQueryResult(result, getAllAnswers, sc);
+						}
+						catch (PSOATransRunException | TranslatorException e)
+						{
+							e.printStackTrace();
+						}
 						println();
 					} while (true);
 				}
 			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
 		}
 		finally {
 			system.shutdown();

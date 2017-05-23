@@ -1,5 +1,5 @@
 And(
-  _p3("str1"^^<http://www.w3.org/2001/XMLSchema#string>)
-  _p3("str2"^^<http://www.w3.org/2001/XMLSchema#string>)
-  _p3("str3"^^<http://www.w3.org/2001/XMLSchema#string>)
+  :p3(:f("str1"^^<http://www.w3.org/2001/XMLSchema#string>))
+  :p3(:f("str2"^^<http://www.w3.org/2001/XMLSchema#string>))
+  :p3(:f("str3"^^<http://www.w3.org/2001/XMLSchema#string>))
 )

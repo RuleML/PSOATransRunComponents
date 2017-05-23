@@ -21,6 +21,9 @@ public class SubstitutionSet extends LinkedHashSet<Substitution> {
 	
 	@Override
 	public String toString() {
+		if (isEmpty())
+			return "No";
+		
 		StringBuilder sb = new StringBuilder();
 		for (Substitution b : this)
 		{

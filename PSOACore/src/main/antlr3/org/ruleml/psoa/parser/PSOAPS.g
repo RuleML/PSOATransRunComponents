@@ -50,6 +50,20 @@ tokens
 	private List<String[]> m_imports = new ArrayList<String[]>();
 	private Set<String> m_localConsts = new HashSet<String>();
     private Map<String, String> m_namespaceTable = new HashMap<String, String>();
+    private static Set<String> s_numberTypeIRIs = new HashSet();
+    private static String s_stringIRI = "http://www.w3.org/2001/XMLSchema#string";
+    
+    static
+    {
+       s_numberTypeIRIs.add("http://www.w3.org/2001/XMLSchema#integer");
+       s_numberTypeIRIs.add("http://www.w3.org/2001/XMLSchema#double");
+       s_numberTypeIRIs.add("http://www.w3.org/2001/XMLSchema#long");
+    }
+    
+    private static boolean fastStringEquals(String s1, String s2)
+    {
+        return s1.hashCode() == s2.hashCode() && s1.equals(s2);
+    }
     
     /** 
      * Get the full IRI form of an IRI prefix
@@ -280,13 +294,14 @@ constant
 
 //  Complete and abbreviated string constant
 const_string
-@init { boolean isAbbrivated = true; } 
+@init
+{
+    boolean isAbbrivated = true;
+}
     : STRING ((SYMSPACE_OPER symspace=iri { isAbbrivated = false; } ) | '@')?
     -> {isAbbrivated}? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
-    -> { $symspace.fullIRI.equals("http://www.w3.org/2001/XMLSchema#integer") || 
-         $symspace.fullIRI.equals("http://www.w3.org/2001/XMLSchema#double") || 
-         $symspace.fullIRI.equals("http://www.w3.org/2001/XMLSchema#long")}? ^(SHORTCONST NUMBER[getStrValue($STRING.text)])
-    -> { $symspace.fullIRI.equals("http://www.w3.org/2001/XMLSchema#string") }? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
+    -> { s_numberTypeIRIs.contains($symspace.fullIRI)}? ^(SHORTCONST NUMBER[getStrValue($STRING.text)])
+    -> { fastStringEquals($symspace.fullIRI, s_stringIRI) }? ^(SHORTCONST LITERAL[getStrValue($STRING.text)])
     -> ^(LITERAL[getStrValue($STRING.text)] IRI[$symspace.text])
     //|   STRING '@' ID /* langtag */ -> ^(SHORTCONST LITERAL[$STRING.text])
     ;

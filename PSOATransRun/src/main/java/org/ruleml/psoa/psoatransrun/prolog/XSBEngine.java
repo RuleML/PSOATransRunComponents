@@ -19,6 +19,8 @@ import com.declarativa.interprolog.SolutionIterator;
 import com.declarativa.interprolog.TermModel;
 import com.declarativa.interprolog.XSBSubprocessEngine;
 
+import logic.is.power.tptp_parser.SimpleTptpParserOutput.Term;
+
 /**
  * XSB Engine
  * 
@@ -245,10 +247,12 @@ public class XSBEngine extends ReusableKBEngine {
 	{
 		Iterator<String> queryVarIter = queryVars.iterator();
 		Substitution answer = new Substitution();
-		
+		StringBuilder b = new StringBuilder(); 
 		for (TermModel term : bindings.flatList())
 		{
-			answer.addPair(queryVarIter.next(), term.toString(true));
+			termToString(b, term);
+			answer.addPair(queryVarIter.next(), b.toString());
+			b.setLength(0);
 		}
 		
 		return answer;
@@ -266,6 +270,55 @@ public class XSBEngine extends ReusableKBEngine {
 		}
 		
 		return b;
+	}
+	
+	private static void termToString(StringBuilder b, TermModel m)
+	{
+		if (m.node instanceof String)
+		{
+			String s = (String)m.node;
+			boolean quote = !Character.isLowerCase(s.charAt(0));
+			
+			if (quote)
+				b.append("'");
+			
+			for (int i = 0; i< s.length(); i++) {
+				char c = s.charAt(i);
+				if (c != '\'')
+					b.append(c);
+				else
+					b.append("''");
+			}
+			
+			if (quote)
+				b.append("'");
+			
+			termChildrenToString(b, m, "(", ")");
+		}
+		else if (m.isList())
+		{
+			termChildrenToString(b, m, "[", "]");
+		}
+		else
+		{
+			b.append(m.node.toString());
+		}
+	}
+	
+	private static void termChildrenToString(StringBuilder b, TermModel m, 
+			String prefix, String suffix) {
+		TermModel[] children = m.getChildren();
+		if (children == null)
+			return;
+		
+		b.append(prefix);
+		for (TermModel ch: children)
+		{
+			termToString(b, ch);
+			b.append(",");
+		}
+		b.setLength(b.length() - 1);
+		b.append(suffix);
 	}
 	
 	private static class PrologAnswerIterator extends AnswerIterator {

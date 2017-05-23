@@ -1,16 +1,18 @@
 Document(
+  Prefix(: <http://psoa.ruleml.org/test#>)
+  Prefix(test: <http://psoa.ruleml.org/test#>)
   Prefix(xs: <http://www.w3.org/2001/XMLSchema#>)
-
+  
   Group
   (
      _p1(3)
      _p1("4"^^xs:integer)
      _p1("5"^^<http://www.w3.org/2001/XMLSchema#integer>)
-     _p2(3.5)
-     _p2("4.5"^^xs:double)
-     _p2("5.5"^^<http://www.w3.org/2001/XMLSchema#double>)
-     _p3("str1")
-     _p3("str2"^^xs:string)
-     _p3("str3"^^<http://www.w3.org/2001/XMLSchema#string>)
+     :p2(3.5)
+     test:p2("4.5"^^xs:double)
+     <http://psoa.ruleml.org/test#p2>("5.5"^^<http://www.w3.org/2001/XMLSchema#double>)
+     :p3(:f("str1"))
+     :p3(:f("str2"^^xs:string))
+     :p3(:f("str3"^^<http://www.w3.org/2001/XMLSchema#string>))
   )
 )
