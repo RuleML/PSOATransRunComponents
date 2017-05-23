@@ -1,0 +1,1 @@
+And(External(isopl:numeric-less-than-or-equal(0 42)) External(isopl:numeric-less-than-or-equal(-42 42)) External(isopl:numeric-less-than-or-equal(-10 -1)) External(isopl:numeric-less-than-or-equal(10.50 42 )) External(isopl:numeric-less-than-or-equal(42 42)) External(isopl:numeric-less-than-or-equal(42.5 42.5)))

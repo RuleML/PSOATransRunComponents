@@ -37,6 +37,11 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		// Taken from ISO Prolog library
 		// Functions
 		// @@@: add missing functions (RIF functions that are also in ISO Prolog)
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#add", "\'+\'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sub", "\'-\'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#mul", "\'*\'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#int-div", "\'//'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#div", "\'/\'");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#rem", "rem");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#mod", "mod");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#abs", "abs");
@@ -53,18 +58,20 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sqrt", "sqrt");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#exp", "exp");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#log", "log");
+		// @@@ Datime		
 			
 		// @@@ Predicates
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#integer", "integer"); // * @@@
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#float", "float");  // * Test if shortcut or xs:double float number (represented as double) [Currently redundant because of above same-named coerce]
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#number", "number"); // *	@@@
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-equal", "\'=:=\'"); // @@@ add tests
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-not-equal", "\'=\\=\'"); // @@@ add tests
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-greater-than", "\'>\'"); // @@@ add tests
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-greater-than-or-equal", "\'>=\'"); // @@@ add tests
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-less-than", "\'<\'"); // @@@ add tests
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-less-than-or-equal", "\'=<\'"); // @@@ add tests
-		// @@@
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#number", "number"); /// * @@@
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-equal", "\'=:=\'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-not-equal", "\'=\\=\'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-greater-than", "\'>\'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-greater-than-or-equal", "\'>=\'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-less-than", "\'<\'");
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#numeric-less-than-or-equal", "\'=<\'");
+		// @@@ String Predicates
+		
 	}
 
 	public AbstractPrologConverter(TreeNodeStream input, RecognizerSharedState state) {

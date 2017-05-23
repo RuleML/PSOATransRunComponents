@@ -1,0 +1,1 @@
+And(External(isopl:numeric-equal(10 10)) External(isopl:numeric-equal(-42 -42)) External(isopl:numeric-equal(42.50 42.50)) External(isopl:numeric-equal(-64.8 -64.8)) External(isopl:numeric-equal(2.0 2)))
