@@ -190,7 +190,7 @@ public class PSOATransRun {
 	}
 	
 	/**
-	 * Execute PSOA query
+	 * Execute PSOA query and obtain all answers
 	 * 
 	 * @param query   input stream of PSOA query
 	 * 
@@ -199,13 +199,40 @@ public class PSOATransRun {
 	 * */
 	public QueryResult executeQuery(InputStream query)
 	{
+		return executeQuery(query, true);
+	}
+	
+	/**
+	 * Execute PSOA query
+	 * 
+	 * @param query   input stream of PSOA query
+	 * @param getAllAnswers   if set to true, obtain all answers at once
+	 * 
+	 * @return   query result
+	 * 
+	 * */
+	public QueryResult executeQuery(InputStream query, boolean getAllAnswers)
+	{
 		String transQuery;
 		
 		m_translateQueryWatch.start();
 		transQuery = m_translator.translateQuery(query);
 		m_translateQueryWatch.stop();
 		
-		return executeTransQuery(transQuery, m_translator.getQueryVars());
+		return executeTransQuery(transQuery, m_translator.getQueryVars(), getAllAnswers);
+	}
+	
+	/**
+	 * Execute PSOA query and obtain all answers
+	 * 
+	 * @param query   PSOA query string
+	 * 
+	 * @return   query result
+	 * 
+	 * */
+	public QueryResult executeQuery(String query)
+	{
+		return executeQuery(query, true);
 	}
 	
 	/**
@@ -216,7 +243,7 @@ public class PSOATransRun {
 	 * @return   query result
 	 * 
 	 * */
-	public QueryResult executeQuery(String query)
+	public QueryResult executeQuery(String query, boolean getAllAnswers)
 	{
 		String transQuery;
 		
@@ -224,10 +251,10 @@ public class PSOATransRun {
 		transQuery = m_translator.translateQuery(query);
 		m_translateQueryWatch.stop();
 		
-		return executeTransQuery(transQuery, m_translator.getQueryVars());
+		return executeTransQuery(transQuery, m_translator.getQueryVars(), getAllAnswers);
 	}
 	
-	private QueryResult executeTransQuery(String transQuery, List<String> queryVars)
+	private QueryResult executeTransQuery(String transQuery, List<String> queryVars, boolean getAllAnswers)
 	{
 		QueryResult result;
 		
@@ -240,7 +267,7 @@ public class PSOATransRun {
 		
 		m_executionWatch.start();
 		if (m_engine instanceof ReusableKBEngine)
-			result = ((ReusableKBEngine) m_engine).executeQuery(transQuery, queryVars);
+			result = ((ReusableKBEngine) m_engine).executeQuery(transQuery, queryVars, getAllAnswers);
 		else
 			result = m_engine.executeQuery(m_transKB, transQuery, queryVars);
 		m_executionWatch.stop();

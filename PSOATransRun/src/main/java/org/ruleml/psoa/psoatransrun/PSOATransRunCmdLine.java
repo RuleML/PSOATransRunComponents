@@ -248,7 +248,7 @@ public class PSOATransRunCmdLine {
 
 						String query = sc.nextLine();
 						try {
-							QueryResult result = system.executeQuery(query);
+							QueryResult result = system.executeQuery(query, getAllAnswers);
 							printQueryResult(result, getAllAnswers, sc);
 						}
 						catch (PSOATransRunException | TranslatorException e)
