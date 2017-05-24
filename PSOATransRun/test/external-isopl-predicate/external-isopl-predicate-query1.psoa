@@ -1,1 +1,1 @@
-And(External(isopl:integer(10)) External(isopl:integer(-42)) External(isopl:float(2.356)) External(isopl:float(-3.145)) External(isopl:number(42)) External(isopl:float(42.646)))
+And(External(isopl:integer(10)) External(isopl:integer(-42)) External(isopl:float(2.356)) External(isopl:float(-3.145)) External(isopl:number(42)) External(isopl:number(42.646)))

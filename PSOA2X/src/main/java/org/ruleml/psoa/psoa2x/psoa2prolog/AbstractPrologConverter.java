@@ -56,20 +56,23 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#atan", "atan");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sqrt", "sqrt");
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#exp", "exp");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#log", "log");
-		// @@@ Datime		
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#log", "log");		
 			
 		// Predicates
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#integer", "integer");  // Test if integer
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#float", "float");  // Test if shortcut or xs:double float number (represented as double) [Currently redundant because of above same-named coerce]
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#number", "number");  // Test if number
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#eq", "\'=:=\'");                //* XSB's special character tokens ...
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#not_eq", "\'=\\=\'");           //*
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#greater_than", "\'>\'");        //*
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#greater_than_or_eq", "\'>=\'"); //*
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#less_than", "\'<\'");           //*
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#less_than_or_eq", "\'=<\'");    //* ... renamed like for functions above
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#eq", "\'=:=\'");                // XSB's special character tokens ...
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#not_eq", "\'=\\=\'");           //
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#greater_than", "\'>\'");        //
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#greater_than_or_eq", "\'>=\'"); //
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#less_than", "\'<\'");           //
+		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#less_than_or_eq", "\'=<\'");    // ... renamed like for functions above
 		// @@@ String Predicates
+		
+		// @@@ Datime
+		s_builtInMap.put("http://xsb.sourceforge.net/manual1/manual1.pdf#datime", "datime");
+		s_builtInMap.put("http://xsb.sourceforge.net/manual1/manual1.pdf#local_datime", "local_datime");	
 		
 	}
 
@@ -95,6 +98,10 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 	{
 		// For the inverse translation of specific Prolog symbols used in 
 		// answers returned by engines, e.g. date-related function names
+		if(symbol.equals("datime"))
+		{
+			return "<http://xsb.sourceforge.net/manual1/manual1.pdf#datime>";
+		}
 		
 		return symbol;
 	}
