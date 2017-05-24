@@ -1,1 +1,1 @@
-And(External(isopl:numeric-greater-than(42 0)) External(isopl:numeric-greater-than(42 -42)) External(isopl:numeric-greater-than(-1 -10)) External(isopl:numeric-greater-than(42 10.50)))
+And(External(isopl:greater_than(42 0)) External(isopl:greater_than(42 -42)) External(isopl:greater_than(-1 -10)) External(isopl:greater_than(42 10.50)))
