@@ -1,5 +1,5 @@
 Document(
-  Prefix (: <http://psoa.ruleml.org/example/music_album#>)
+  Prefix (: <http://psoa.ruleml.org/exa/music_album#>)
 
   Group(
     :o1#:albsplitObj( :artist->"Van Morrison"   :title->"Astral Weeks"              :favorite->"Madame George"     )

@@ -1,0 +1,11 @@
+Document(
+  Group (
+    _o1#Top(+[_Ernie _Tony])
+    _o2#_startup(+[_Ernie _Tony])
+    _o3#Top(-[_Ernie _Tony])
+    _o4#_startup(-[_Ernie _Tony])
+    _o5#_company(+[_Ernie _Tony])
+    _o6#_company(-[_Ernie _Tony])
+    _startup##_company
+  )
+)

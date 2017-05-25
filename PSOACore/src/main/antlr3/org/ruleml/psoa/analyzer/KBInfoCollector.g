@@ -50,16 +50,16 @@ options
         return pi;
     }
     
-    public boolean isPurelyRelational(CommonTree tree)
+    public boolean isRelational(CommonTree tree)
     {
-        return isPurelyRelational(tree.toStringTree());
+        return isRelational(tree.toStringTree());
     }
     
-    public boolean isPurelyRelational(String pred)
+    public boolean isRelational(String pred)
     {
         PredicateInfo pi = m_predicates.get(pred);
         
-        return pi == null || pi.isPurelyRelational();
+        return pi == null || pi.isRelational();
     }
     
     public void addPsoaTermInfo(String pred, Collection<Integer> positionalArities, boolean hasOID, boolean hasIndepTuple, boolean hasSlot)

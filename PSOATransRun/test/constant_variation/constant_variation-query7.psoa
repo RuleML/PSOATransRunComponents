@@ -1,0 +1,5 @@
+And(
+  <http://psoa.ruleml.org/test#p2>("3.5"^^<http://www.w3.org/2001/XMLSchema#double>)
+  <http://psoa.ruleml.org/test#p2>("4.5"^^<http://www.w3.org/2001/XMLSchema#double>)
+  <http://psoa.ruleml.org/test#p2>("5.5"^^<http://www.w3.org/2001/XMLSchema#double>)
+)

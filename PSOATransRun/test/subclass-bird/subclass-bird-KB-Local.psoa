@@ -1,0 +1,54 @@
+Document(
+  Group(
+    _swan##_bird
+    _pigeon##_bird
+    
+    <!--
+      Express a signature declaration of class _bird -- all birds have wings.
+      DL form: \exists hasPart.{wings} \sqsuperset bird
+      Flora-2 form: bird[|hasPart->wings|].
+      Wings are not the only defining feature for birds. There are other
+      winged animals that are not birds, e.g. bats and insects, so the
+      opposite implication direction is false.
+    -->
+    Forall ?X (
+      ?X#Top(_hasPart->_wings) :- ?X#_bird
+    )
+    
+    <!--
+        Express a signature declaration of class _swan -- all swans can inhabit in water.
+        ¡°inhabits¡± is a multi-valued slot name pointing to places that an animal can inhabit.
+        DL form: \exists inhabits.{water} \sqsuperset swan
+        Flora-2 form: swan[|inhabits->water|].
+    -->
+    Forall ?X (
+      ?X#Top(_inhabits->_water) :- ?X#_swan
+    )
+    
+    <!-- The _age->2 slot is asserted on the instance b1, not the entire _swan class. -->
+    _b1#_swan(_age->2)                             
+    _b2#_pigeon(_age->4)
+  )
+)
+
+<!--
+Queries:
+_b1#_swan(_hasPart->_wings)    yes
+_b1#_bird(_inhabits->_water)   yes
+_b2#_bird(_inhabits->_water)   no
+_b1#_bird(_age->2)             yes
+_b1#_swan(_hasPart->?P)
+   ?P=_wings
+?B#_bird
+   ?B=_b1
+   ?B=_b2
+?B#_bird(_inhabits->?L)
+   ?B=_b1 ?L=_water
+?B#_bird(_age->?A)
+   ?B=_b1 ?A=2
+   ?B=_b2 ?A=4
+?B#_bird(_hasPart->_wings)
+   ?B=_b1
+   ?B=_b2
+?B#_apple(_hasPart->_wings)    no
+-->

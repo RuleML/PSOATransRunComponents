@@ -20,16 +20,16 @@ options
 
 @members
 {
-    private boolean m_isQuery = false, m_omitMemtermInNegtiveAtoms;
+    private boolean m_isNegOccurence = false, m_isQuery = false, m_omitMemtermInNegativeAtoms;
     
-    public boolean getOmitMemtermInNegtiveAtoms()
+    public boolean getOmitMemtermInNegativeAtoms()
     {
-        return m_omitMemtermInNegtiveAtoms;
+        return m_omitMemtermInNegativeAtoms;
     }
     
-    public void setOmitMemtermInNegtiveAtoms(boolean omitMemtermInNegtiveAtoms)
+    public void setOmitMemtermInNegativeAtoms(boolean omitMemtermInNegativeAtoms)
     {
-        m_omitMemtermInNegtiveAtoms = omitMemtermInNegtiveAtoms;
+        m_omitMemtermInNegativeAtoms = omitMemtermInNegativeAtoms;
     }
     
     private CommonTree getSlotTupributorTree(CommonTree oid, CommonTree pred, 
@@ -38,6 +38,7 @@ options
 		CommonTree root = (CommonTree)adaptor.nil();
 		CommonTree predTree, topPredTree, memberTree;
 		boolean isPredTop = (pred.getToken().getType() == TOP);
+		boolean hasDependent = false;
 		
 		memberTree = (CommonTree)adaptor.create(PSOA, "PSOA");
 		adaptor.addChild(memberTree, oid);
@@ -68,6 +69,7 @@ options
                }
                else
                {
+                  hasDependent = true;
                	  adaptor.addChild(sloterm, adaptor.dupTree(predTree));               	  
                }
                
@@ -96,6 +98,7 @@ options
                }
                else
                {
+                  hasDependent = true;
                	  adaptor.addChild(tupleterm, adaptor.dupTree(predTree));           	  
                }
                
@@ -104,7 +107,8 @@ options
 		    }
 		}
     
-        if (!isPredTop && !(getOmitMemtermInNegtiveAtoms() && $head.size() == 0))
+        if (!isPredTop &&
+            !(getOmitMemtermInNegativeAtoms() && m_isNegOccurence && hasDependent))
         {
             adaptor.addChild(root, memberTree);
         }
@@ -163,9 +167,13 @@ clause
     ;
     
 head
-scope
+@init
 {
-	int a;  // Create a scope for head, using a dummy scope variable
+	m_isNegOccurence = false;
+}
+@after
+{
+	m_isNegOccurence = true;
 }
     :   atomic
     |   ^(AND head+)

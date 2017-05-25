@@ -1,1 +1,1 @@
-?X=External(func:numeric-subtract(127 128))
+?X=External(func:numeric-subtract(127 128.5))

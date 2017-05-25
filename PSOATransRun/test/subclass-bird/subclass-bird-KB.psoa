@@ -1,0 +1,56 @@
+Document(
+  Prefix (: <http://psoa.ruleml.org/exa/subclass-bird#>)
+
+  Group(
+    :swan##:bird
+    :pigeon##:bird
+    
+    <!--
+      Express a signature declaration of class :bird -- all birds have wings.
+      DL form: \exists hasPart.{wings} \sqsuperset bird
+      Flora-2 form: bird[|hasPart->wings|].
+      Wings are not the only defining feature for birds. There are other
+      winged animals that are not birds, e.g. bats and insects, so the
+      opposite implication direction is false.
+    -->
+    Forall ?X (
+      ?X#Top(:hasPart->:wings) :- ?X#:bird
+    )
+    
+    <!--
+        Express a signature declaration of class :swan -- all swans can inhabit in water.
+        ¡°inhabits¡± is a multi-valued slot name pointing to places that an animal can inhabit.
+        DL form: \exists inhabits.{water} \sqsuperset swan
+        Flora-2 form: swan[|inhabits->water|].
+    -->
+    Forall ?X (
+      ?X#Top(:inhabits->:water) :- ?X#:swan
+    )
+    
+    <!-- The :age->2 slot is asserted on the instance b1, not the entire :swan class. -->
+    :b1#:swan(:age->2)                             
+    :b2#:pigeon(:age->4)
+  )
+)
+
+<!--
+Queries:
+:b1#:swan(:hasPart->:wings)    yes
+:b1#:bird(:inhabits->:water)   yes
+:b2#:bird(:inhabits->:water)   no
+:b1#:bird(:age->2)             yes
+:b1#:swan(:hasPart->?P)
+   ?P=:wings
+?B#:bird
+   ?B=:b1
+   ?B=:b2
+?B#:bird(:inhabits->?L)
+   ?B=:b1 ?L=:water
+?B#:bird(:age->?A)
+   ?B=:b1 ?A=2
+   ?B=:b2 ?A=4
+?B#:bird(:hasPart->:wings)
+   ?B=:b1
+   ?B=:b2
+?B#:apple(:hasPart->:wings)    no
+-->

@@ -94,7 +94,7 @@ scope
             int i = 0;
 	        for (String newVar : $varMap.keySet())
 	        {
-	           print(i == 0? "![" : ",");
+	           print(i++ == 0? "![" : ",");
 	           print(newVar);
 	        }
         	print("]: (");
@@ -104,7 +104,7 @@ scope
         	i = 0;
 	        for (Map.Entry<String,String> varPair : $varMap.entrySet())
 	        {
-	            print(i == 0? "(\"?" : ", \"?");
+	            print(i++ == 0? "(\"?" : ", \"?");
 	            print(varPair.getValue(), "= \", ", varPair.getKey());
 	        }
 	        print("))).");
@@ -114,7 +114,7 @@ scope
 
 rule
     :   ^(FORALL { append("!["); } 
-          (VAR_ID { convertVar($VAR_ID.text); } )+ { append("]: ("); }
+          (VAR_ID { convertVar($VAR_ID.text); append(","); } )+ { trimEnd(1); append("]: ("); }
            clause { append(")"); } )
     |   clause
     ;
@@ -135,8 +135,8 @@ head
             append(numSubformulas > 0? ")" : "\$true");  // And() is translated to true    
         }
     |   ^(EXISTS { append("(?["); }
-            (VAR_ID { convertVar($VAR_ID.text); } )+
-            { append("]: "); }
+            (VAR_ID { convertVar($VAR_ID.text); append(","); } )+
+            { trimEnd(1); append("]: "); }
             head { append(")"); } )
     ;
 
@@ -179,6 +179,7 @@ formula
         existVars.clear();
     }
     |   atomic
+    |   external
     ;
 
 atomic
@@ -210,8 +211,14 @@ term returns [boolean isTop]
       $isTop = false;
     }
     |   psoa { $isTop = false; }
+    |   external
     ;
     
+external
+	:   ^(EXTERNAL psoa)
+    { throw new TranslatorException("External is not supported by PSOA2TPTP"); }
+    ;
+
 psoa
 @init
 {

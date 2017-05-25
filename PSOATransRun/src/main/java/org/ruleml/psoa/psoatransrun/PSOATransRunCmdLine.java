@@ -9,12 +9,10 @@ import org.ruleml.psoa.psoa2x.psoa2prolog.PSOA2PrologConfig;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PrologTranslator;
 import org.ruleml.psoa.psoa2x.psoa2tptp.PSOA2TPTPConfig;
 import org.ruleml.psoa.psoa2x.psoa2tptp.TPTPTranslator;
-import org.ruleml.psoa.psoatransrun.engine.EngineConfig;
 import org.ruleml.psoa.psoatransrun.engine.ExecutionEngine;
 import org.ruleml.psoa.psoatransrun.prolog.XSBEngine;
 import org.ruleml.psoa.psoatransrun.test.TestSuite;
 import org.ruleml.psoa.psoatransrun.tptp.VampirePrimeEngine;
-import org.ruleml.psoa.transformer.RelationalTransformerConfig;
 
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
@@ -137,6 +135,9 @@ public class PSOATransRunCmdLine {
 			if (!isTest)
 				kbStream = new FileInputStream(kbFile);
 		}
+		catch (NullPointerException e) {
+			printErrlnAndExit("No input KB specified");
+		}
 		catch (FileNotFoundException e) {
 			printErrlnAndExit("Cannot find KB file ", inputPath);
 		}
@@ -153,7 +154,7 @@ public class PSOATransRunCmdLine {
 			{
 				PSOA2PrologConfig transConfig = new PSOA2PrologConfig();
 				transConfig.dynamicObj = dynamicObj;
-				transConfig.omitMemtermInNegtiveAtoms = omitNegMem;
+				transConfig.omitMemtermInNegativeAtoms = omitNegMem;
 				transConfig.differentiateObj = differentiated;
 				translator = new PrologTranslator(transConfig);
 				
@@ -169,11 +170,13 @@ public class PSOATransRunCmdLine {
 			{
 				PSOA2TPTPConfig transConfig = new PSOA2TPTPConfig();
 				transConfig.dynamicObj = dynamicObj;
-				transConfig.omitMemtermInNegtiveAtoms = omitNegMem;
+				transConfig.omitMemtermInNegativeAtoms = omitNegMem;
 				transConfig.differentiateObj = differentiated;
 				translator = new TPTPTranslator(transConfig);
 				VampirePrimeEngine.Config engineConfig = new VampirePrimeEngine.Config();
-				engineConfig.timeout = timeout;
+				if (timeout > 0)
+					engineConfig.timeout = timeout;
+				engineConfig.transKBPath = transKBPath;
 				engine = new VampirePrimeEngine(engineConfig);
 				
 				if (xsbPath != null)
@@ -224,7 +227,7 @@ public class PSOATransRunCmdLine {
 
 			println();
 		}
-
+		
 		try {
 			// Load KB
 			system.loadKB(kbStream);
@@ -244,15 +247,18 @@ public class PSOATransRunCmdLine {
 							break;
 
 						String query = sc.nextLine();
-						QueryResult result = system.executeQuery(query);
-						printQueryResult(result, getAllAnswers, sc);
+						try {
+							QueryResult result = system.executeQuery(query, getAllAnswers);
+							printQueryResult(result, getAllAnswers, sc);
+						}
+						catch (PSOATransRunException | TranslatorException e)
+						{
+							e.printStackTrace();
+						}
 						println();
 					} while (true);
 				}
 			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
 		}
 		finally {
 			system.shutdown();
@@ -279,7 +285,7 @@ public class PSOATransRunCmdLine {
 	
 					// Handle user requests for more answers if the first answer is not "yes"
 					if (!answer.isEmpty()) {
-						while(reader.hasNext()) {
+						while(true) {
 							String input = reader.nextLine();
 							if (input.equals(";")) {
 								if (iter.hasNext())
@@ -290,6 +296,7 @@ public class PSOATransRunCmdLine {
 								}
 							}
 							else if (input.isEmpty()) {
+								println(iter.hasNext()? "Yes" : "No");
 								break;
 							}
 						}
@@ -338,8 +345,8 @@ public class PSOATransRunCmdLine {
 			println("  -n,--numRuns      Number of runs for each test case");
 			println("  -m,--timeout      Timeout (only supported for the TPTP instantiation");
 			println("                    of PSOATransRun)");
-			println("  -z,--omitNegMem   Omit memterm in the slotribution of negative");
-			println("                    occurrences of psoa atoms");
+			println("  -z,--omitNegMem   Omit memterm in the slotribution of negative occurrences");
+			println("                    of psoa atoms with at least one dependent descriptor");
 		}
 	}
 }

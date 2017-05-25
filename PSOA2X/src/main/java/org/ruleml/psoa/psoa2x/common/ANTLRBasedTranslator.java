@@ -65,9 +65,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 			Converter converter = createTranslatorWalker(stream);
 			converter.setOutputStream(getPrintStream(out));
 			converter.document();
-		} catch (RecognitionException e) {
-			throw new TranslatorException(e);
-		} catch (IOException e) {
+		} catch (RecognitionException | RewriteCardinalityException | IOException e) {
 			throw new TranslatorException(e);
 		}
 	}
@@ -119,12 +117,13 @@ public abstract class ANTLRBasedTranslator extends Translator {
 	 * */
 	public void translateQuery(PSOAQuery query, OutputStream out) {
 		try {
+			FreshNameGenerator.resetVarGen();
 			query.setPrintAfterTransformation(debugMode);
 			TreeNodeStream stream = normalize(query).getTreeNodeStream();
 			m_queryConverter = createTranslatorWalker(stream);
 			m_queryConverter.setOutputStream(getPrintStream(out));
 			m_queryVarMap = m_queryConverter.query();
-		} catch (RecognitionException e) {
+		} catch (RecognitionException | RewriteCardinalityException e) {
 			throw new TranslatorException(e);
 		}
 	}

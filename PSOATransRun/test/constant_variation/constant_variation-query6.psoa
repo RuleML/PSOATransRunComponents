@@ -1,0 +1,1 @@
+And(test:p2("3.5"^^xs:double) test:p2("4.5"^^xs:double) test:p2("5.5"^^xs:double))

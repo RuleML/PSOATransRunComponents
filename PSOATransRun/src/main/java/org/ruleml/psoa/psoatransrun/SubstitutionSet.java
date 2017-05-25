@@ -12,7 +12,7 @@ import org.ruleml.psoa.psoa2x.common.Translator;
  * which is used to represent a set of query answers in PSOATransRun.
  * 
  * */
-public class SubstitutionSet extends HashSet<Substitution> {
+public class SubstitutionSet extends LinkedHashSet<Substitution> {
 
 	/**
 	 * Generated serialization UID
@@ -21,6 +21,9 @@ public class SubstitutionSet extends HashSet<Substitution> {
 	
 	@Override
 	public String toString() {
+		if (isEmpty())
+			return "No";
+		
 		StringBuilder sb = new StringBuilder();
 		for (Substitution b : this)
 		{

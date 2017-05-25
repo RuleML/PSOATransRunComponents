@@ -1,0 +1,13 @@
+Document
+(
+  Prefix(: <http://psoa.ruleml.org/lib/physics#>)
+  Prefix(xsb: <http://xsb.sourceforge.net/manual1/manual1.pdf#>)
+  
+  Group
+  (
+    Forall ?year ?month ?day ?hour ?minute ?second (
+	  :currentDatetime(:datetime(?year ?month ?day ?hour ?minute ?second)) :- 
+	    External(xsb:datime(xsb:datime(?year ?month ?day ?hour ?minute ?second)))
+	)
+  )
+)

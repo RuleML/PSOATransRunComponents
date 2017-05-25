@@ -20,7 +20,7 @@ public class PredicateInfo
 		m_hasSlot = false;
 	}
 	
-	public boolean isPurelyRelational()
+	public boolean isRelational()
 	{
 		return !m_hasOID && !m_hasSlot && !m_hasIndepTuple;
 	}

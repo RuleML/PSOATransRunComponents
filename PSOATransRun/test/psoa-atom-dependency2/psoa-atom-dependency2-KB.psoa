@@ -1,0 +1,12 @@
+Document(  
+  Group (
+    Forall ?h ?t (
+      ?h#_nurse(_behavior+>_caring _time+>?t) :- _onDuty(?h ?t)
+    )
+    Forall ?h ?t (
+      ?h#_athlete(_behavior+>_competing _time+>?t) :- _inMatch(?h ?t)
+    )
+    _onDuty(_nurlete17 _t1)
+    _inMatch(_nurlete17 _t2)
+  )
+)

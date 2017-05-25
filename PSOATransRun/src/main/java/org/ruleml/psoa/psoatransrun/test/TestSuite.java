@@ -72,7 +72,8 @@ public class TestSuite {
 			}
 			catch (Exception e) {
 				System.err.println("Failed to run test case " + tc.getDirName());
-				e.printStackTrace();
+				printErrln(e.getMessage());
+//				e.printStackTrace();
 			}
 			finally
 			{
