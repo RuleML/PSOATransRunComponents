@@ -1,0 +1,5 @@
+Document
+(
+  Prefix(: <http://psoa.ruleml.org/lib/physics#>)
+  Import(<http://psoa.ruleml.org/lib/phys.psoa>)
+)

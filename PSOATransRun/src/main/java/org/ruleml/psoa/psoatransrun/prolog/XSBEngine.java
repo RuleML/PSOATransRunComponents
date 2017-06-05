@@ -139,9 +139,10 @@ public class XSBEngine extends ReusableKBEngine {
 				writer.println(":- table(prdtupterm/" + (i + 1) + ").");
 			}
 			
-			// Configure XSB to return false for (sub)queries using unknown predicates
-			writer.println(":- set_prolog_flag(unknown,fail).");
-			writer.println(":- import datime/1, local_datime/1 from standard."); // Works only for external calls inside KB rules
+			// Configure XSB
+			writer.println(":- set_prolog_flag(unknown,fail).");  // Return false for (sub)queries using unknown predicates
+			writer.println(":- import datime/1, local_datime/1 from standard.");  // Selectively import 2 predicates (works only for external calls inside KB rules)
+			
 			writer.print(kb);
 		}
 		catch (FileNotFoundException e)

@@ -1,0 +1,4 @@
+Or(:eqTime(:time(14 20 05) :time(13 20 05))
+   :eqTime(:time(14 20 05) :time(14 19 05))
+   :eqTime(:time(14 20 05) :time(14 20 04)))
+    

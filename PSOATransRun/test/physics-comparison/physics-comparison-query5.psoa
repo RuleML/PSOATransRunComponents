@@ -1,0 +1,4 @@
+Or(:lessEqDate(:date(2017 05 30) :date(2016 05 30))
+   :lessEqDate(:date(2017 05 30) :date(2017 04 30))
+   :lessEqDate(:date(2017 05 30) :date(2017 05 29)))
+    
