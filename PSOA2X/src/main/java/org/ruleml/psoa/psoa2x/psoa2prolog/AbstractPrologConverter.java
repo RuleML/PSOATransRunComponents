@@ -68,7 +68,6 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#greater_than_or_eq", "\'>=\'"); //
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#less_than", "\'<\'");           //
 		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#less_than_or_eq", "\'=<\'");    // ... renamed like for functions above
-		// @@@ String Predicates
 		
 		// Taken from XSB Prolog standard module
 		s_builtInMap.put("http://xsb.sourceforge.net/manual1/manual1.pdf#datime", "datime");              // XSB's datime and local_datime predicates
