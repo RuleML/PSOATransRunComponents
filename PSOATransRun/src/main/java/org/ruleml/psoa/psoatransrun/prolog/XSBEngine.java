@@ -139,8 +139,10 @@ public class XSBEngine extends ReusableKBEngine {
 				writer.println(":- table(prdtupterm/" + (i + 1) + ").");
 			}
 			
-			// Configure XSB to return false for (sub)queries using unknown predicates
-			writer.println(":- set_prolog_flag(unknown,fail).");
+			// Configure XSB
+			writer.println(":- set_prolog_flag(unknown,fail).");  // Return false for (sub)queries using unknown predicates
+			writer.println(":- import datime/1, local_datime/1 from standard.");  // Selectively import 2 predicates (works only for external calls inside KB rules)
+			
 			writer.print(kb);
 		}
 		catch (FileNotFoundException e)
@@ -150,6 +152,7 @@ public class XSBEngine extends ReusableKBEngine {
 		
 		if (m_engine.consultAbsolute(m_transKBFile))
 		{
+			// Works only for top level external queries: m_engine.deterministicGoal("import datime/1, local_datime/1 from standard");
 			String path = m_transKBFile.getPath();
 			path = path.substring(0, path.length() - 2).concat("xwam");			
 			File xwamFile = new File(path);

@@ -45,7 +45,7 @@ public abstract class PrologTermLangConverter extends ANTLRBasedTranslator.Conve
 	private static Pattern s_termPattern = 
 			Pattern.compile(
 					 "(?<quotedConst>\\'([^\\']|(\\'\\'))+\\'(?!\\'))" +
-					"|(?<number>[+-]?[\\d*\\.]?\\d+)" +
+					"|(?<number>[+-]?(\\d+(\\.\\d*)?|(\\.\\d+)))" +
 					"|(?<unquotedConst>[a-z]\\w*)" +
 					"|(?<var>[A-Z]\\w+)" +  
 					"|(?<string>\\\"([^\\\"]|(\\\\\\\"))*\\\")"

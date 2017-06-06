@@ -1,0 +1,1 @@
+And(?X1=External(isopl:add(10 50)) ?X2=External(isopl:add(20 -21)) ?X3=External(isopl:sub(2 -6)) ?X4=External(isopl:sub(-4 -10)))

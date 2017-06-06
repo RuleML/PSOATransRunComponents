@@ -1,0 +1,12 @@
+Document (
+  Prefix(isopl: <http://www.deransart.fr/prolog/bips.html#>)
+  Prefix(: <http://psoa.ruleml.org/test/external-isopl#>)
+  
+  Group (
+    Forall ?X1 ?X2 ?X3 (
+	  :inRange(?X1 ?X2 ?X3) :-
+	    And(isopl:greater_than_or_eq(?X1 ?X2)
+		    isopl:less_than_or_eq(?X1 ?X3))
+	)
+  )
+)
