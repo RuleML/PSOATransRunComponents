@@ -251,7 +251,10 @@ public class PSOATransRunCmdLine {
 							QueryResult result = system.executeQuery(query, getAllAnswers);
 							printQueryResult(result, getAllAnswers, sc);
 						}
-						catch (PSOATransRunException | TranslatorException e)
+						// The catch part could be later refined with specific kinds of 
+						// exceptions that would not interfere future query executions, e.g.:
+						// catch (PSOATransRunException | TranslatorException e)
+						catch (Exception e)  
 						{
 							e.printStackTrace();
 						}

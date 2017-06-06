@@ -12,7 +12,7 @@ import org.eclipse.rdf4j.model.vocabulary.*;
  * Class for translating RDF/N3 KBs to PSOA presentation syntax.
  * 
  **/
-public class RDF2PSOA implements X2PSOA {
+public class RDF2PSOA extends X2PSOA {
 	private static ValueFactory factory = SimpleValueFactory.getInstance();
 	private PrintStream m_output;
 	

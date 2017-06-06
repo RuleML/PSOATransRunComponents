@@ -22,12 +22,11 @@ public abstract class PrologTermLangConverter extends ANTLRBasedTranslator.Conve
 	}
 	
 	protected void convertIRIConst(String iri) {
-        // TODO: Handle special datatypes, e.g. string, int, etc.
 		append("\'<", iri, ">\'");
 	}
 
 	protected void convertStringConst(String str) {
-		append("\'\"", str.replace("\'","\'\'"), "\"\'");
+		append("\"", str, "\"");
 	}
 	
 	protected void convertGeneralConst(String literal, String datatype) {
@@ -48,7 +47,8 @@ public abstract class PrologTermLangConverter extends ANTLRBasedTranslator.Conve
 					"|(?<number>[+-]?(\\d+(\\.\\d*)?|(\\.\\d+)))" +
 					"|(?<unquotedConst>[a-z]\\w*)" +
 					"|(?<var>[A-Z]\\w+)" +  
-					"|(?<string>\\\"([^\\\"]|(\\\\\\\"))*\\\")"
+					"|(?<string>\\\"([^\\\"]|(\\\\\\\"))*\\\")" +
+					"|(?<list>\\[\\d+(,\\d+)*\\])"
 			);
 	
 	/**
@@ -85,6 +85,10 @@ public abstract class PrologTermLangConverter extends ANTLRBasedTranslator.Conve
 			else if (matcher.group("string") != null)
 			{
 				sb.append(inverseTranslateString(symbol));
+			}
+			else if (matcher.group("list") != null)
+			{
+				sb.append(inverseTranslateList(symbol));
 			}
 			else
 			{
@@ -153,6 +157,10 @@ public abstract class PrologTermLangConverter extends ANTLRBasedTranslator.Conve
 	}
 
 	protected String inverseTranslateString(String symbol) {
+		return symbol;
+	}
+
+	protected Object inverseTranslateList(String symbol) {
 		return symbol;
 	}
 }

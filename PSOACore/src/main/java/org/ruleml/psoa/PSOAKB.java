@@ -64,43 +64,46 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 	public void load(String iri, String entailment) throws IOException
 	{
 		URL url = new URL(iri);
-		final InputStream psoaIn;
+		InputStream psoaIn = null;
 		
-		if (iri.endsWith(".psoa"))
+		try
 		{
-			psoaIn = url.openStream();
-		}
-		else 
-		{
-			X2PSOA translator;
-			
-			if (iri.endsWith(".n3") || iri.endsWith(".nt") || iri.endsWith(".ttl"))
+			if (iri.endsWith(".psoa"))
 			{
-				if (entailment == null)
+				psoaIn = url.openStream();
+			}
+			else 
+			{
+				X2PSOA translator;
+				
+				if (iri.endsWith(".n3") || iri.endsWith(".nt") || iri.endsWith(".ttl"))
 				{
-					throw new IllegalArgumentException("Missing entailment for file " + iri);
-				}					
-				else if (!entailment.equals("http://www.w3.org/ns/entailment/Simple"))
+					if (entailment == null)
+					{
+						throw new IllegalArgumentException("Missing entailment for file " + iri);
+					}					
+					else if (!entailment.equals("http://www.w3.org/ns/entailment/Simple"))
+					{
+						throw new IllegalArgumentException("Unsupported entailment for file " + iri);
+					}
+					
+					translator = new RDF2PSOA();
+				}
+				else
 				{
-					throw new IllegalArgumentException("Unsupported entailment for file " + iri);
+					throw new IllegalArgumentException("Unsupported input format");
 				}
 				
-				translator = new RDF2PSOA();
-			}
-			else
-			{
-				throw new IllegalArgumentException("Unsupported input format");
+				psoaIn = translator.getTranslatedStream(url.openStream());
 			}
 			
-			try (PipedOutputStream psoaOut = new PipedOutputStream()) {
-				// translate and load may be separated in different threads
-				psoaIn = new PipedInputStream(psoaOut, 10485760);
-				translator.translate(url.openStream(), psoaOut);
-			}
+			load(psoaIn);
 		}
-			
-		load(psoaIn);
-		psoaIn.close();
+		finally
+		{
+			if (psoaIn != null)
+				psoaIn.close();
+		}
 	}
 	
 	/**

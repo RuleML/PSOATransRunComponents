@@ -91,6 +91,12 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 			append(builtIn);
 		}
 	}
+
+	// Translate double-quoted strings to single-quoted Prolog symbols 
+	@Override
+	protected void convertStringConst(String str) {
+		append("\'\"", str.replace("\'","\'\'"), "\"\'");
+	}
 	
 	@Override
 	protected String inverseTranslateUnquotedConst(String symbol)
@@ -102,6 +108,11 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 			return "<http://xsb.sourceforge.net/manual1/manual1.pdf#datime>";
 		}
 		
+		return symbol;
+	}
+
+	@Override
+	protected Object inverseTranslateList(String symbol) {
 		return symbol;
 	}
 }
