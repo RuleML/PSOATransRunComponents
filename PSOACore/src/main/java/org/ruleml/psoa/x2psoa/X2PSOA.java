@@ -7,17 +7,28 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 /**
- * Interface for translators from foreign langauges to PSOA
+ * Superclass for translators from other languages or syntaxes to PSOA presentation syntax
  * 
  * */
 public abstract class X2PSOA
 {
+	/**
+	 * Translate input into PSOA presentation syntax and write the output
+	 * into an output stream.
+	 * 
+	 * @param input   the input stream to be translated into PSOA presentation syntax
+	 * @param output   the output stream for translator output
+	 * 
+	 * */
 	public abstract void translate(InputStream input, OutputStream output) throws IOException;
 	
 	/**
-	 * Get an InputStream including the translated PSOA/PS output of the original input.
+	 * Get an input stream for reading the PSOA presentation syntax translation 
+	 * of the original input stream.
 	 * 
-	 * @param input   the input stream to be translated into PSOA/PS
+	 * @param input   the input stream to be translated into PSOA presentation syntax
+	 * 
+	 * @return   a stream for reading the translator output
 	 * 
 	 * */
 	public InputStream getTranslatedStream(InputStream input) throws IOException
@@ -26,11 +37,10 @@ public abstract class X2PSOA
 		
 		try (PipedOutputStream psoaOut = new PipedOutputStream()) {
 			/*
-			   The following assumes an maximum translated output size
-			   of 10MB. If the output is larger than 10MB, the reading of 
-			   the returned stream should be in a different thread from  
-			   the thread where this method is called. Otherwise, the 
-			   calling thread will be blocked.
+			   The following assumes a maximum translator output size
+			   of 10MB. An output size larger than that will block the 
+			   current thread. In the future, the translate call can be 
+			   put into a different thread to avoid this problem.
 			 */
 			
 			stream = new PipedInputStream(psoaOut, 10485760);

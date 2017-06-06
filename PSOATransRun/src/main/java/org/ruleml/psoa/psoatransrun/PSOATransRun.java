@@ -2,7 +2,7 @@ package org.ruleml.psoa.psoatransrun;
 
 import static org.ruleml.psoa.utils.IOUtil.println;
 
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 
 import org.ruleml.psoa.psoa2x.common.*;
@@ -97,8 +97,8 @@ public class PSOATransRun {
 	}
 	
 	/**
-	 * Load an input PSOA KB into PSOATransRun. The KB is translated 
-	 * into the corresponding target language and prepared in the engine.
+	 * Load a KB in PSOA presentation syntax into PSOATransRun. The KB is 
+	 * translated into the execution target language and prepared in the engine.
 	 * 
 	 * @param in   input KB stream
 	 * 
@@ -109,8 +109,8 @@ public class PSOATransRun {
 	}
 	
 	/**
-	 * Load an input PSOA KB into PSOATransRun. The KB is translated 
-	 * into the corresponding target language and prepared in the engine.
+	 * Load a KB in PSOA presentation syntax into PSOATransRun. The KB is 
+	 * translated into the execution target language and prepared in the engine.
 	 * 
 	 * @param in   input KB string
 	 * 
@@ -121,8 +121,8 @@ public class PSOATransRun {
 	}
 	
 	/**
-	 * Load an input PSOA KB into PSOATransRun. The KB is translated 
-	 * into the corresponding target language and prepared in the engine. 
+	 * Load a KB in PSOA presentation syntax into PSOATransRun. The KB is 
+	 * translated into the execution target language and prepared in the engine.
 	 * 
 	 * @param in   input KB stream
 	 * @param keepTransKB   whether to keep translated KB in the memory
@@ -140,8 +140,8 @@ public class PSOATransRun {
 	}
 	
 	/**
-	 * Load an input PSOA KB into PSOATransRun. The input KB is translated 
-	 * into the corresponding target language and prepared in the engine. 
+	 * Load a KB in PSOA presentation syntax into PSOATransRun. The KB is 
+	 * translated into the execution target language and prepared in the engine.
 	 * 
 	 * @param kb   input KB string
 	 * @param keepTransKB   whether to keep translated KB in the memory
@@ -156,6 +156,20 @@ public class PSOATransRun {
 		m_translateKBWatch.stop();
 		
 		loadTranslatedKB(transKB, keepTransKB);
+	}
+	
+	/**
+	 * Load a KB file in PSOA presentation syntax into PSOATransRun. The KB is 
+	 * translated into the execution target language and prepared in the engine.
+	 * 
+	 * @param path   path of input PSOA KB
+	 * 
+	 * */
+	public void loadKBFromFile(String path) throws IOException
+	{
+		try (FileInputStream kbStream = new FileInputStream(path)) {
+			loadKB(kbStream);
+		}
 	}
 	
 	/**

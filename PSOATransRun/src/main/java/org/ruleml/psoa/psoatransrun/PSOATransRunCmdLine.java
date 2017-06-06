@@ -14,6 +14,8 @@ import org.ruleml.psoa.psoatransrun.prolog.XSBEngine;
 import org.ruleml.psoa.psoatransrun.test.TestSuite;
 import org.ruleml.psoa.psoatransrun.tptp.VampirePrimeEngine;
 
+import com.google.common.io.Files;
+
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
@@ -47,14 +49,11 @@ public class PSOATransRunCmdLine {
 		};
 
 		Getopt optionsParser = new Getopt("", args, "?l:i:q:tn:epo:x:am:rsuz", opts);
-		File kbFile = null;
-		FileInputStream kbStream = null, queryStream = null;
-		String arg;
 
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
 				isTest = false;
-		String inputPath = null, lang = null, transKBPath = null, xsbPath = null;
+		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null, xsbPath = null;
 		int timeout = -1, numRuns = 1;
 		
 		for (int opt = optionsParser.getopt(); opt != -1; opt = optionsParser
@@ -70,21 +69,10 @@ public class PSOATransRunCmdLine {
 				lang = optionsParser.getOptarg();
 				break;
 			case 'i':
-				inputPath = optionsParser.getOptarg();
+				inputKBPath = optionsParser.getOptarg();
 				break;
 			case 'q':
-				arg = optionsParser.getOptarg();
-				try {
-					queryStream = new FileInputStream(arg);
-				}
-				catch (FileNotFoundException e) {
-					printErrln("Cannot find query file ", arg,
-							". Read from console.");
-				}
-				catch (SecurityException e) {
-					printErrln("Unable to read query file ", arg,
-							". Read from console.");
-				}
+				inputQueryPath = optionsParser.getOptarg();
 				break;
 			case 'm':
 				try {
@@ -128,26 +116,15 @@ public class PSOATransRunCmdLine {
 				assert false;
 			}
 		}
-
-		// Try reading input file / directory
-		try {
-			kbFile = new File(inputPath);
-			if (!isTest)
-				kbStream = new FileInputStream(kbFile);
-		}
-		catch (NullPointerException e) {
+		
+		// Check whether input KB file / directory has been specified
+		if (inputKBPath == null) {
 			printErrlnAndExit("No input KB specified");
-		}
-		catch (FileNotFoundException e) {
-			printErrlnAndExit("Cannot find KB file ", inputPath);
-		}
-		catch (SecurityException e) {
-			printErrlnAndExit("Unable to read KB file ", inputPath);
 		}
 
 		// Initialize PSOATransRun
-		ExecutionEngine engine = null;
 		Translator translator = null;
+		ExecutionEngine engine = null;
 		
 		try {
 			if (lang == null || lang.equalsIgnoreCase("prolog"))
@@ -198,70 +175,84 @@ public class PSOATransRunCmdLine {
 		if (isTest)
 		{			
 			try {
-				TestSuite ts = new TestSuite(kbFile, system, numRuns);
+				TestSuite ts = new TestSuite(inputKBPath, system, numRuns);
 				ts.run();
 				ts.outputSummary();
-				System.exit(0);
+				return;
 			}
 			catch (PSOATransRunException e)
 			{
 				printErrlnAndExit(e.getMessage());
 			}
 			// TestSuite already calls system.shutdown(), hence
-			// no finally needed
-		}
-		
-		// Print initial PSOA KB if requested
-		if (showOrigKB) {
-			println("Original KB:");
-			try (BufferedReader reader = new BufferedReader(
-					new FileReader(kbFile))) {
-				do {
-					String line = reader.readLine();
-					if (line != null)
-						println(line);
-					else
-						break;
-				} while (true);
-			}
-
-			println();
+			// no finally block is needed
 		}
 		
 		try {
-			// Load KB
-			system.loadKB(kbStream);
+			// Print input PSOA KB if requested
+			if (showOrigKB) {
+				println("Original KB:");
+				
+				try (BufferedReader reader = new BufferedReader(
+						new FileReader(inputKBPath))) {
+					String line;
+					while ((line = reader.readLine()) != null)
+						println(line);
+				}
+
+				println();
+			}
+			
+			// Load KB file
+			system.loadKBFromFile(inputKBPath);
 			println("KB Loaded");
 
-			if (queryStream != null) {
-				// Execute query from file input
-				QueryResult result = system.executeQuery(queryStream);
-				printQueryResult(result, getAllAnswers, null);
-			}
-			else {
-				try (Scanner sc = new Scanner(System.in)) {
-					// Console query loop
-					do {
-						println("Input Query:");
-						if (!sc.hasNext())
-							break;
-
-						String query = sc.nextLine();
-						try {
-							QueryResult result = system.executeQuery(query, getAllAnswers);
-							printQueryResult(result, getAllAnswers, sc);
-						}
-						// The catch part could be later refined with specific kinds of 
-						// exceptions that would not interfere future query executions, e.g.:
-						// catch (PSOATransRunException | TranslatorException e)
-						catch (Exception e)  
-						{
-							e.printStackTrace();
-						}
-						println();
-					} while (true);
+			// Execute query from file input
+			if (inputQueryPath != null) {
+				try (FileInputStream queryStream = new FileInputStream(inputQueryPath)) {
+					QueryResult result = system.executeQuery(queryStream);
+					printQueryResult(result, getAllAnswers, null);
+					return;
+				}
+				catch (FileNotFoundException e) {
+					printErrln("Cannot find query file ", inputQueryPath,
+							". Read from console.");
+				}
+				catch (SecurityException e) {
+					printErrln("Unable to read query file ", inputQueryPath,
+							". Read from console.");
 				}
 			}
+
+			// Execute query from console
+			try (Scanner sc = new Scanner(System.in)) {
+				// Console query loop
+				do {
+					println("Input Query:");
+					if (!sc.hasNext())
+						break;
+
+					String query = sc.nextLine();
+					try {
+						QueryResult result = system.executeQuery(query, getAllAnswers);
+						printQueryResult(result, getAllAnswers, sc);
+					}
+					// The catch part could be later refined with specific kinds of 
+					// exceptions that would not interfere future query executions, e.g.:
+					// catch (PSOATransRunException | TranslatorException e)
+					catch (Exception e)  
+					{
+						e.printStackTrace();
+					}
+					println();
+				} while (true);
+			}
+		}
+		catch (FileNotFoundException e) {
+			printErrlnAndExit("Cannot find KB file ", inputKBPath);
+		}
+		catch (SecurityException e) {
+			printErrlnAndExit("Unable to read KB file ", inputKBPath);
 		}
 		finally {
 			system.shutdown();
