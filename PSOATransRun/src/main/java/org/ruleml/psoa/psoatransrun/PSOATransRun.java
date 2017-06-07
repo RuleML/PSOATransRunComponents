@@ -167,8 +167,15 @@ public class PSOATransRun {
 	 * */
 	public void loadKBFromFile(String path) throws IOException
 	{
-		try (FileInputStream kbStream = new FileInputStream(path)) {
-			loadKB(kbStream);
+		if (path.endsWith(".psoa"))
+		{			
+			try (FileInputStream kbStream = new FileInputStream(path)) {
+				loadKB(kbStream);
+			}
+		}
+		else
+		{
+			throw new PSOATransRunException("Unsupported KB file extension");
 		}
 	}
 	
