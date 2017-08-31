@@ -205,7 +205,8 @@ public class PSOATransRunCmdLine {
 			
 			// Load KB file
 			system.loadKBFromFile(inputKBPath);
-			println("KB Loaded");
+			println("KB Loaded. Enter Queries:");
+			println();
 
 			// Execute query from file input
 			if (inputQueryPath != null) {
@@ -228,7 +229,7 @@ public class PSOATransRunCmdLine {
 			try (Scanner sc = new Scanner(System.in)) {
 				// Console query loop
 				do {
-					println("Input Query:");
+					print("> ");
 					if (!sc.hasNext())
 						break;
 
