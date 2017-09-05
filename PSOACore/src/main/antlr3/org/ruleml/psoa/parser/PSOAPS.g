@@ -334,11 +334,11 @@ COMMENT : '%' (options {greedy=false;} : .* ) '\n' { $channel = HIDDEN; } ;
 MULTI_LINE_COMMENT :  '<!--' (options {greedy=false;} : .* ) '-->' { $channel=HIDDEN; } ;
 
 // Keywords:
-DOCUMENT : 'Document' ;
+DOCUMENT : 'Document' | 'RuleML' ;
 BASE : 'Base' ;
 IMPORT : 'Import' ;
 PREFIX : 'Prefix' ;
-GROUP : 'Group' ;
+GROUP : 'Group' | 'Assert' ;
 FORALL : 'Forall' ;
 EXISTS : 'Exists' ;
 AND : 'And' ;
