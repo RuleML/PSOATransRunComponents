@@ -86,10 +86,5 @@
 			<artifactId>PSOACore</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>logic.is.power</groupId>
-			<artifactId>tptp-parser</artifactId>
-			<version>1.0</version>
-		</dependency>
 	</dependencies>
 </project>

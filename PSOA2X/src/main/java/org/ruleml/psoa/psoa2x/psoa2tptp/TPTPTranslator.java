@@ -24,9 +24,6 @@ public class TPTPTranslator extends ANTLRBasedTranslator {
 	
 	@Override
 	protected Converter createTranslatorWalker(TreeNodeStream astNodes) {
-		if (m_config.useDirect)
-			return new DirectTPTPConverter(astNodes);
-		else
-			return new ASOTPTPConverter(astNodes);
+		return new DirectTPTPConverter(astNodes);
 	}
 }

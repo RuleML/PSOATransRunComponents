@@ -19,8 +19,6 @@ import com.declarativa.interprolog.SolutionIterator;
 import com.declarativa.interprolog.TermModel;
 import com.declarativa.interprolog.XSBSubprocessEngine;
 
-import logic.is.power.tptp_parser.SimpleTptpParserOutput.Term;
-
 /**
  * XSB Engine
  * 
