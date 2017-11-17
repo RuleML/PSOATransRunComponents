@@ -279,15 +279,22 @@ slot
 */
 
 constant
+@init
+{
+	String localConstName;
+}
     :	iri   -> ^(SHORTCONST iri)
     |   const_string -> const_string
     |   NUMBER  -> ^(SHORTCONST NUMBER)
     |   PN_LOCAL /* _NCNAME */ {
             if (!$PN_LOCAL.text.startsWith("_"))
                 throw new RuntimeException("Incorrect constant format:" + $PN_LOCAL.text);
-            m_localConsts.add($PN_LOCAL.text.substring(1));
+            localConstName = $PN_LOCAL.text.substring(1);
+//			localConstName = $PN_LOCAL.text.startsWith("_")? $PN_LOCAL.text.substring(1) : $PN_LOCAL.text;
+            
+            m_localConsts.add(localConstName);
         }
-        -> ^(SHORTCONST LOCAL[$PN_LOCAL.text.substring(1)])
+        -> ^(SHORTCONST LOCAL[localConstName])
     |   TOP
     ;
 
@@ -381,6 +388,7 @@ fragment IRI_REF_CHARACTERS
     ;
 
 
+// Modified from SPARQL 1.1
 NAMESPACE : PN_PREFIX? ':';
 fragment PN_PREFIX : PN_CHARS_BASE ((PN_CHARS|'.')* PN_CHARS)?;
 PN_LOCAL

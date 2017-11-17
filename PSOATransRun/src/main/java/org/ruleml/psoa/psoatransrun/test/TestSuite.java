@@ -10,17 +10,19 @@ import static org.ruleml.psoa.utils.IOUtil.*;
 
 public class TestSuite {
 	private ArrayList<TestCase> m_testCases;
+	private PrintStream m_outputStream = System.out;
+	private boolean m_verbose; 
 	private int m_correctTestCases, m_totalQueries, m_correctQueries;
 	private int m_engineAnswers, m_standardAnswers, m_correctEngineAnswers;
 	private long m_kbTranslateTime, m_queryTranslateTime, m_queryTime;
 	private final int m_runsEachTestCase;
 	
-	public TestSuite(String path, PSOATransRun system, int runs)
+	public TestSuite(String path, PSOATransRun system, int runs, boolean verbose)
 	{
-		this(new File(path), system, runs);
+		this(new File(path), system, runs, verbose);
 	}
 	
-	public TestSuite(File dir, PSOATransRun system, int runs)
+	public TestSuite(File dir, PSOATransRun system, int runs, boolean verbose)
 	{
 		File[] testCases = dir.listFiles();
 		
@@ -28,6 +30,7 @@ public class TestSuite {
 			throw new PSOATransRunException("The input path does not denote a directory.");
 		
 		m_runsEachTestCase = runs;
+		m_verbose = verbose;
 		m_testCases = new ArrayList<TestCase>(testCases.length);
 		for (File testCaseDir : testCases)
 		{
@@ -54,8 +57,9 @@ public class TestSuite {
 			
 			try
 			{
-				println("Run test case ", (++i), ": ", tc.getDirName(), " (", tc.numQueries(), " queries)");
-				if (tc.run(m_runsEachTestCase))
+				int numQueries = tc.numQueries();
+				println("Run test case ", (++i), ": ", tc.getDirName(), " (", numQueries, numQueries > 1? " queries)" : " query)");
+				if (tc.run(m_runsEachTestCase, m_verbose))
 				{
 					m_correctTestCases++;
 				}
@@ -67,13 +71,19 @@ public class TestSuite {
 				m_kbTranslateTime += tc.kbTranslateTime();
 				m_queryTranslateTime += tc.queryTranslateTime();
 				m_queryTime += tc.queryTime();
+				
+				if (m_verbose)
+				{
+					tc.outputSummary(m_outputStream, "\t");
+				}
+				
 //				println("Correct queries: ", tc.numCorrectQueries());
 //				println(m_correctEngineAnswers, "/", m_engineAnswers, ",");
 			}
 			catch (Exception e) {
-				System.err.println("Failed to run test case " + tc.getDirName());
 				printErrln(e.getMessage());
 //				e.printStackTrace();
+				printErrln("Failed to run test case " + tc.getDirName());
 			}
 			finally
 			{
@@ -82,9 +92,17 @@ public class TestSuite {
 		}
 	}
 	
+	public void setOutputStream(OutputStream out)
+	{
+		if (out instanceof PrintStream)
+			m_outputStream = (PrintStream) out;
+		else
+			m_outputStream = new PrintStream(out);
+	}
+	
 	public void outputSummary()
 	{
-		outputSummary(System.out);
+		outputSummary(m_outputStream);
 	}
 	
 	public void outputSummary(OutputStream out)
@@ -110,10 +128,10 @@ public class TestSuite {
 		out.print("Degree of completeness: ");
 		out.format("%.2f", m_correctEngineAnswers / (double) m_standardAnswers).println();
 		out.print("Avg. KB translation time per test case (ms): ");
-		out.format("%.2f", m_kbTranslateTime / (double) m_testCases.size() / 1000).println();
-		out.print("Avg. Query translation time per test case (ms): ");
-		out.format("%.2f", m_queryTranslateTime / (double) m_totalQueries / 1000).println();
+		out.format("%.2f", m_kbTranslateTime / (double) m_testCases.size()).println();
+		out.print("Avg. query translation time per test case (ms): ");
+		out.format("%.2f", m_queryTranslateTime / (double) m_totalQueries).println();
 		out.print("Avg. execution time per query (ms): ");
-		out.format("%.2f", m_queryTime / (double) m_totalQueries / 1000).println();
+		out.format("%.2f", m_queryTime / (double) m_totalQueries).println();
 	}
 }

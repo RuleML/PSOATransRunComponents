@@ -21,7 +21,7 @@ public class TestCase {
 				m_numSoundAns, // Total sound answers obtained for all queries 
 				m_numEngineAns; // Total answers obtained for all queries that have standard answers
 	private int m_numKBAxioms, m_numTransKBAxioms, m_numCorrectQueries;
-	private long m_totalKBTransTime, m_totalQueryTransTime, m_totalQueryTime;
+	private long m_totalKBTransTimePerRun, m_totalQueryTransTimePerRun, m_totalQueryTimePerRun;
 	private Map<String, String[]> m_incorrectQueries;
 	private File m_dir, m_kb;
 	private Map<File, QueryResult> m_queryAndAns;
@@ -143,11 +143,13 @@ public class TestCase {
 				}
 				catch (Exception e)
 				{
+					printErrln();
 					printErrln("Failed to run query " + queryAns.getKey().getName());
 					throw e;
 				}
 			}
 			
+			m_system.dispose();
 			return isTestCasePassed;
 		}
 		catch (IOException e) {
@@ -156,14 +158,32 @@ public class TestCase {
 		}
 	}
 
-	public boolean run(int times)
+	public boolean run(int times, boolean verbose)
 	{		
 		boolean isAnswerCorrect = true;
+
+		m_system.resetTimers();
+		String runstr = "";
 		
-		for (int i = times; i > 0; i--)
+		for (int i = 1; i <= times; i++)
 		{
+			if (verbose)
+			{
+				for (int j = runstr.length(); j > 0; j--)
+					printErr("\b");
+				runstr = String.format("Run %d", i);
+				printErr(runstr);
+			}
+			
 			isAnswerCorrect = runOnce() && isAnswerCorrect;
 		}
+		
+		for (int j = runstr.length(); j > 0; j--)
+			printErr("\b");
+		for (int j = runstr.length(); j > 0; j--)
+			printErr(" ");		
+		for (int j = runstr.length(); j > 0; j--)
+			printErr("\b");
 		
 		for (Entry<String, String[]> q : m_incorrectQueries.entrySet())
 		{
@@ -175,9 +195,9 @@ public class TestCase {
 		m_numEngineAns /= times;
 		m_numSoundAns /= times;
 		m_numCorrectQueries /= times;
-		m_totalKBTransTime = m_system.kbTransTime() / times;
-		m_totalQueryTransTime = m_system.queryTransTime() / times;
-		m_totalQueryTime = m_system.executionTime() / times;
+		m_totalKBTransTimePerRun = m_system.kbTransTime() / times;
+		m_totalQueryTransTimePerRun = m_system.queryTransTime() / times;
+		m_totalQueryTimePerRun = m_system.executionTime() / times;
 		return isAnswerCorrect;
 	}
 	
@@ -199,15 +219,30 @@ public class TestCase {
 	}
 
 	public long kbTranslateTime() {
-		return m_totalKBTransTime;
+		return m_totalKBTransTimePerRun;
 	}
 	
 	public long queryTranslateTime() {
-		return m_totalQueryTransTime;
+		return m_totalQueryTransTimePerRun;
 	}
 	
 	public long queryTime() {
-		return m_totalQueryTime;
+		return m_totalQueryTimePerRun;
+	}
+	
+	public void outputSummary(PrintStream out)
+	{
+		outputSummary(out, "");
+	}
+	
+	public void outputSummary(PrintStream out, String indent)
+	{
+		print(out, indent, "Avg. KB translation time (ms): ");
+		out.println(kbTranslateTime());
+		print(out, indent, "Avg. query translation time (ms): ");
+		out.format("%.2f", queryTranslateTime() / (double) numQueries()).println();
+		print(out, indent, "Avg. execution time per query (ms): ");
+		out.format("%.2f", queryTime() / (double) numQueries()).println();
 	}
 	
 	public int numKBAxioms()

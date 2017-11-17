@@ -97,11 +97,12 @@ public class VampirePrimeEngine extends ReusableKBEngine {
 		
 		CommandLine cl = new CommandLine(m_config.binPath);
 		cl.addArguments(new String[] { "-t", String.valueOf(m_config.timeout),
-				"-m", "300000", "--elim_def", "0", "--selection", "8",
+				"-m", "2048000", "--elim_def", "0", "--selection", "8",
 				"--config", m_config.answerPredicatePath,
-				"--max_number_of_answers", "100",
+				"--max_number_of_answers", "400",
 				"--inconsistencies_as_answers", "off",
-				"--limited_abs_lit_chaining", "on", "--proof", "on",
+				// "--limited_abs_lit_chaining", "on",
+				"--proof", "on",
 				m_transKBFile.getAbsolutePath(),
 				queryFile.getAbsolutePath() });
 

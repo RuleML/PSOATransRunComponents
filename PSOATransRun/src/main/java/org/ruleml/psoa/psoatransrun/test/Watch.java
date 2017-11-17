@@ -24,17 +24,19 @@ public class Watch {
 	
 	public void stop()
 	{
-		m_totalTime += System.nanoTime() - m_startTime;
+		long elapsed = System.nanoTime() - m_startTime;
+		m_totalTime += elapsed;
 		m_invocations++;
 		if (m_startTime < 0)
 			throw new WatchException("Watch \"" + m_name + "\" has not started.");
 		m_startTime = -1;
 	}
 	
-	public void Reset()
+	public void reset()
 	{
 		m_startTime = -1;
 		m_totalTime = 0;
+		m_invocations = 0;
 	}
 	
 //	@Override

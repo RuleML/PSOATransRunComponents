@@ -1,5 +1,5 @@
 /**
- *  This grammar file is used to generate a transformer for differentiated objectification.
+ *  This grammar file is used to generate a transformer for objectification.
  **/
 
 tree grammar Objectifier;
@@ -31,7 +31,8 @@ options
     private boolean m_isRuleBody = false, m_isQuery = false, m_isGroundFact = false, m_dynamic = false, m_diff;
     private Set<String> m_localConsts;
     private Set<String> m_clauseVars = new HashSet<String>();
-    private Map<String, CommonTree> m_newVarNodes = new LinkedHashMap<String, CommonTree>();
+    private Map<String, CommonTree> m_newForallVarNodes = new LinkedHashMap<String, CommonTree>(),
+    								m_newExistVarNodes = new LinkedHashMap<String, CommonTree>();
     private KBInfoCollector m_KBInfo = null;
     
     public void setDynamic(boolean b, KBInfoCollector info)
@@ -53,19 +54,22 @@ options
     private CommonTree newVarNode()
     {
 	    // Generate a fresh variable name using an incomplete set of 
-	    // clause variables. The name may be modified later in newVarsTree().
+	    // clause variables. The name may be modified later in newForallVarsTree().
         String name = freshVarName(m_clauseVars);
         CommonTree node = (CommonTree)adaptor.create(VAR_ID, name);
         
-		m_newVarNodes.put(name, node);
+        if (m_isRuleBody || m_isQuery)
+        	m_newForallVarNodes.put(name, node);
+        else
+        	m_newExistVarNodes.put(name, node);
 		return (CommonTree)adaptor.dupNode(node);
     }
 	
-  	private CommonTree newVarsTree()
+  	private CommonTree newForallVarsTree()
   	{
         CommonTree root = (CommonTree)adaptor.nil();
   	    
-  	    for (Map.Entry<String, CommonTree> entry : m_newVarNodes.entrySet())
+  	    for (Map.Entry<String, CommonTree> entry : m_newForallVarNodes.entrySet())
         {
            String var = entry.getKey();
            CommonTree node = entry.getValue();
@@ -78,8 +82,25 @@ options
            adaptor.addChild(root, node);
         }
         
-        m_newVarNodes.clear();
+        m_newForallVarNodes.clear();
         return root;
+  	}
+  	
+  	private void checkNewExistVars()
+  	{
+  	    for (Map.Entry<String, CommonTree> entry : m_newExistVarNodes.entrySet())
+        {
+           String var = entry.getKey();
+           CommonTree node = entry.getValue();
+           
+           // Rename the variable name if it has been used in the clause
+           if (m_clauseVars.contains(var))
+           {
+              node.getToken().setText(freshVarName(m_clauseVars));  
+           }
+        }
+        
+        m_newExistVarNodes.clear();
   	}
 }
 
@@ -115,12 +136,13 @@ query
 }
 @after
 {
+   checkNewExistVars();
    m_clauseVars.clear();
    m_isQuery = false;
 }
     :   formula
-    ->  { m_newVarNodes.isEmpty() }? formula
-    ->  ^(EXISTS { newVarsTree() } formula)
+    ->  { m_newForallVarNodes.isEmpty() }? formula
+    ->  ^(EXISTS { newForallVarsTree() } formula)
     ;
     
 rule
@@ -131,15 +153,16 @@ rule
 }
 @after
 {
+   checkNewExistVars();
    m_clauseVars.clear();
 }
     :  ^(FORALL (VAR_ID {  m_clauseVars.add($VAR_ID.text); })+ clause)
       // Add new variables to ForAll wrapper
-      -> { !m_newVarNodes.isEmpty() && m_diff }? ^(FORALL VAR_ID+ { newVarsTree() } clause)
+      -> { !m_newForallVarNodes.isEmpty() && m_diff }? ^(FORALL VAR_ID+ { newForallVarsTree() } clause)
       -> ^(FORALL VAR_ID+ clause)
 	  |  clause
 	  // Add new variables to ForAll wrapper
-	  -> { !m_newVarNodes.isEmpty() && m_diff }? ^(FORALL { newVarsTree() } clause)
+	  -> { !m_newForallVarNodes.isEmpty() && m_diff }? ^(FORALL { newForallVarsTree() } clause)
 	  -> clause
     ;
 

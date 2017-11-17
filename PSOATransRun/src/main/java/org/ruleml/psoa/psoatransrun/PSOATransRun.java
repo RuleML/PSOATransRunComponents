@@ -310,7 +310,7 @@ public class PSOATransRun {
 	 * */
 	public long kbTransTime()
 	{
-		return m_translateKBWatch.totalMicroSeconds();
+		return m_translateKBWatch.totalMilliSeconds();
 	}
 	
 	/**
@@ -321,7 +321,7 @@ public class PSOATransRun {
 	 * */
 	public long queryTransTime()
 	{
-		return m_translateQueryWatch.totalMicroSeconds();
+		return m_translateQueryWatch.totalMilliSeconds();
 	}
 	
 	/**
@@ -335,7 +335,20 @@ public class PSOATransRun {
 		if (m_engine instanceof XSBEngine)
 			return ((XSBEngine) m_engine).getTime();
 		else
-			return m_executionWatch.totalMicroSeconds();
+			return m_executionWatch.totalMilliSeconds();
+	}
+	
+	/**
+	 * Reset all timers
+	 * 
+	 * */
+	public void resetTimers()
+	{
+		m_translateKBWatch.reset();
+		m_translateQueryWatch.reset();
+		m_executionWatch.reset();
+		if (m_engine instanceof XSBEngine)
+			((XSBEngine) m_engine).resetTimer();
 	}
 	
 	/**

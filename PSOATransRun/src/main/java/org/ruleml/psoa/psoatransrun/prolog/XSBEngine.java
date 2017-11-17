@@ -41,6 +41,10 @@ public class XSBEngine extends ReusableKBEngine {
 	}
 	
 	public XSBEngine(Config config) {
+		this(config, false);
+	}
+	
+	public XSBEngine(Config config, boolean delayStart) {
 		
 		// Configure xsb installation folder
 		m_xsbFolder = config.xsbFolderPath;
@@ -90,7 +94,8 @@ public class XSBEngine extends ReusableKBEngine {
 		}
 		
 		// Start XSB engine
-		m_engine = new XSBSubprocessEngine(m_xsbBinPath);
+		if (!delayStart)
+			m_engine = new XSBSubprocessEngine(m_xsbBinPath);
 		
 		// Set transated KB
 		String transKBPath = config.transKBPath;
@@ -119,22 +124,25 @@ public class XSBEngine extends ReusableKBEngine {
 
 	@Override
 	public void loadKB(String kb) {
-		if (m_engine.isShutingDown())
-		{
+		if (m_engine == null || m_engine.isShutingDown())
 			m_engine = new XSBSubprocessEngine(m_xsbBinPath);
-		}
 		
 		try(PrintWriter writer = new PrintWriter(m_transKBFile))
 		{
 			writer.println(":- table(memterm/2).");
+			writer.println(":- index memterm/2-2.");
 			writer.println(":- table(sloterm/3).");
+			writer.println(":- index sloterm/3-2.");
 			writer.println(":- table(prdsloterm/4).");
+			writer.println(":- index prdsloterm/4-2.");
+			writer.println(":- index prdsloterm/4-3.");
 			
 			// Assume a maximum tuple length of 10 
 			for (int i = 2; i < 11; i++)
 			{
 				writer.println(":- table(tupterm/" + i + ").");
 				writer.println(":- table(prdtupterm/" + (i + 1) + ").");
+				writer.println(":- index prdtupterm/" + (i + 1) + "-2.");
 			}
 			
 			// Configure XSB
@@ -147,13 +155,16 @@ public class XSBEngine extends ReusableKBEngine {
 		{
 			throw new PSOATransRunException(e);
 		}
+
+		String path = m_transKBFile.getPath();
+		path = path.substring(0, path.length() - 2).concat("xwam");			
+		File xwamFile = new File(path);
+		if (xwamFile.exists())
+			xwamFile.delete();
 		
 		if (m_engine.consultAbsolute(m_transKBFile))
 		{
 			// Works only for top level external queries: m_engine.deterministicGoal("import datime/1, local_datime/1 from standard");
-			String path = m_transKBFile.getPath();
-			path = path.substring(0, path.length() - 2).concat("xwam");			
-			File xwamFile = new File(path);
 			if (xwamFile.exists())
 				xwamFile.deleteOnExit();
 		}
@@ -348,7 +359,11 @@ public class XSBEngine extends ReusableKBEngine {
 	
 	public long getTime()
 	{
-		return m_exeWatch.totalMicroSeconds();
+		return m_exeWatch.totalMilliSeconds();
+	}
+
+	public void resetTimer() {
+		m_exeWatch.reset();
 	}
 	
 	@Override

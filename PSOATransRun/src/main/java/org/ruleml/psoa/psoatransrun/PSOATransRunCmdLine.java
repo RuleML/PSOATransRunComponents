@@ -45,14 +45,15 @@ public class PSOATransRunCmdLine {
 				new LongOpt("timeout", LongOpt.REQUIRED_ARGUMENT, null, 'm'),
 				new LongOpt("staticOnly", LongOpt.NO_ARGUMENT, null, 's'),
 				new LongOpt("undiff", LongOpt.NO_ARGUMENT, null, 'u'),
+				new LongOpt("verbose", LongOpt.NO_ARGUMENT, null, 'v'),
 				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z')
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?l:i:q:tn:epo:x:am:rsuz", opts);
+		Getopt optionsParser = new Getopt("", args, "?l:i:q:tn:epo:x:am:rsuvz", opts);
 
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
-				isTest = false;
+				isTest = false, verbose = false;
 		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null, xsbPath = null;
 		int timeout = -1, numRuns = 1;
 		
@@ -79,14 +80,19 @@ public class PSOATransRunCmdLine {
 					timeout = Integer.parseInt(optionsParser.getOptarg());
 				}
 				catch (NumberFormatException e) {
-					printErrlnAndExit("Incorrect number format for timeout");
+					printErrlnAndExit("Incorrect number format for --timeout");
 				}
 				break;
 			case 't':
 				isTest = true;
 				break;
 			case 'n':
-				numRuns = 1;
+				try {
+					numRuns = Integer.parseInt(optionsParser.getOptarg());
+				}
+				catch (NumberFormatException e) {
+					printErrlnAndExit("Incorrect number format for --numRuns");
+				}
 				break;
 			case 'e':
 				showOrigKB = true;
@@ -108,6 +114,9 @@ public class PSOATransRunCmdLine {
 				break;
 			case 'u':
 				differentiated = false;
+				break;
+			case 'v':
+				verbose = true;
 				break;
 			case 'z':
 				omitNegMem = true;
@@ -175,7 +184,7 @@ public class PSOATransRunCmdLine {
 		if (isTest)
 		{			
 			try {
-				TestSuite ts = new TestSuite(inputKBPath, system, numRuns);
+				TestSuite ts = new TestSuite(inputKBPath, system, numRuns, verbose);
 				ts.run();
 				ts.outputSummary();
 				return;
@@ -210,9 +219,10 @@ public class PSOATransRunCmdLine {
 
 			// Execute query from file input
 			if (inputQueryPath != null) {
-				try (FileInputStream queryStream = new FileInputStream(inputQueryPath)) {
+				try (FileInputStream queryStream = new FileInputStream(inputQueryPath);
+					 Scanner sc = new Scanner(System.in)) {
 					QueryResult result = system.executeQuery(queryStream);
-					printQueryResult(result, getAllAnswers, null);
+					printQueryResult(result, getAllAnswers, sc);
 					return;
 				}
 				catch (FileNotFoundException e) {
@@ -231,8 +241,11 @@ public class PSOATransRunCmdLine {
 				do {
 					print("> ");
 					if (!sc.hasNext())
+					{
+						println();
 						break;
-
+					}
+					
 					String query = sc.nextLine();
 					try {
 						QueryResult result = system.executeQuery(query, getAllAnswers);
@@ -340,6 +353,7 @@ public class PSOATransRunCmdLine {
 			println("  -n,--numRuns      Number of runs for each test case");
 			println("  -m,--timeout      Timeout (only supported for the TPTP instantiation");
 			println("                    of PSOATransRun)");
+			println("  -v,--verbose      Show output for each test case while running tests");
 			println("  -z,--omitNegMem   Omit memterm in the slotribution of negative occurrences");
 			println("                    of psoa atoms with at least one dependent descriptor");
 		}
