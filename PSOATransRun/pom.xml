@@ -89,7 +89,6 @@
 					<finalName>PSOATransRunLocal</finalName>
 					<archive>
 						<manifest>
-							<!-- <mainClass>org.ruleml.psoa.psoatransrun.test.PSOATransRunTest</mainClass> -->
 							<mainClass>org.ruleml.psoa.psoatransrun.PSOATransRunCmdLine</mainClass>
 						</manifest>
 					</archive>
