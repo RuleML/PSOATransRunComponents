@@ -2,7 +2,7 @@
  * This grammar file is used to generate the converter from a normalized PSOA input to TPTP
 */
 
-tree grammar DirectTPTPConverter;
+tree grammar TPTPConverter;
 
 options 
 {
@@ -31,7 +31,7 @@ options
     private enum TermType { CONST, VAR, FUNC_INTERNAL, FUNC_EXTERNAL };
     private PSOA2TPTPConfig m_config;
        
-    public DirectTPTPConverter(TreeNodeStream input, PSOA2TPTPConfig config) {
+    public TPTPConverter(TreeNodeStream input, PSOA2TPTPConfig config) {
         this(input);
         m_config = config;
     }
