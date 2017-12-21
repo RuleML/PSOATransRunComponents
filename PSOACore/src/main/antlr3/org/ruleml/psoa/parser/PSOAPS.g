@@ -218,15 +218,15 @@ formula returns [boolean isValidHead, boolean isAtomic]
 atomic
 @after
 {
-    if ($tree.getChildCount() == 1 && $non_ex_term.isSimple)
-        throw new RuntimeException("Simple term cannot be an atomic formula:" + $non_ex_term.text);
+    if ($tree.getChildCount() == 1 && $left_term.isSimple)
+        throw new RuntimeException("Simple term cannot be an atomic formula:" + $left_term.text);
 }
-    :   non_ex_term=internal_term ((EQUAL | SUBCLASS)^ term)?
+    :   left_term=internal_term ((EQUAL | SUBCLASS)^ term)?
     ;
 
 term
-    :   internal_term -> internal_term
-    |   external_term -> external_term
+    :   internal_term
+    |   external_term
     ;
 
 simple_term
