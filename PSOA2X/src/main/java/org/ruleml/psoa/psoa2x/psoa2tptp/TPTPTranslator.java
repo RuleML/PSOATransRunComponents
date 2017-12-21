@@ -23,7 +23,7 @@ public class TPTPTranslator extends ANTLRBasedTranslator {
 	}
 	
 	@Override
-	protected Converter createTranslatorWalker(TreeNodeStream astNodes) {
+	protected Converter createConverter(TreeNodeStream astNodes) {
 		return new TPTPConverter(astNodes);
 	}
 }

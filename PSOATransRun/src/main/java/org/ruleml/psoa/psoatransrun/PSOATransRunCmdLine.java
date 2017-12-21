@@ -14,8 +14,6 @@ import org.ruleml.psoa.psoatransrun.prolog.XSBEngine;
 import org.ruleml.psoa.psoatransrun.test.TestSuite;
 import org.ruleml.psoa.psoatransrun.tptp.VampirePrimeEngine;
 
-import com.google.common.io.Files;
-
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 

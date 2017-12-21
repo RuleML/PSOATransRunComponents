@@ -10,7 +10,7 @@ import org.antlr.runtime.tree.*;
 import org.ruleml.psoa.*;
 
 public abstract class ANTLRBasedTranslator extends Translator {
-	abstract protected Converter createTranslatorWalker(TreeNodeStream astNodes);
+	abstract protected Converter createConverter(TreeNodeStream astNodes);
 	abstract protected <T extends PSOAInput<T>> T normalize(T input);
 	protected PSOAKB m_kb;
 	protected Converter m_queryConverter;
@@ -62,7 +62,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 			kb.loadImports();
 			kb.setPrintAfterTransformation(debugMode);
 			TreeNodeStream stream = normalize(kb).getTreeNodeStream();
-			Converter converter = createTranslatorWalker(stream);
+			Converter converter = createConverter(stream);
 			converter.setOutputStream(getPrintStream(out));
 			converter.document();
 		} catch (RecognitionException | RewriteCardinalityException | IOException e) {
@@ -120,7 +120,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 			FreshNameGenerator.resetVarGen();
 			query.setPrintAfterTransformation(debugMode);
 			TreeNodeStream stream = normalize(query).getTreeNodeStream();
-			m_queryConverter = createTranslatorWalker(stream);
+			m_queryConverter = createConverter(stream);
 			m_queryConverter.setOutputStream(getPrintStream(out));
 			m_queryVarMap = m_queryConverter.query();
 		} catch (RecognitionException | RewriteCardinalityException e) {

@@ -27,7 +27,7 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 	}
 	
 	@Override
-	protected Converter createTranslatorWalker(TreeNodeStream astNodes) {
+	protected Converter createConverter(TreeNodeStream astNodes) {
 		return new PrologConverter(astNodes, m_config);
 	}
 }
