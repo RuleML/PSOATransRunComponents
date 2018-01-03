@@ -9,14 +9,10 @@ options
     output = AST;
     k = 1;  // limit to one-step look ahead for efficient parsing
     ASTLabelType = CommonTree;
-    // backtrack=true;
-    // Potential performance problem! 
-    // See http://www.antlr.org/wiki/display/ANTLR3/How+to+remove+global+backtracking+from+your+grammar
 }
 
-tokens 
+tokens
 {
-    VAR_LIST;
     PSOA;
     TUPLE;
     SLOT;
@@ -39,6 +35,8 @@ tokens
     import java.util.HashSet;
     import java.util.Map;
     import java.util.HashMap;
+    
+    import org.ruleml.psoa.transformer.PSOARuntimeException;
 }
 
 @lexer::header {
@@ -72,7 +70,7 @@ tokens
     {
     	String ns = m_namespaceTable.get(prefix);
     	if (ns == null)
-    		throw new RuntimeException("Namespace prefix " + prefix + " used but not defined");
+    		throw new PSOARuntimeException("Namespace prefix " + prefix + " used but not defined");
     		
     	return ns;
     }
@@ -84,7 +82,7 @@ tokens
 		String oldIRI = m_namespaceTable.put(ns, iri);
 		if (oldIRI != null && !oldIRI.equals(iri))
 		{
-			throw new RuntimeException("Redefinition of namespace prefix " + ns);
+			throw new PSOARuntimeException("Redefinition of namespace prefix " + ns);
 		}
 	}
 	
@@ -125,7 +123,10 @@ tokens
     }
 }
 
-top_level_item : document | query[null];
+document
+    :   DOCUMENT LPAR base? prefix* importDecl* group? RPAR
+        -> ^(DOCUMENT base? prefix* importDecl* group?)
+    ;
 
 query[Map<String, String> nsTable]
 @init
@@ -134,11 +135,6 @@ query[Map<String, String> nsTable]
 		m_namespaceTable = nsTable;
 }
     :   formula;
-
-document
-    :   DOCUMENT LPAR base? prefix* importDecl* group? RPAR
-        -> ^(DOCUMENT base? prefix* importDecl* group?)
-    ;
 
 base
     :   BASE LPAR IRI_REF RPAR -> ^(BASE IRI_REF)
@@ -180,22 +176,12 @@ rule
     ;
 
 clause
-@init { boolean isRule = false; }
 @after
-    {
-        if (isRule)
-        {
-            if (!$f1.isValidHead)
-                throw new RuntimeException("Unacceptable head formula:" + $f1.text);
-        }
-//        else if (!$f1.isAtomic)
-//        {
-//            throw new RuntimeException("Unacceptable clause:" + $clause.text);
-//        }
-    }
-    :   (f1=formula -> formula) ( IMPLICATION f2=formula { isRule = true; } -> ^(IMPLICATION $clause $f2) )?
-    //-> {isRule}? ^(IMPLICATION $f1 $f2)
-    //->           $f1
+{
+    if (!$f1.isValidHead)
+        throw new PSOARuntimeException("Unacceptable head formula:" + $f1.text);
+}
+    :   (f1=formula -> formula) (IMPLICATION f2=formula -> ^(IMPLICATION $clause $f2) )?
     ;
 
 formula returns [boolean isValidHead, boolean isAtomic]
@@ -219,7 +205,7 @@ atomic
 @after
 {
     if ($tree.getChildCount() == 1 && $left_term.isSimple)
-        throw new RuntimeException("Simple term cannot be an atomic formula:" + $left_term.text);
+        throw new PSOARuntimeException("Simple term cannot be an atomic formula:" + $left_term.text);
 }
     :   left_term=internal_term ((EQUAL | SUBCLASS)^ term)?
     ;
@@ -279,18 +265,19 @@ slot
 */
 
 constant
-@init
-{
-	String localConstName;
-}
     :	iri   -> ^(SHORTCONST iri)
     |   const_string -> const_string
     |   NUMBER  -> ^(SHORTCONST NUMBER)
-    |   PN_LOCAL /* _NCNAME */ {
-            if (!$PN_LOCAL.text.startsWith("_"))
-                throw new RuntimeException("Incorrect constant format:" + $PN_LOCAL.text);
-            localConstName = $PN_LOCAL.text.substring(1);
-//			localConstName = $PN_LOCAL.text.startsWith("_")? $PN_LOCAL.text.substring(1) : $PN_LOCAL.text;
+    |   { String localConstName; }
+		PN_LOCAL {
+    		if ($PN_LOCAL.text.startsWith("_"))
+				localConstName = $PN_LOCAL.text.substring(1);
+			else
+				localConstName = $PN_LOCAL.text; // Allow local constants without '_'-prefix
+			/* 
+				Enforcing '_' prefix:
+				throw new PSOARuntimeException("Incorrect constant format:" + $PN_LOCAL.text);
+			*/
             
             m_localConsts.add(localConstName);
         }
@@ -379,11 +366,10 @@ STRING: '"' (options {greedy=false;} : ~('"' | '\\' | EOL) | ECHAR)* '"';
 // IRI_REF : '<' IRI_START_CHAR (IRI_CHAR)+ '>' { setText(getFullIRI(iri)); };
 
 IRI_REF
-    : ('<' (options{greedy=false;}: IRI_REF_CHARACTERS)* '>') => '<' (options{greedy=false;}: IRI_REF_CHARACTERS*) '>'
-    { String s = getText(); setText(s.substring(1, s.length() - 1)); }
+    : '<' IRI_REF_CHAR* '>' { String s = getText(); setText(s.substring(1, s.length() - 1)); }
     ;
 
-fragment IRI_REF_CHARACTERS
+fragment IRI_REF_CHAR
     :  ~('<' | '>' | '"' | '{' | '}' | '|' | '^' | '`' | '\\' | '\u0000'..'\u0020')
     ;
 
@@ -429,44 +415,6 @@ fragment ALPHA : 'a'..'z' | 'A'..'Z' ;
 fragment DIGIT : '0'..'9' ;
 
 VAR_ID : '?' PN_LOCAL?;
-
-/*
-VAR_ID : '?' ID_CHAR*;
-ID : ID_START_CHAR ID_CHAR*;
-
-//  Basics
-fragment IRI_CHAR : ALPHA | DIGIT | '+' | '-' | '.' | '@' | ':' | '_' | '~' | '%' | '!' |  '$' | '&' | '\'' | '(' | ')' | '*' | ',' | ';' | '=' | '?' | '#' | '/';
-
-// Currently, these are only URI characters. The set has to be extended
-// to include all IRI characters.
-fragment IRI_START_CHAR : ALPHA ;
-
-//  In the slots a hyphen may appear directly after a term, so we disallow it to be an ID_CHAR 
-fragment ID_CHAR
-    : ID_START_CHAR
-    | DIGIT
-    | '\u00B7'           // as in the SPARQL 1.1 grammar
-    | '\u203F'..'\u2040' // as in the SPARQL 1.1 grammar
-    | { input.LA(2) != '>' }? => '-'
-    | '.'
-    ;
-
-fragment ID_START_CHAR
-    : ALPHA
-    | '\u00C0'..'\u00D6'
-    | '\u00D8'..'\u00F6'
-    | '\u00F8'..'\u02FF'
-    | '\u0370'..'\u037D'
-    | '\u037F'..'\u1FFF'
-    | '\u200C'..'\u200D'
-    | '\u2070'..'\u218F'
-    | '\u2C00'..'\u2FEF'
-    | '\u3001'..'\uD7FF'
-    | '\uF900'..'\uFDCF'
-    | '\uFDF0'..'\uFFFD'
-    | '_'
-    ;
-*/
 
 fragment ECHAR : '\\' ('t' | 'b' | 'n' | 'r' | 'f' | '\\' | '"' | '\'');
 
