@@ -59,10 +59,10 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 	
 	public PSOAQuery slotTupribute(boolean omitMemtermInNegativeAtoms)
 	{
-		return transform("slotribution/tupribution", stream -> {
-			SlotTupributor slotTupributor = new SlotTupributor(stream);
-			slotTupributor.setOmitMemtermInNegativeAtoms(omitMemtermInNegativeAtoms);
-			return slotTupributor.query();
+		return transform("describution", stream -> {
+			Descributor descributor = new Descributor(stream);
+			descributor.setOmitMemtermInNegativeAtoms(omitMemtermInNegativeAtoms);
+			return descributor.query();
 		});
 	}
 	

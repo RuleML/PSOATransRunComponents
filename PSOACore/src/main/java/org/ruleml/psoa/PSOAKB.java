@@ -270,10 +270,10 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 	
 	public PSOAKB slotTupribute(boolean omitMemtermInNegativeAtoms)
 	{
-		return transform("slotribution/tupribution", stream -> {
-			SlotTupributor slotTupributor = new SlotTupributor(stream);
-			slotTupributor.setOmitMemtermInNegativeAtoms(omitMemtermInNegativeAtoms);
-			return slotTupributor.document();			
+		return transform("describution", stream -> {
+			Descributor descributor = new Descributor(stream);
+			descributor.setOmitMemtermInNegativeAtoms(omitMemtermInNegativeAtoms);
+			return descributor.document();			
 		});
 	}
 	
