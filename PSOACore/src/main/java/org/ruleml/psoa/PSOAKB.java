@@ -268,7 +268,7 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 		return transform("Skolemization", stream -> (new Skolemizer(stream)).document());
 	}
 	
-	public PSOAKB slotTupribute(boolean omitMemtermInNegativeAtoms)
+	public PSOAKB describute(boolean omitMemtermInNegativeAtoms)
 	{
 		return transform("describution", stream -> {
 			Descributor descributor = new Descributor(stream);
@@ -335,7 +335,7 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 		return unnest().
 			   rewriteSubclass().
 			   objectify(config.differentiateObj, config.dynamicObj).
-			   slotTupribute(config.omitMemtermInNegativeAtoms);
+			   describute(config.omitMemtermInNegativeAtoms);
 	}
 	
 	/**

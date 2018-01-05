@@ -57,7 +57,7 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 		});
 	}
 	
-	public PSOAQuery slotTupribute(boolean omitMemtermInNegativeAtoms)
+	public PSOAQuery describute(boolean omitMemtermInNegativeAtoms)
 	{
 		return transform("describution", stream -> {
 			Descributor descributor = new Descributor(stream);
@@ -112,7 +112,7 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 	public PSOAQuery FOLnormalize(RelationalTransformerConfig config) {
 		return unnest().
 			   objectify(config.differentiateObj, config.dynamicObj).
-			   slotTupribute(config.omitMemtermInNegativeAtoms);
+			   describute(config.omitMemtermInNegativeAtoms);
 	}
 
 	
