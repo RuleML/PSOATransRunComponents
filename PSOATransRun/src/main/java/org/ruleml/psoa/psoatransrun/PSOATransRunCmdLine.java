@@ -352,7 +352,7 @@ public class PSOATransRunCmdLine {
 			println("  -m,--timeout      Timeout (only supported for the TPTP instantiation");
 			println("                    of PSOATransRun)");
 			println("  -v,--verbose      Show output for each test case while running tests");
-			println("  -z,--omitNegMem   Omit memterm in the slotribution of negative occurrences");
+			println("  -z,--omitNegMem   Omit memterm in the describution of negative occurrences");
 			println("                    of psoa atoms with at least one dependent descriptor");
 		}
 	}

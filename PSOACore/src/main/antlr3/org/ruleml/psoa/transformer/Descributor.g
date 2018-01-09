@@ -1,5 +1,5 @@
 /**
- * The grammar file is used to generate a transformer for performing slotribution/tupribution.
+ * The grammar file is used to generate a transformer for performing describution.
  **/
  
 tree grammar Descributor;
@@ -219,9 +219,9 @@ external
     ;
     
 psoa[boolean isAtomicFormula]
-    :   ^(PSOA oid=term? ^(INSTANCE pred=term) tuples+=tuple* slots+=slot*)
-    -> { !isAtomicFormula || oid == null }? ^(PSOA $oid? ^(INSTANCE $pred) tuple* slot*)
-	-> { getDescributorTree($oid.tree, $pred.tree, $tuples, $slots) }
+    :   ^(PSOA oid=term? ^(INSTANCE op=term) tuples+=tuple* slots+=slot*)
+    -> { !isAtomicFormula || oid == null }? ^(PSOA $oid? ^(INSTANCE $op) tuple* slot*)
+	-> { getDescributorTree($oid.tree, $op.tree, $tuples, $slots) }
 	
 //    -> ^(AND 
 //          ^(PSOA $oid ^(INSTANCE $pred))

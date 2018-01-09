@@ -174,13 +174,18 @@ public abstract class ANTLRBasedTranslator extends Translator {
 			int end = startIndex.value + offset;
 			m_buffer.replace(startIndex.value, end, s);
 			
+			// Dispose indices in the replaced segment
 			BufferIndex endIndex = new BufferIndex(end);
-			for(BufferIndex index :
-				  s_index.subSet(new BufferIndex(startIndex.value + 1), endIndex))
+			Iterator<BufferIndex> iter = s_index.subSet(new BufferIndex(startIndex.value + 1), endIndex).iterator();
+			while (iter.hasNext())
 			{
+				BufferIndex index = iter.next();
 				index.value = m_buffer.length();
+				index.dispose();
+				iter.remove();
 			}
 			
+			// Update indices in the segment after the replaced string
 			int indOffset = s.length() - offset;
 			if (indOffset != 0)
 			{	

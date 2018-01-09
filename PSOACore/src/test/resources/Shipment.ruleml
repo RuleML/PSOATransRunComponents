@@ -14,7 +14,7 @@ Document (
 		shipment("PC"^^xs:string "47.5"^^xs:float cpt:source->mus:BostonMoS cpt:dest->mus:LondonSciM)
 		shipment("PDA"^^xs:string "9.5"^^xs:float cpt:source->mus:LondonSciM cpt:dest->mus:BostonMoS)
 		
-		<!-- Tuptributed and slotributed version -->
+		<!-- Descributed version -->
 		Forall ?cost ?cost1 ?cost2 ?A ?B ?2 ?3 (
 			Exists ?1 (And(?1#cpt:reciship(?cost) ?1#cpt:reciship(cpt:source->?A) ?1#cpt:reciship(cpt:dest->?B))) :-
 					And(?2#cpt:shipment(? ?cost1) ?2#cpt:shipment(cpt:source->?A) ?2#cpt:shipment(cpt:dest->?B)

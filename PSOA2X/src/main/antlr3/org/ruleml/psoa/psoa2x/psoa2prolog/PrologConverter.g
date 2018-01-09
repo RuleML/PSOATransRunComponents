@@ -155,7 +155,7 @@ equal
 }
     :   ^(EQUAL   
           {
-             // The two spaces are the placeholder of the Prolog primitive 
+             // The two spaces are the placeholder of the Prolog primitive
              append("  (");  
           } 
           t1=term { append(","); }
@@ -188,7 +188,11 @@ term returns [TermType type, boolean isTop]
 external
     :   ^(EXTERNAL psoa)
     ;
-    
+
+// Tree grammar:
+// psoa: ^(PSOA ((oid=term ^(INSTANCE op=term)) | ^(INSTANCE op=term)) 
+//                          (tuple | slot | ))
+
 psoa
 @init
 {
@@ -214,9 +218,9 @@ psoa
                         append("       (");
                      }
                      oid=term { append(","); }  // OID
-                     ^(INSTANCE pred=term)     // predicate/function
+                     ^(INSTANCE op=term)     // predicate/function
                      {
-						if (!$pred.isTop)
+						if (!$op.isTop)
 						{
 							append(",");
 						}
@@ -248,9 +252,9 @@ psoa
                  }
                  append(")");
               }
-           |  // No slot or tuples  
+           |  // No slots or tuples  
 		      {
-			      if ($pred.isTop)
+			      if ($op.isTop)
 			      {
 				     // Tautology, o#Top
 			         replace(startIdx, "true");
