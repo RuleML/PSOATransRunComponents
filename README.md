@@ -1,5 +1,5 @@
 Import Project into Eclipse using Eclipse's Built-in Git Plugin and Prepare for Building
-1. Install JDK 8 or higher and Eclipse 4.2 or higher
+1. Install JDK 8 or higher and Eclipse 4.2 or higher; configure Eclipse so it uses JDK (see @@@)
 2. If you want to submit your changes to this project as a non-collaborator, you need to fork this project under your own GitHub account
 3. Import project into Eclipse
    1. Open Eclipse, choose File -> Import -> Git -> Project from Git and click "Next"
