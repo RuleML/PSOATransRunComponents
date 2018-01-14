@@ -44,7 +44,8 @@ public class PSOATransRunCmdLine {
 				new LongOpt("staticOnly", LongOpt.NO_ARGUMENT, null, 's'),
 				new LongOpt("undiff", LongOpt.NO_ARGUMENT, null, 'u'),
 				new LongOpt("verbose", LongOpt.NO_ARGUMENT, null, 'v'),
-				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z')
+				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z'),
+				new LongOpt("swiProlog", LongOpt.NO_ARGUMENT, null, 'w')
 		};
 
 		Getopt optionsParser = new Getopt("", args, "?l:i:q:tn:epo:x:am:rsuvz", opts);
