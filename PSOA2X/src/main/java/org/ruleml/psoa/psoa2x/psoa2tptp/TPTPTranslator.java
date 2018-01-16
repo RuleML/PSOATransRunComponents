@@ -5,21 +5,23 @@ import org.ruleml.psoa.PSOAInput;
 import org.ruleml.psoa.psoa2x.common.*;
 
 public class TPTPTranslator extends ANTLRBasedTranslator {
-	private PSOA2TPTPConfig m_config;
+	private Config m_config;
+	
+	public static class Config extends RelationalTranslatorConfig {}
 	
 	public TPTPTranslator()
 	{
-		this(new PSOA2TPTPConfig());
+		this(new Config());
 	}
 	
-	public TPTPTranslator(PSOA2TPTPConfig config)
+	public TPTPTranslator(Config config)
 	{
 		m_config = config;
 	}
 
 	@Override
 	protected <T extends PSOAInput<T>> T normalize(T input) {
-		return input.FOLnormalize(m_config);
+		return input.FOLnormalize(m_config.getRelationalTransformerConfig());
 	}
 	
 	@Override

@@ -4,10 +4,7 @@ import java.io.*;
 import java.util.Scanner;
 
 import org.ruleml.psoa.psoa2x.common.Translator;
-import org.ruleml.psoa.psoa2x.common.TranslatorException;
-import org.ruleml.psoa.psoa2x.psoa2prolog.PSOA2PrologConfig;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PrologTranslator;
-import org.ruleml.psoa.psoa2x.psoa2tptp.PSOA2TPTPConfig;
 import org.ruleml.psoa.psoa2x.psoa2tptp.TPTPTranslator;
 import org.ruleml.psoa.psoatransrun.engine.ExecutionEngine;
 import org.ruleml.psoa.psoatransrun.prolog.XSBEngine;
@@ -136,10 +133,10 @@ public class PSOATransRunCmdLine {
 		try {
 			if (lang == null || lang.equalsIgnoreCase("prolog"))
 			{
-				PSOA2PrologConfig transConfig = new PSOA2PrologConfig();
-				transConfig.dynamicObj = dynamicObj;
-				transConfig.omitMemtermInNegativeAtoms = omitNegMem;
-				transConfig.differentiateObj = differentiated;
+				PrologTranslator.Config transConfig = new PrologTranslator.Config();
+				transConfig.setDynamicObj(dynamicObj);
+				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
+				transConfig.setDifferentiateObj(differentiated);
 				translator = new PrologTranslator(transConfig);
 				
 				XSBEngine.Config engineConfig = new XSBEngine.Config();
@@ -152,10 +149,10 @@ public class PSOATransRunCmdLine {
 			}
 			else if (lang.equalsIgnoreCase("tptp"))
 			{
-				PSOA2TPTPConfig transConfig = new PSOA2TPTPConfig();
-				transConfig.dynamicObj = dynamicObj;
-				transConfig.omitMemtermInNegativeAtoms = omitNegMem;
-				transConfig.differentiateObj = differentiated;
+				TPTPTranslator.Config transConfig = new TPTPTranslator.Config();
+				transConfig.setDynamicObj(dynamicObj);
+				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
+				transConfig.setDifferentiateObj(differentiated);
 				translator = new TPTPTranslator(transConfig);
 				VampirePrimeEngine.Config engineConfig = new VampirePrimeEngine.Config();
 				if (timeout > 0)

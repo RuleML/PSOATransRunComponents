@@ -71,15 +71,15 @@ public class PSOATransRun {
 	 * @param config   configuration of the translator
 	 * 
 	 * */
-	public static PSOATransRun getInstantiation(String targetLang, TransformerConfig config)
+	public static PSOATransRun getInstantiation(String targetLang, TranslatorConfig config)
 	{
 		if (targetLang.equalsIgnoreCase("prolog"))
 		{
-			return new PSOATransRun(new PrologTranslator((PSOA2PrologConfig)config), new XSBEngine());
+			return new PSOATransRun(new PrologTranslator((PrologTranslator.Config)config), new XSBEngine());
 		}
 		else if (targetLang.equalsIgnoreCase("tptp"))
 		{
-			return new PSOATransRun(new TPTPTranslator((PSOA2TPTPConfig)config), new VampirePrimeEngine());
+			return new PSOATransRun(new TPTPTranslator((TPTPTranslator.Config)config), new VampirePrimeEngine());
 		}
 		
 		throw new PSOATransRunException("Unknown target language: " + targetLang);

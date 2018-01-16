@@ -29,9 +29,9 @@ options
 @members
 {
     private enum TermType { CONST, VAR, FUNC_INTERNAL, FUNC_EXTERNAL };
-    private PSOA2TPTPConfig m_config;
+    private TPTPTranslator.Config m_config;
        
-    public TPTPConverter(TreeNodeStream input, PSOA2TPTPConfig config) {
+    public TPTPConverter(TreeNodeStream input, TPTPTranslator.Config config) {
         this(input);
         m_config = config;
     }
