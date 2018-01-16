@@ -324,7 +324,7 @@ curie returns [String fullIRI]
 //--------------------- LEXER: -----------------------
 // Comments and whitespace:
 WHITESPACE  :  (' '|'\t'|'\r'|'\n')+ { $channel = HIDDEN; } ;
-COMMENT : '%' (options {greedy=false;} : .* ) '\n' { $channel = HIDDEN; } ;
+COMMENT : '%' ~('\n')* { $channel = HIDDEN; } ;
 MULTI_LINE_COMMENT :  '<!--' (options {greedy=false;} : .* ) '-->' { $channel=HIDDEN; } ;
 
 // Keywords:
