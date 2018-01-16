@@ -48,6 +48,7 @@ tokens
 	private List<String[]> m_imports = new ArrayList<String[]>();
 	private Set<String> m_localConsts = new HashSet<String>();
     private Map<String, String> m_namespaceTable = new HashMap<String, String>();
+    private ParserConfig m_config;
     private static Set<String> s_numberTypeIRIs = new HashSet();
     private static String s_stringIRI = "http://www.w3.org/2001/XMLSchema#string";
     
@@ -120,6 +121,10 @@ tokens
     private String getStrValue(String str)
     {
         return str.substring(1, str.length() - 1);
+    }
+    
+    public void setParserConfig(ParserConfig config) {
+    	m_config = config;
     }
 }
 
@@ -272,12 +277,12 @@ constant
 		PN_LOCAL {
     		if ($PN_LOCAL.text.startsWith("_"))
 				localConstName = $PN_LOCAL.text.substring(1);
-			else
-				localConstName = $PN_LOCAL.text; // Allow local constants without '_'-prefix
-			/* 
-				Enforcing '_' prefix:
-				throw new PSOARuntimeException("Incorrect constant format:" + $PN_LOCAL.text);
-			*/
+			else {
+				if (m_config.reconstruct)
+					localConstName = $PN_LOCAL.text; // Allow local constants without '_'-prefix
+				else
+					throw new PSOARuntimeException("Incorrect constant format:" + $PN_LOCAL.text);  // Enforcing '_' prefix
+            }
             
             m_localConsts.add(localConstName);
         }

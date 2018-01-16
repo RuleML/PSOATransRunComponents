@@ -17,6 +17,7 @@ public class TPTPTranslator extends ANTLRBasedTranslator {
 	public TPTPTranslator(Config config)
 	{
 		m_config = config;
+		m_parserConfig = config.getParserConfig();
 	}
 
 	@Override

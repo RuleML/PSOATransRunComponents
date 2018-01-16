@@ -30,6 +30,7 @@ public class PSOATransRunCmdLine {
 				new LongOpt("targetLang", LongOpt.REQUIRED_ARGUMENT, null, 'l'),
 				new LongOpt("input", LongOpt.REQUIRED_ARGUMENT, null, 'i'),
 				new LongOpt("query", LongOpt.REQUIRED_ARGUMENT, null, 'q'),
+				new LongOpt("reconstruct", LongOpt.NO_ARGUMENT, null, 'r'),
 				new LongOpt("test", LongOpt.NO_ARGUMENT, null, 't'),
 				new LongOpt("numRuns", LongOpt.REQUIRED_ARGUMENT, null, 'n'),
 				new LongOpt("echoInput", LongOpt.NO_ARGUMENT, null, 'e'),
@@ -48,7 +49,7 @@ public class PSOATransRunCmdLine {
 
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
-				isTest = false, verbose = false;
+				isTest = false, verbose = false, reconstruct = false;
 		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null, xsbPath = null;
 		int timeout = -1, numRuns = 1;
 		
@@ -69,6 +70,9 @@ public class PSOATransRunCmdLine {
 				break;
 			case 'q':
 				inputQueryPath = optionsParser.getOptarg();
+				break;
+			case 'r':
+				reconstruct = true;
 				break;
 			case 'm':
 				try {
@@ -137,6 +141,7 @@ public class PSOATransRunCmdLine {
 				transConfig.setDynamicObj(dynamicObj);
 				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
 				transConfig.setDifferentiateObj(differentiated);
+				transConfig.setReconstruct(reconstruct);
 				translator = new PrologTranslator(transConfig);
 				
 				XSBEngine.Config engineConfig = new XSBEngine.Config();
@@ -153,6 +158,7 @@ public class PSOATransRunCmdLine {
 				transConfig.setDynamicObj(dynamicObj);
 				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
 				transConfig.setDifferentiateObj(differentiated);
+				transConfig.setReconstruct(reconstruct);
 				translator = new TPTPTranslator(transConfig);
 				VampirePrimeEngine.Config engineConfig = new VampirePrimeEngine.Config();
 				if (timeout > 0)
@@ -331,6 +337,7 @@ public class PSOATransRunCmdLine {
 		println("  -q,--query        Query document for the KB. If the query document");
 		println("                    is not specified, the engine will read queries");
 		println("                    from the standard input.");
+		println("  -r,--reconstruct  Reconstruct underscores for local constants");
 		println("  -p,--printTrans   Print translated KB and queries to standard output");
 		println("  -o,--outputTrans  Save translated KB to the designated file");
 		println("  -x,--xsbfolder    Specifies XSB installation folder. The default path is ");

@@ -21,6 +21,7 @@ public class PrologTranslator extends ANTLRBasedTranslator {
 	public PrologTranslator(Config config)
 	{
 		m_config = config;
+		m_parserConfig = config.getParserConfig();
 	}
 
 	@Override
