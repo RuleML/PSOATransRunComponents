@@ -27,10 +27,9 @@ options
 @members
 {
     private enum TermType { CONST, VAR, FUNC_INTERNAL, FUNC_EXTERNAL };
-    private PSOA2PrologConfig m_config;
-    
+    private PrologTranslator.Config m_config;
        
-    public PrologConverter(TreeNodeStream input, PSOA2PrologConfig config) {
+    public PrologConverter(TreeNodeStream input, PrologTranslator.Config config) {
         this(input);
         m_config = config;
     }

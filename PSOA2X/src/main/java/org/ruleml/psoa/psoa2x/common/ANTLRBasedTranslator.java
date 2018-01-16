@@ -8,13 +8,16 @@ import java.util.*;
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.ruleml.psoa.*;
+import org.ruleml.psoa.parser.ParserConfig;
 
 public abstract class ANTLRBasedTranslator extends Translator {
 	abstract protected Converter createConverter(TreeNodeStream astNodes);
 	abstract protected <T extends PSOAInput<T>> T normalize(T input);
+	
 	protected PSOAKB m_kb;
 	protected Converter m_queryConverter;
-
+	protected ParserConfig m_parserConfig;
+	
 	/**
 	 * Translate the input KB and write the outcome into an output stream 
 	 * 
@@ -25,6 +28,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 	@Override
 	public void translateKB(String kb, OutputStream out) throws TranslatorException {
 		m_kb = new PSOAKB();
+		m_kb.setParserConfig(m_parserConfig);
 		m_kb.loadFromText(kb);
 		translateKB(m_kb, out);
 	}
@@ -42,6 +46,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 		try {
 			FreshNameGenerator.reset();
 			m_kb = new PSOAKB();
+			m_kb.setParserConfig(m_parserConfig);
 			m_kb.load(kb);
 			translateKB(m_kb, out);
 		} catch (IOException e) {
@@ -82,6 +87,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 	@Override
 	public void translateQuery(String query, OutputStream out) throws TranslatorException {
 		PSOAQuery psoaquery = new PSOAQuery(m_kb);
+		psoaquery.setParserConfig(m_parserConfig);
 		psoaquery.loadFromText(query);
 		translateQuery(psoaquery, out);
 	}
@@ -99,6 +105,7 @@ public abstract class ANTLRBasedTranslator extends Translator {
 	public void translateQuery(InputStream query, OutputStream out) throws TranslatorException {
 		try {
 			PSOAQuery psoaquery = new PSOAQuery(m_kb);
+			psoaquery.setParserConfig(m_parserConfig);
 			psoaquery.load(query);
 			translateQuery(psoaquery, out);
 		} catch (IOException e) {

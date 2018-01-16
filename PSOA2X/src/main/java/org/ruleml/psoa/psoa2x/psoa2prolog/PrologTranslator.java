@@ -9,21 +9,24 @@ import org.ruleml.psoa.PSOAInput;
 import org.ruleml.psoa.psoa2x.common.*;
 
 public class PrologTranslator extends ANTLRBasedTranslator {
-	PSOA2PrologConfig m_config;
+	Config m_config;
+	
+	public static class Config extends RelationalTranslatorConfig { }
 	
 	public PrologTranslator()
 	{
-		this(new PSOA2PrologConfig());
+		this(new Config());
 	}
 	
-	public PrologTranslator(PSOA2PrologConfig config)
+	public PrologTranslator(Config config)
 	{
 		m_config = config;
+		m_parserConfig = config.getParserConfig();
 	}
 
 	@Override
 	protected <T extends PSOAInput<T>> T normalize(T input) {
-		return input.LPnormalize(m_config);
+		return input.LPnormalize(m_config.getRelationalTransformerConfig());
 	}
 	
 	@Override

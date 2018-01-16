@@ -19,8 +19,12 @@ public abstract class PSOAInput<T extends PSOAInput<T>> {
 	protected Tree m_tree;
 	protected boolean m_printAfterTransformation = false;
 	protected PrintStream m_printStream = System.out;
+	protected ParserConfig m_config = new ParserConfig();
 
-
+	public void setParserConfig(ParserConfig config) {
+    	m_config = config;
+    }
+	
 	/**
 	 * Parse a string into an ANTLR tree representing the PSOA input
 	 * 
@@ -70,6 +74,7 @@ public abstract class PSOAInput<T extends PSOAInput<T>> {
 		PSOAPSLexer lexer = new PSOAPSLexer(input);
 		m_tokens = new CommonTokenStream(lexer);
 		PSOAPSParser parser = new PSOAPSParser(m_tokens);
+		parser.setParserConfig(m_config);
 		m_tree = (Tree) parse(parser).getTree();
 	}
 
