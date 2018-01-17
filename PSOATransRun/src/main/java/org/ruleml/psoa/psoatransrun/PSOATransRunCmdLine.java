@@ -358,7 +358,7 @@ public class PSOATransRunCmdLine {
 		println("  -r,--reconstruct  Reconstruct underscores for local constants");
 		println("  -p,--printTrans   Print translated KB and queries to standard output");
 		println("  -o,--outputTrans  Save translated KB to the designated file");
-		println("  -x,--xsbfolder    Specifies XSB installation folder. The default path is ");
+		println("  -x,--prologFolder Specifies Prolog installation folder. The default path is ");
 		println("                    obtained from the environment variable XSB_DIR");
 		println("  -u,--undiff       Perform undifferentiated objectification");
 		println("  -s,--staticOnly   Perform static objectification only");
@@ -367,7 +367,7 @@ public class PSOATransRunCmdLine {
 		{
 			println("     --longhelp     Print the help message, including commands for internal use");
 			println("  -l,--targetLang   Translation target language (currently support");
-			println("                    \"prolog\" and \"tptp\")");
+			println("                    \"prolog\", \"swi\" and \"tptp\")");
 			println("  -t,--test         Run PSOATransRun tests (-i specifies the directory");
 			println("                    for the test suite)");
 			println("  -n,--numRuns      Number of runs for each test case");
