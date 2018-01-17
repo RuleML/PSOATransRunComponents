@@ -7,6 +7,7 @@ import org.ruleml.psoa.psoa2x.common.Translator;
 import org.ruleml.psoa.psoa2x.psoa2prolog.PrologTranslator;
 import org.ruleml.psoa.psoa2x.psoa2tptp.TPTPTranslator;
 import org.ruleml.psoa.psoatransrun.engine.ExecutionEngine;
+import org.ruleml.psoa.psoatransrun.prolog.SWIEngine;
 import org.ruleml.psoa.psoatransrun.prolog.XSBEngine;
 import org.ruleml.psoa.psoatransrun.test.TestSuite;
 import org.ruleml.psoa.psoatransrun.tptp.VampirePrimeEngine;
@@ -36,14 +37,13 @@ public class PSOATransRunCmdLine {
 				new LongOpt("echoInput", LongOpt.NO_ARGUMENT, null, 'e'),
 				new LongOpt("printTrans", LongOpt.NO_ARGUMENT, null, 'p'),
 				new LongOpt("outputTrans", LongOpt.REQUIRED_ARGUMENT, null, 'o'),
-				new LongOpt("xsbfolder", LongOpt.REQUIRED_ARGUMENT, null, 'x'),
+				new LongOpt("prologFolder", LongOpt.REQUIRED_ARGUMENT, null, 'x'),
 				new LongOpt("allAns", LongOpt.NO_ARGUMENT, null, 'a'),
 				new LongOpt("timeout", LongOpt.REQUIRED_ARGUMENT, null, 'm'),
 				new LongOpt("staticOnly", LongOpt.NO_ARGUMENT, null, 's'),
 				new LongOpt("undiff", LongOpt.NO_ARGUMENT, null, 'u'),
 				new LongOpt("verbose", LongOpt.NO_ARGUMENT, null, 'v'),
-				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z'),
-				new LongOpt("swiProlog", LongOpt.NO_ARGUMENT, null, 'w')
+				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z')
 		};
 
 		Getopt optionsParser = new Getopt("", args, "?l:i:q:tn:epo:x:am:rsuvz", opts);
@@ -51,7 +51,7 @@ public class PSOATransRunCmdLine {
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
 				isTest = false, verbose = false, reconstruct = false;
-		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null, xsbPath = null;
+		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null, prologPath = null;
 		int timeout = -1, numRuns = 1;
 		
 		for (int opt = optionsParser.getopt(); opt != -1; opt = optionsParser
@@ -104,7 +104,7 @@ public class PSOATransRunCmdLine {
 				transKBPath = optionsParser.getOptarg();
 				break;
 			case 'x':
-				xsbPath = optionsParser.getOptarg();
+				prologPath = optionsParser.getOptarg();
 				break;
 			case 'a':
 				getAllAnswers = true;
@@ -147,8 +147,25 @@ public class PSOATransRunCmdLine {
 				
 				XSBEngine.Config engineConfig = new XSBEngine.Config();
 				engineConfig.transKBPath = transKBPath;
-				engineConfig.xsbFolderPath = xsbPath;
+				engineConfig.xsbFolderPath = prologPath;
 				engine = new XSBEngine(engineConfig);
+				
+				if (timeout > 0)
+					printErrln("Ignore -t option: only applicable for the target language TPTP");
+			}
+			else if (lang.equalsIgnoreCase("swi"))
+			{
+				PrologTranslator.Config transConfig = new PrologTranslator.Config();
+				transConfig.setDynamicObj(dynamicObj);
+				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
+				transConfig.setDifferentiateObj(differentiated);
+				transConfig.setReconstruct(reconstruct);
+				translator = new PrologTranslator(transConfig);
+				
+				SWIEngine.Config engineConfig = new SWIEngine.Config();
+				engineConfig.transKBPath = transKBPath;
+				engineConfig.swiFolderPath = prologPath;
+				engine = new SWIEngine(engineConfig);
 				
 				if (timeout > 0)
 					printErrln("Ignore -t option: only applicable for the target language TPTP");
@@ -167,7 +184,7 @@ public class PSOATransRunCmdLine {
 				engineConfig.transKBPath = transKBPath;
 				engine = new VampirePrimeEngine(engineConfig);
 				
-				if (xsbPath != null)
+				if (prologPath != null)
 					printErrln("Ignore -x option: only applicable for the target language Prolog");
 			}
 			else
