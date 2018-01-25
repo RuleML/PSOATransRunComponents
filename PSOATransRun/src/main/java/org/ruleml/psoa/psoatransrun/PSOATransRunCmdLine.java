@@ -30,7 +30,7 @@ public class PSOATransRunCmdLine {
 				new LongOpt("targetLang", LongOpt.REQUIRED_ARGUMENT, null, 'l'),
 				new LongOpt("input", LongOpt.REQUIRED_ARGUMENT, null, 'i'),
 				new LongOpt("query", LongOpt.REQUIRED_ARGUMENT, null, 'q'),
-				new LongOpt("reconstruct", LongOpt.NO_ARGUMENT, null, 'r'),
+				new LongOpt("explicitLocalConstants", LongOpt.NO_ARGUMENT, null, 'c'),
 				new LongOpt("test", LongOpt.NO_ARGUMENT, null, 't'),
 				new LongOpt("numRuns", LongOpt.REQUIRED_ARGUMENT, null, 'n'),
 				new LongOpt("echoInput", LongOpt.NO_ARGUMENT, null, 'e'),
@@ -45,11 +45,11 @@ public class PSOATransRunCmdLine {
 				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z')
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?l:i:q:tn:epo:x:am:rsuvz", opts);
+		Getopt optionsParser = new Getopt("", args, "?l:i:q:tn:epo:x:am:csuvz", opts);
 
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
-				isTest = false, verbose = false, reconstruct = false;
+				isTest = false, verbose = false, reconstruct = true;
 		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null, xsbPath = null;
 		int timeout = -1, numRuns = 1;
 		
@@ -71,8 +71,8 @@ public class PSOATransRunCmdLine {
 			case 'q':
 				inputQueryPath = optionsParser.getOptarg();
 				break;
-			case 'r':
-				reconstruct = true;
+			case 'c':
+				reconstruct = false;
 				break;
 			case 'm':
 				try {
@@ -337,7 +337,7 @@ public class PSOATransRunCmdLine {
 		println("  -q,--query        Query document for the KB. If the query document");
 		println("                    is not specified, the engine will read queries");
 		println("                    from the standard input.");
-		println("  -r,--reconstruct  Reconstruct underscores for local constants");
+		println("  -c,--explicitLocalConstants  Require explicit underscores for local constants");
 		println("  -p,--printTrans   Print translated KB and queries to standard output");
 		println("  -o,--outputTrans  Save translated KB to the designated file");
 		println("  -x,--xsbfolder    Specifies XSB installation folder. The default path is ");
