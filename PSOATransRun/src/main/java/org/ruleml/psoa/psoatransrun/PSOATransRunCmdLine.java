@@ -328,7 +328,7 @@ public class PSOATransRunCmdLine {
 	}
 	
 	private static void printUsage(boolean isLong) {
-		println("Usage: java -jar PSOATransRun.jar -i <kb> [-e] [-p] [-o <translated KB output>] [-q <query>] [-a] [-s] [-x <xsb folder>]");
+		println("Usage: java -jar PSOATransRun.jar -i <kb> [-e] [-p] [-c] [-o <translated KB output>] [-q <query>] [-a] [-u] [-s] [-x <xsb folder>]");
 		println("Options:");
 		println("  -?,--help         Print the help message");
 		println("  -a,--allAns       Retrieve all answers for each query at once");
