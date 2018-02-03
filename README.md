@@ -1,6 +1,6 @@
-PSOATransRunComponents is structured into @@@
+The 'package' PSOATransRunComponents, while listed as one of five siblings (along with PSOA2X, PSOACore, PSOATransRun, PSOATransRunWebService), acts as their root, creating a top-level tree structure.
 
-Import Project into Eclipse using Eclipse's Built-in Git Plugin and Prepare for Building
+Import Project into Eclipse using Eclipse's Built-in Git Plugin EGit (see https://eclipsesource.com/blogs/tutorials/egit-tutorial) and Prepare for Building
 1. Install JDK 8 or higher and Eclipse 4.2 or higher; configure Eclipse so it uses JDK (see http://techiedan.com/2009/10/19/set-up-jdk-in-eclipse/)
 2. If you want to submit your changes to this project as a non-collaborator, you need to fork this project under your own GitHub account
 3. Import project into Eclipse
