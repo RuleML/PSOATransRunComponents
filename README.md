@@ -1,3 +1,5 @@
+PSOATransRunComponents is structured into @@@
+
 Import Project into Eclipse using Eclipse's Built-in Git Plugin and Prepare for Building
 1. Install JDK 8 or higher and Eclipse 4.2 or higher; configure Eclipse so it uses JDK (see http://techiedan.com/2009/10/19/set-up-jdk-in-eclipse/)
 2. If you want to submit your changes to this project as a non-collaborator, you need to fork this project under your own GitHub account
@@ -11,7 +13,7 @@ Import Project into Eclipse using Eclipse's Built-in Git Plugin and Prepare for 
    7. Click "Next" and then "Finish" to import the project into Eclipse (pop-up about missing "natures" can be ignored, if no edits on PSOATransRunWebService, currently for TPTP, will be done)
 4. Preparation for building project
    1. Go to Eclipse's "Project" menu item and uncheck "Build Automatically"
-   2. Expand the dropdown list besides the green run button in the Eclipse toolbar and click "Run Configurations"
+   2. Expand the dropdown list besides the green run button in the Eclipse toolbar and click "Run Configurations..."
    3. Expand the "Maven Build" menu, choose any one of the "InterPrologInstall" items, and click "Run". This will install the InterProlog library to your local Maven repository.
    4. There should be red-cross error icons shown for projects PSOA2X and PSOACore. If not, try building the project once as explained in the Section "Building Project in Eclipse" (DO NOT perform "Maven -> Update Project" after this build). To fix these errors, follow the next steps.
    5. Expand the "PSOACore" project, open pom.xml and navigate to the "pom.xml" tab.
