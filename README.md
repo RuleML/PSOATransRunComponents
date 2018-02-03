@@ -26,7 +26,7 @@ Building Project in Eclipse
 
   \<local repo dir\>\PSOATransRun\target\PSOATransRunLocal.jar
   
-  In case the building process is successful but Eclipse still shows errors for the projects (as               tiny red crosses in the project icons), right-click the PSOATransRunComponents project and choose "Maven -> Update Project".
+  In case Eclipse still shows errors for the projects (as tiny red crosses in the project icons) after a successful building process, right-click the PSOATransRunComponents project and choose "Maven -> Update Project".
 * For a clean (not just incremental) build, which is recommended for the last round of testing and release, click "Run As -> Maven clean" before doing the above "Maven install".
 
 Running Tests
