@@ -10,7 +10,7 @@ Import Project into Eclipse using Eclipse's Built-in Git Plugin EGit (see https:
    4. Input your GitHub credentials and click "Next"
    5. Unselect all branches except the "master" branch and click "Next"
    6. Set your local path of the project folder and click "Next"
-   7. Click "Next" and then "Finish" to import the project into Eclipse (pop-up about missing "natures" can be ignored, if no edits on PSOATransRunWebService, currently for TPTP, will be done)
+   7. The "Import existing Eclipse projects" radio button should be selected if it is not already. Click "Next" and then "Finish" to import the project into Eclipse (pop-up about missing "natures" can be ignored, if no edits on PSOATransRunWebService, currently for TPTP, will be done)
 4. Preparation for building project
    1. Go to Eclipse's "Project" menu item and uncheck "Build Automatically"
    2. Expand the dropdown list besides the green run button in the Eclipse toolbar and click "Run Configurations..."
