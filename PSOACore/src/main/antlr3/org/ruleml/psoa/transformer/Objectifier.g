@@ -24,6 +24,7 @@ options
 	import org.ruleml.psoa.analyzer.*;
 	
 	import static org.ruleml.psoa.FreshNameGenerator.*;
+	import static org.ruleml.psoa.utils.IOUtil.*;
 }
 
 @members
@@ -223,7 +224,18 @@ psoa[boolean isAtomic]
 {
    CommonTree varNode;
 }
-    :   ^(PSOA oid=term? ^(INSTANCE type=term) tuple* slot*)
+    :   ^(PSOA oid=term?
+            ^(INSTANCE type=term
+            	{
+            		if (m_dynamic &&  
+            			(oid == null || $oid.tree.getType() == VAR_ID) && $type.tree.getType() == VAR_ID)    // Predicate variable
+            		{
+            			printErrln("Warning: Predicate variables may lead to incompleteness under " +
+            					   "static/dynamic objectification (completeness obtained under --staticOnly (-s) option)");
+            		}
+            	}
+             )
+    	 tuple* slot*)
     // keep oidful psoa term unchanged
     -> { oid != null }? ^(PSOA $oid ^(INSTANCE $type) tuple* slot*)
     // dynamic objectification for an atom using a relational predicate 

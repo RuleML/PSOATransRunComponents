@@ -26,6 +26,7 @@ options
 	import org.ruleml.psoa.analyzer.*;
 	
 	import static org.ruleml.psoa.FreshNameGenerator.*;
+	import static org.ruleml.psoa.utils.IOUtil.*;
 }
 
 @members
@@ -272,18 +273,32 @@ psoa[boolean isAtomicFormula]
     PredicateInfo pi = null;
 }
     :   ^(PSOA oid=term?
-            ^(INSTANCE type=term { pi = m_KBInfo.getPredInfo($type.tree.toStringTree()); } ) tuples+=tuple* slots+=slot*)
+            ^(INSTANCE type=term
+            	{
+            	  /*
+            	    Unnecessary here, since the message will be printed by ANTLR-generated Objectifier class
+            	    
+            		if ((oid == null || $oid.tree.getType() == VAR_ID) && $type.tree.getType() == VAR_ID)      // Predicate variable
+            		{
+            			printErrln("Warning: Predicate variables may lead to incompleteness under " +
+            					   "static/dynamic objectification (completeness obtained under --staticOnly (-s) option)");
+            		}
+                  */
+            		pi = m_KBInfo.getPredInfo($type.tree.toStringTree());
+            	}
+             )
+          tuples+=tuple* slots+=slot*)
     -> // Function applications
        { !$isAtomicFormula }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
     -> {
-            m_KBInfo.hasHeadOnlyVariables()  // KB has head-only variables
-         || !(pi == null || pi.isRelational())  // Atoms with non-relational predicates
-         || (oid == null && $slots == null)  // Relational atom
-         || $type.tree.getType() == TOP      // Top-typed queries
-         || $type.tree.getType() == VAR_ID   // Predicate variable
+            m_KBInfo.hasHeadOnlyVariables()     // KB has head-only variables
+         || !(pi == null || pi.isRelational())  // Atoms with non-relational KB predicates
+         || (oid == null && $slots == null)     // Relational atom
+         || $type.tree.getType() == TOP         // Top-typed atom
+         || $type.tree.getType() == VAR_ID      // Predicate variable
        }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*) 
     -> {   pi == null ||         // Predicate does not exist in KB
-          !$oid.isVariable ||    // Psoa term with OID constants
+          !$oid.isVariable ||    // Psoa term with an OID constant
           $slots != null         // Psoa term with slots
        }? FALSITY
     -> // Rewrite a pure membership query atom
