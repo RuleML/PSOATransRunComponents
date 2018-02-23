@@ -223,19 +223,23 @@ psoa[boolean isAtomic]
 @init
 {
    CommonTree varNode;
+   boolean hasSlot = false;
 }
     :   ^(PSOA oid=term?
-            ^(INSTANCE type=term
+            ^(INSTANCE type=term) tuple* (slot { hasSlot = true; })*
             	{
-            		if (m_dynamic &&  
-            			(oid == null || $oid.tree.getType() == VAR_ID) && $type.tree.getType() == VAR_ID)    // Predicate variable
+            		// If predicate variable of atom can be bound to a relational predicate, static/dynamic may be incomplete
+            		if (m_dynamic &&   // Static/dynamic setting
+            			(oid == null || $oid.tree.getType() == VAR_ID) &&   // OID absent or OID variable
+            			!hasSlot &&    // No slot 
+            			// Tuple testing is more complicated, hence omitted, leading to more "false positive" warnings
+            			$type.tree.getType() == VAR_ID)    // Predicate variable
             		{
             			printErrln("Warning: Predicate variables may lead to incompleteness under " +
             					   "static/dynamic objectification (completeness obtained under --staticOnly (-s) option)");
             		}
             	}
-             )
-    	 tuple* slot*)
+         )
     // keep oidful psoa term unchanged
     -> { oid != null }? ^(PSOA $oid ^(INSTANCE $type) tuple* slot*)
     // dynamic objectification for an atom using a relational predicate 
