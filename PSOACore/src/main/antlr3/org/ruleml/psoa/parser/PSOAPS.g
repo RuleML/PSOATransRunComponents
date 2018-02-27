@@ -41,6 +41,8 @@ tokens
 
 @lexer::header {
     package org.ruleml.psoa.parser;
+    
+    import org.ruleml.psoa.transformer.PSOARuntimeException;
 }
 
 @members
@@ -383,7 +385,12 @@ fragment IRI_REF_CHAR
 NAMESPACE : PN_PREFIX? ':';
 fragment PN_PREFIX : PN_CHARS_BASE ((PN_CHARS|'.')* PN_CHARS)?;
 PN_LOCAL
-	: (PN_CHARS_U | DIGIT | PLX) (PN_CHARS | PLX)*;
+	: (PN_CHARS_U | DIGIT | PLX) (PN_CHARS | PLX)* 
+	{ 
+		if(input.LA(1) == '?')    // '?' is not allowed inside a name
+			throw new PSOARuntimeException("Incorrect name format: " + getText() + "?...");  
+	}
+	;
 
 fragment PN_CHARS
     : PN_CHARS_U
@@ -419,7 +426,12 @@ fragment PN_LOCAL_ESC
 fragment ALPHA : 'a'..'z' | 'A'..'Z' ;
 fragment DIGIT : '0'..'9' ;
 
-VAR_ID : '?' PN_LOCAL?;
+VAR_ID : '?' PN_LOCAL? 
+	{ 
+		if(input.LA(1) == '?')    // '?' is not allowed inside variable name
+			throw new PSOARuntimeException("Incorrect name format: " + getText() + "?...");  
+	}
+	;
 
 fragment ECHAR : '\\' ('t' | 'b' | 'n' | 'r' | 'f' | '\\' | '"' | '\'');
 
