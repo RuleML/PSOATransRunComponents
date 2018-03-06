@@ -53,12 +53,11 @@ options
             return (CommonTree)adaptor.create(FALSITY, "FALSITY");
         
         SortedSet<Integer> arities = pi.getPositionalArities();
+        ArrayList<CommonTree> newVars = new ArrayList<CommonTree>();
         
         for (int i = arities.last(); i > 0; i--)
         {
-            String var = freshVarName(m_queryVars);
-            CommonTree varNode = (CommonTree)adaptor.create(VAR_ID, var);
-            m_newVarNodes.put(var, varNode);
+        	newVars.add(newVarNode());
         }
         
         for (Integer i : arities)
@@ -96,11 +95,9 @@ options
             equality.addChild((CommonTree)adaptor.dupTree(oid));
             equality.addChild(oidFuncApp);
             
-            int j = i;
-            for (CommonTree varNode : m_newVarNodes.values())
+            for (int j = 0; j < i; j++)
             {
-                if (--j < 0)
-                  break;
+            	CommonTree varNode = newVars.get(j);
                 predAppTuple.addChild((CommonTree)adaptor.dupTree(varNode));
                 oidFuncTuple.addChild((CommonTree)adaptor.dupTree(varNode));
             }
@@ -110,6 +107,8 @@ options
             disjunct.addChild(equality);
             disjuncts.add(disjunct);
         }
+        
+        newVars.clear();
         
         // The predicate is only used as a nullary predicate
         if (m_newVarNodes.isEmpty())
@@ -139,6 +138,14 @@ options
         tree.insertChild(1, (CommonTree)adaptor.dupTree(type));
         return tree;
     }
+    
+    private CommonTree newVarNode() {
+        String var = freshVarName(m_queryVars);
+        CommonTree varNode = (CommonTree)adaptor.create(VAR_ID, var);
+        m_newVarNodes.put(var, varNode);
+        
+        return varNode;
+    }
 	
   	private CommonTree newVarsTree()
   	{
@@ -159,6 +166,15 @@ options
         
         m_newVarNodes.clear();
         return root;
+  	}
+  	
+  	private boolean hasIndepTuple(List tuples) {
+  		for (Object tuple : tuples) {
+  			if (((CommonTree)tuple).getChild(0).getText().equals("-"))
+  				return true;
+  		}
+  		
+  		return false;
   	}
 }
 
@@ -271,8 +287,9 @@ psoa[boolean isAtomicFormula]
 {
     int i = 0;
     PredicateInfo pi = null;
+    CommonTree oidTree = null;
 }
-    :   ^(PSOA oid=term?
+    :   ^(PSOA (oid=term { oidTree = $oid.tree; })?
             ^(INSTANCE type=term
             	{
             	  /*
@@ -293,20 +310,29 @@ psoa[boolean isAtomicFormula]
     -> {
             m_KBInfo.hasHeadOnlyVariables()     // KB has head-only variables
          || !(pi == null || pi.isRelational())  // Atoms with non-relational KB predicates
-         || (oid == null && $slots == null)     // Relational atom
+         || (oid == null && pi != null 
+             && $tuples.size() == 1 && !hasIndepTuple($tuples) && $slots == null)     // Relational atom
          || $type.tree.getType() == TOP         // Top-typed atom
          || $type.tree.getType() == VAR_ID      // Predicate variable
-       }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*) 
+       }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
     -> {   pi == null ||         // Predicate does not exist in KB
-          !$oid.isVariable ||    // Psoa term with an OID constant
+          (oid != null && !oid.isVariable) ||    // Psoa term with a non-variable OID
+          (pi.isRelational() && hasIndepTuple($tuples)) ||  // Relational predicate having independent tuple
           $slots != null         // Psoa term with slots
        }? FALSITY
     -> // Rewrite a pure membership query atom
        { $tuples == null }?
        { membershipRewriteTree($oid.tree, $type.tree, pi) }
     -> // Rewrite query atoms with tuples and OID variable
-        ^(AND (^(PSOA ^(INSTANCE $type) tuple)
-               ^(EQUAL $oid ^(PSOA ^(INSTANCE ^(SHORTCONST LOCAL[s_oidFuncName])) { oidFuncArgTree($type.tree, (CommonTree)$tuples.get(i++)) })))*)
+        ^(AND
+            ^(AND ^(PSOA ^(INSTANCE { adaptor.dupTree($type.tree) } ) tuple)
+                  ^(EQUAL { adaptor.dupTree(oidTree != null? oidTree : (oidTree = newVarNode())) }
+                          ^(PSOA ^(INSTANCE ^(SHORTCONST LOCAL[s_oidFuncName])) 
+             	                 { oidFuncArgTree($type.tree, (CommonTree)$tuples.get(i++)) }
+             	           )
+             	   )
+             )*
+        )
     ;
 
 tuple
