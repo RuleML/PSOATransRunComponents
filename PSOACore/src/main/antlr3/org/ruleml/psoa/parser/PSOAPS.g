@@ -41,8 +41,6 @@ tokens
 
 @lexer::header {
     package org.ruleml.psoa.parser;
-    
-    import org.ruleml.psoa.transformer.PSOARuntimeException;
 }
 
 @members
@@ -127,6 +125,12 @@ tokens
     
     public void setParserConfig(ParserConfig config) {
     	m_config = config;
+    }
+    
+    public void checkPrecedingWhitespace() {
+    	if (input.get(input.index() - 1).getType() != WHITESPACE) {
+    		throw new PSOARuntimeException("Whitespace is expected before " + input.get(input.index()).getText());
+    	}
     }
 }
 
@@ -228,7 +232,7 @@ simple_term
     ;
 
 external_term
-    :   EXTERNAL LPAR simple_term LPAR term* RPAR RPAR
+    :   EXTERNAL LPAR simple_term LPAR (term ({ checkPrecedingWhitespace(); } term)*)? RPAR RPAR
     -> ^(EXTERNAL ^(PSOA ^(INSTANCE simple_term) ^(TUPLE DEPSIGN["+"] term*)))
     ;
 
@@ -247,17 +251,17 @@ psoa_rest
 
 tuples_and_slots
     :   tuple+ slot* -> tuple+ slot*
-    |   terms+=term+ { boolean hasSlot = false; }
+    |   terms+=term ({ checkPrecedingWhitespace(); } terms+=term)* { boolean hasSlot = false; }
         (SLOT_ARROW first_slot_value=term { hasSlot = true; } slot* )? // Syntactic sugar for psoa terms which has only one tuple
     -> {!hasSlot}? ^(TUPLE DEPSIGN["+"] {getTupleTree($terms, $terms.size()) } ) // single tuple
-    -> {$terms.size() == 1}?
+    -> {$terms.size() == 1}?  // No tuple, only slot(s)
         ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get(0)} $first_slot_value) slot* // slot only
     ->  ^(TUPLE DEPSIGN["+"] {getTupleTree($terms, $terms.size() - 1)}) ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get($terms.size() - 1)} $first_slot_value) slot* // tuples and slots
     ;
 
 tuple
-    :   DEPSIGN LSQBR term+ RSQBR -> ^(TUPLE DEPSIGN term+)
-    |   LSQBR term+ RSQBR -> ^(TUPLE DEPSIGN["+"] term+)
+    :   DEPSIGN LSQBR term ({ checkPrecedingWhitespace(); } term)* RSQBR -> ^(TUPLE DEPSIGN term+)
+    |   LSQBR term ({ checkPrecedingWhitespace(); } term)* RSQBR -> ^(TUPLE DEPSIGN["+"] term+)
     ;
 
 slot
@@ -385,12 +389,7 @@ fragment IRI_REF_CHAR
 NAMESPACE : PN_PREFIX? ':';
 fragment PN_PREFIX : PN_CHARS_BASE ((PN_CHARS|'.')* PN_CHARS)?;
 PN_LOCAL
-	: (PN_CHARS_U | DIGIT | PLX) (PN_CHARS | PLX)* 
-	{ 
-		if(input.LA(1) == '?')    // '?' is not allowed inside a name
-			throw new PSOARuntimeException("Incorrect name format: " + getText() + "?...");  
-	}
-	;
+	: (PN_CHARS_U | DIGIT | PLX) (PN_CHARS | PLX)*;
 
 fragment PN_CHARS
     : PN_CHARS_U
@@ -426,12 +425,7 @@ fragment PN_LOCAL_ESC
 fragment ALPHA : 'a'..'z' | 'A'..'Z' ;
 fragment DIGIT : '0'..'9' ;
 
-VAR_ID : '?' PN_LOCAL? 
-	{ 
-		if(input.LA(1) == '?')    // '?' is not allowed inside variable name
-			throw new PSOARuntimeException("Incorrect name format: " + getText() + "?...");  
-	}
-	;
+VAR_ID : '?' PN_LOCAL?;
 
 fragment ECHAR : '\\' ('t' | 'b' | 'n' | 'r' | 'f' | '\\' | '"' | '\'');
 
