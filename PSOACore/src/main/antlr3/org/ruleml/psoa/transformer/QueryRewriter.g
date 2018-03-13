@@ -169,6 +169,9 @@ options
   	}
   	
   	private boolean hasIndepTuple(List tuples) {
+  		if (tuples == null)
+  			return false;
+  		
   		for (Object tuple : tuples) {
   			if (((CommonTree)tuple).getChild(0).getText().equals("-"))
   				return true;
@@ -310,7 +313,7 @@ psoa[boolean isAtomicFormula]
     -> {
             m_KBInfo.hasHeadOnlyVariables()     // KB has head-only variables
          || !(pi == null || pi.isRelational())  // Atoms with non-relational KB predicates
-         || (oid == null && pi != null 
+         || (oid == null && pi != null && $tuples != null
              && $tuples.size() == 1 && !hasIndepTuple($tuples) && $slots == null)     // Relational atom
          || $type.tree.getType() == TOP         // Top-typed atom
          || $type.tree.getType() == VAR_ID      // Predicate variable
