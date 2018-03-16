@@ -313,8 +313,8 @@ psoa[boolean isAtomicFormula]
     -> {
             m_KBInfo.hasHeadOnlyVariables()     // KB has head-only variables
          || !(pi == null || pi.isRelational())  // Atoms with non-relational KB predicates
-         || (oid == null && pi != null && $tuples != null
-             && $tuples.size() == 1 && !hasIndepTuple($tuples) && $slots == null)     // Relational atom
+         || (oid == null && pi != null && ($tuples == null || $tuples.size() == 1)
+             && !hasIndepTuple($tuples) && $slots == null)     // Relational atom
          || $type.tree.getType() == TOP         // Top-typed atom
          || $type.tree.getType() == VAR_ID      // Predicate variable
        }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
@@ -325,7 +325,7 @@ psoa[boolean isAtomicFormula]
        }? FALSITY
     -> // Rewrite a pure membership query atom
        { $tuples == null }?
-       { membershipRewriteTree($oid.tree, $type.tree, pi) }
+       { membershipRewriteTree(oidTree, $type.tree, pi) }
     -> // Rewrite query atoms with tuples and OID variable
         ^(AND
             ^(AND ^(PSOA ^(INSTANCE { adaptor.dupTree($type.tree) } ) tuple)
