@@ -70,7 +70,7 @@ options
         if (positionalArities.isEmpty())
         {
             if (!hasSlot)
-                pi.addPositionalArity(0);
+                pi.setHasNoDesc(true);
         }
         else
             pi.addPositionalArities(positionalArities);

@@ -10,7 +10,7 @@ public class PredicateInfo
 {
 	private String m_name;
 	SortedSet<Integer> m_positionalArities;
-	boolean m_hasOID, m_hasSlot, m_hasIndepTuple, m_hasMultiTuple;
+	boolean m_hasOID, m_hasSlot, m_hasIndepTuple, m_hasMultiTuple, m_hasNoDesc;
 	
 	public PredicateInfo(String name)
 	{
@@ -18,11 +18,14 @@ public class PredicateInfo
 		m_positionalArities = new TreeSet<Integer>();
 		m_hasOID = false;
 		m_hasSlot = false;
+		m_hasIndepTuple = false;
+		m_hasMultiTuple = false;
+		m_hasNoDesc = false;
 	}
 	
 	public boolean isRelational()
 	{
-		return !m_hasOID && !m_hasSlot && !m_hasIndepTuple && !m_hasMultiTuple;
+		return !m_hasOID && !m_hasSlot && !m_hasIndepTuple && !m_hasMultiTuple && !m_hasNoDesc;
 	}
 	
 	public SortedSet<Integer> getPositionalArities()
@@ -63,6 +66,11 @@ public class PredicateInfo
 	public void setHasMultiTuple(boolean b)
 	{
 		m_hasMultiTuple = b;
+	}
+	
+	public void setHasNoDesc(boolean b)
+	{
+		m_hasNoDesc = b;
 	}
 	
 	public boolean isTop()
