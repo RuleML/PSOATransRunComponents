@@ -260,8 +260,8 @@ tuples_and_slots
     ;
 
 tuple
-    :   DEPSIGN LSQBR term ({ checkPrecedingWhitespace(); } term)* RSQBR -> ^(TUPLE DEPSIGN term+)
-    |   LSQBR term ({ checkPrecedingWhitespace(); } term)* RSQBR -> ^(TUPLE DEPSIGN["+"] term+)
+    :   DEPSIGN LSQBR (term ({ checkPrecedingWhitespace(); } term)*)? RSQBR -> ^(TUPLE DEPSIGN term*)
+    |   LSQBR (term ({ checkPrecedingWhitespace(); } term)*)? RSQBR -> ^(TUPLE DEPSIGN["+"] term*)    // Tuples with no dependency signs are treated as dependent, may be DEPRECATED in the future 
     ;
 
 slot

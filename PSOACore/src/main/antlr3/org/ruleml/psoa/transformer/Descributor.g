@@ -231,7 +231,7 @@ psoa[boolean isAtomicFormula]
     ;
 
 tuple
-    :   ^(TUPLE DEPSIGN term+)
+    :   ^(TUPLE DEPSIGN term*)
     ;
     
 slot

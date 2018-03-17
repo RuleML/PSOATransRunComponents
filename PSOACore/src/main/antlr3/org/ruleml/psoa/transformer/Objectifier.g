@@ -264,7 +264,7 @@ psoa[boolean isAtomic]
     ;
 
 tuple
-    :   ^(TUPLE DEPSIGN term+)
+    :   ^(TUPLE DEPSIGN term*)
     ;
     
 slot

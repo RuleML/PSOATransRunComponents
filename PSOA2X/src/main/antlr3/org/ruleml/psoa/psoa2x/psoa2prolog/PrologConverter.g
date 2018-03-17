@@ -281,7 +281,7 @@ psoa
 tuple returns [boolean isDependent]
     :   ^(TUPLE
           DEPSIGN  { $isDependent = $DEPSIGN.text.equals("+"); }
-          (term { append(","); })+)
+          (term { append(","); })*)
     {
        trimEnd(1);
     }

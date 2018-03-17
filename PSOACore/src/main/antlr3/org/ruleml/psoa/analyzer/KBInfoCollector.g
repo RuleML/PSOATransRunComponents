@@ -239,7 +239,7 @@ tuple returns [int length, boolean dep]
 {
     $length = 0;
 }
-    :   ^(TUPLE DEPSIGN { $dep = $DEPSIGN.text.equals("+"); } (term { $length++; })+)
+    :   ^(TUPLE DEPSIGN { $dep = $DEPSIGN.text.equals("+"); } (term { $length++; })*)
     ;
     
 slot

@@ -262,7 +262,7 @@ psoa[boolean isTopLevel]
     ;
 
 tuple
-    :   ^(TUPLE DEPSIGN term+)
+    :   ^(TUPLE DEPSIGN term*)
     ;
     
 slot
