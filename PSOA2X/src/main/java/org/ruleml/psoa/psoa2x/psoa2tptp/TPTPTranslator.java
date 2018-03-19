@@ -2,6 +2,7 @@ package org.ruleml.psoa.psoa2x.psoa2tptp;
 
 import org.antlr.runtime.tree.TreeNodeStream;
 import org.ruleml.psoa.PSOAInput;
+import org.ruleml.psoa.parser.ParserConfig;
 import org.ruleml.psoa.psoa2x.common.*;
 
 public class TPTPTranslator extends ANTLRBasedTranslator {
@@ -17,7 +18,6 @@ public class TPTPTranslator extends ANTLRBasedTranslator {
 	public TPTPTranslator(Config config)
 	{
 		m_config = config;
-		m_parserConfig = config.getParserConfig();
 	}
 
 	@Override
@@ -28,5 +28,10 @@ public class TPTPTranslator extends ANTLRBasedTranslator {
 	@Override
 	protected Converter createConverter(TreeNodeStream astNodes) {
 		return new TPTPConverter(astNodes);
+	}
+
+	@Override
+	protected ParserConfig getParserConfig() {
+		return m_config.getParserConfig();
 	}
 }

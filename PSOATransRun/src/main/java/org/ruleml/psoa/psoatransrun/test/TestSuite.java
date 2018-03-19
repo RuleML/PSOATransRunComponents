@@ -24,7 +24,7 @@ public class TestSuite {
 	
 	public TestSuite(File dir, PSOATransRun system, int runs, boolean verbose)
 	{
-		File[] testCases = dir.listFiles();
+		File[] testCases = dir.listFiles();  // TODO: listFiles could be generalized to structured directories.
 		
 		if (testCases == null)
 			throw new PSOATransRunException("The input path does not denote a directory.");

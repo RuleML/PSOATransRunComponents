@@ -1,0 +1,19 @@
+RuleML ( 
+  Assert (
+
+    Forall ?person ?merchant ?object (
+      own(?person ?object) :- 
+        And(buy(?person ?merchant ?object) keep(?person ?object))
+    )
+
+    Forall ?person ?merchant ?object (
+      buy(?person ?merchant ?object) :- 
+        sell(?merchant ?person ?object)
+    )
+
+    sell(John Mary XMLBible)
+
+    keep(Mary XMLBible)
+    
+  )
+)

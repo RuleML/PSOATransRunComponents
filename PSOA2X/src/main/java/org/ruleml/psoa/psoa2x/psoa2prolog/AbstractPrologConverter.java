@@ -36,38 +36,38 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		
 		// Taken from ISO Prolog library
 		// Functions
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#add", "\'+\'");     // XSB's special character tokens
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sub", "\'-\'");     // replaced with
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#mul", "\'*\'");     // short names
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#int-div", "\'//'"); // similar to
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#div", "\'/\'");     // ISO's other names.
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#rem", "rem");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#mod", "mod");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#abs", "abs");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sign", "sign");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#float", "float");  // Coerce to shortcut float number (represented as double) from, e.g., integer
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#truncate", "truncate");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#round", "round");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#floor", "floor");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#ceiling", "ceiling");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#power", "\'**\'");  // Special chars for XSB
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sin", "sin");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#cos", "cos");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#atan", "atan");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#sqrt", "sqrt");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#exp", "exp");
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#log", "log");		
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#add", "\'+\'");     // XSB's special character tokens
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#sub", "\'-\'");     // replaced with
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#mul", "\'*\'");     // short names
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#int-div", "\'//'"); // similar to
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#div", "\'/\'");     // ISO's other names.
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#rem", "rem");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#mod", "mod");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#abs", "abs");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#sign", "sign");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#float", "float");  // Coerce to shortcut float number (represented as double) from, e.g., integer
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#truncate", "truncate");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#round", "round");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#floor", "floor");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#ceiling", "ceiling");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#power", "\'**\'");  // Special chars for XSB
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#sin", "sin");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#cos", "cos");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#atan", "atan");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#sqrt", "sqrt");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#exp", "exp");
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#log", "log");		
 			
 		// Predicates
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#integer", "integer");  // Test if integer
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#float", "float");  // Test if shortcut or xs:double float number (represented as double) [Currently redundant because of above same-named coerce]
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#number", "number");  // Test if number
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#eq", "\'=:=\'");                // XSB's special character tokens ...
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#not_eq", "\'=\\\\=\'");           //
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#greater_than", "\'>\'");        //
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#greater_than_or_eq", "\'>=\'"); //
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#less_than", "\'<\'");           //
-		s_builtInMap.put("http://www.deransart.fr/prolog/bips.html#less_than_or_eq", "\'=<\'");    // ... renamed like for functions above
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#integer", "integer");  // Test if integer
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#float", "float");  // Test if shortcut or xs:double float number (represented as double) [Currently redundant because of above same-named coerce]
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#number", "number");  // Test if number
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#eq", "\'=:=\'");                // XSB's special character tokens ...
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#not_eq", "\'=\\\\=\'");           //
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#greater_than", "\'>\'");        //
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#greater_than_or_eq", "\'>=\'"); //
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#less_than", "\'<\'");           //
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#less_than_or_eq", "\'=<\'");    // ... renamed like for functions above
 		
 		// Taken from XSB Prolog standard module
 		s_builtInMap.put("http://xsb.sourceforge.net/manual1/manual1.pdf#datime", "datime");              // XSB's datime and local_datime predicates

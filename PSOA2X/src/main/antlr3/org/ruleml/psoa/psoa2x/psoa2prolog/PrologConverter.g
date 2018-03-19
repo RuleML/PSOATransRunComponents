@@ -281,9 +281,10 @@ psoa
 tuple returns [boolean isDependent]
     :   ^(TUPLE
           DEPSIGN  { $isDependent = $DEPSIGN.text.equals("+"); }
-          (term { append(","); })+)
+          (term { append(","); })*)
     {
-       trimEnd(1);
+    	if (peekEnd(1).equals(","))  // Use trimEnd() only for trimming preceding comma, e.g. not for '(' in the conversion of p(+[])
+       		trimEnd(1);
     }
     ;
     
