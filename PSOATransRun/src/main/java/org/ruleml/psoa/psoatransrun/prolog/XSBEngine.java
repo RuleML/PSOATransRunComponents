@@ -129,7 +129,7 @@ public class XSBEngine extends PrologEngine {
 			writer.println(":- index prdsloterm/4-3.");
 			
 			// Assume a maximum tuple length of 10
-			for (int i = 2; i < 12; i++)
+			for (int i = 1; i < 12; i++)
 			{
 				writer.println(":- table(tupterm/" + i + ").");
 				writer.println(":- table(prdtupterm/" + (i + 1) + ").");

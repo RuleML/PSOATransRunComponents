@@ -221,7 +221,7 @@ psoa
     ;
 
 tuple
-    :   ^(TUPLE DEPSIGN term[false]+)
+    :   ^(TUPLE DEPSIGN term[false]*)
     ;
     
 slot

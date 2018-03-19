@@ -187,7 +187,7 @@ public class TestCase {
 		
 		for (Entry<String, String[]> q : m_incorrectQueries.entrySet())
 		{
-			System.err.println("Incorrectly answered query: " + q.getKey());
+			System.err.println("  Incorrectly answered query: " + q.getKey());
 //			System.err.println("  Wrong answer: " + q.getValue()[0]);
 		}
 		

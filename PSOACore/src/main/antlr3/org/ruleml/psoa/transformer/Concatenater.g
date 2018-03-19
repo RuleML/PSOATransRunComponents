@@ -123,7 +123,7 @@ psoa
     ;
 
 tuple
-    :   ^(TUPLE DEPSIGN term+)
+    :   ^(TUPLE DEPSIGN term*)
     ;
     
 slot
