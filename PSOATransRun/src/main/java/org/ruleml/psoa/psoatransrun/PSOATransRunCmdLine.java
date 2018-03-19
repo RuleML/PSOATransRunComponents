@@ -42,14 +42,15 @@ public class PSOATransRunCmdLine {
 				new LongOpt("staticOnly", LongOpt.NO_ARGUMENT, null, 's'),
 				new LongOpt("undiff", LongOpt.NO_ARGUMENT, null, 'u'),
 				new LongOpt("verbose", LongOpt.NO_ARGUMENT, null, 'v'),
-				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z')
+				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z'),
+				new LongOpt("dense", LongOpt.NO_ARGUMENT, null, 'd')
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?l:i:q:tn:epo:x:am:rsuvz", opts);
+		Getopt optionsParser = new Getopt("", args, "?l:i:q:tn:epo:x:am:rsuvzd", opts);
 
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
-				isTest = false, verbose = false, reconstruct = false;
+				isTest = false, dense = false, verbose = false, reconstruct = false;
 		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null, xsbPath = null;
 		int timeout = -1, numRuns = 1;
 		
@@ -64,6 +65,9 @@ public class PSOATransRunCmdLine {
 				return;
 			case 'l':
 				lang = optionsParser.getOptarg();
+				break;
+			case 'd':
+				dense = true;
 				break;
 			case 'i':
 				inputKBPath = optionsParser.getOptarg();
@@ -133,7 +137,10 @@ public class PSOATransRunCmdLine {
 		// Initialize PSOATransRun
 		Translator translator = null;
 		ExecutionEngine engine = null;
-		
+
+		// Display version number
+		println("PSOATransRun 1.3");  // TODO: Define method in PSOATransRun class, called here to return version		
+				
 		try {
 			if (lang == null || lang.equalsIgnoreCase("prolog"))
 			{
@@ -257,7 +264,11 @@ public class PSOATransRunCmdLine {
 					// catch (PSOATransRunException | TranslatorException e)
 					catch (Exception e)  
 					{
-						e.printStackTrace();
+						if (dense) {
+							printErrln(e.getMessage());
+						}
+						else
+							e.printStackTrace();
 					}
 					println();
 				} while (true);
@@ -344,6 +355,7 @@ public class PSOATransRunCmdLine {
 		println("                    obtained from the environment variable XSB_DIR");
 		println("  -u,--undiff       Perform undifferentiated objectification");
 		println("  -s,--staticOnly   Perform static objectification only");
+		println("  -d,--denseErrorMsgs  Display dense error messages");
 		
 		if (isLong)
 		{
