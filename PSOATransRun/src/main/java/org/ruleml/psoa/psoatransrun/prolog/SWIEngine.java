@@ -45,24 +45,32 @@ public class SWIEngine extends PrologEngine {
 		//TODO: Actually configure SWI Engine
 		// Configure swi installation folder
 		// For Linux the command providing the paths is 
-		// swipl -dump-runtime-variables
-		m_swiFolder = config.swiFolderPath;
-
-		if (m_swiFolder == null || !(new File(m_swiFolder)).exists())
-			m_swiFolder = System.getenv("PLBASE");
-		
-		if (m_swiFolder == null)
-			throw new PSOATransRunException("Unable to locate SWI installation folder.");
-		
-		File f = new File(m_swiFolder);
-		if (!(f.exists() && f.isDirectory()))
-			throw new PSOATransRunException("SWI installation folder " + m_swiFolder + " does not exist");
-		
-		// Find the path of SWI binary
+		// swipl --dump-runtime-variables
 		if (OS.isFamilyUnix() || OS.isFamilyMac())
 		{
-			m_swiBinPath = "/usr/lib/swi-prolog/bin/amd64/";
+			m_swiFolder = "/usr/bin";
 		}
+		
+//		m_swiFolder = config.swiFolderPath;
+//
+//		if (m_swiFolder == null || !(new File(m_swiFolder)).exists())
+//			{
+//			if (OS.isFamilyUnix() || OS.isFamilyMac())
+//			{
+//				//m_swiBinPath = "/usr/lib/swi-prolog/bin/amd64/";
+//				m_swiFolder = "/usr/bin";
+//			}
+//			}
+		
+//		if (m_swiFolder == null)
+//			throw new PSOATransRunException("Unable to locate SWI binary folder.");
+//		
+//		File f = new File(m_swiFolder);
+//		if (!(f.exists() && f.isDirectory()))
+//			throw new PSOATransRunException("SWI binary folder " + m_swiFolder + " does not exist");
+//		
+		// Find the path of SWI binary
+		
 
 //			f = new File(f, "config");
 //			File[] subdirs = f.listFiles();
@@ -99,7 +107,7 @@ public class SWIEngine extends PrologEngine {
 //		
 		// Start SWI engine
 		if (!delayStart)
-			m_engine = new SWISubprocessEngine(m_swiBinPath);
+			m_engine = new SWISubprocessEngine(m_swiFolder);
 		
 		// Set translated KB
 		String transKBPath = config.transKBPath;
@@ -131,23 +139,23 @@ public class SWIEngine extends PrologEngine {
 		{
 			writer.println(":- use_module(library(tabling)).");
 			writer.println(":- table memterm/2.");
-			writer.println(":- index memterm/2-2.");
+			writer.println(":- index(memterm/2-2).");
 			writer.println(":- table sloterm/3.");
-			writer.println(":- index sloterm/3-2.");
+			writer.println(":- index(sloterm/3-2).");
 			writer.println(":- table prdsloterm/4.");
-			writer.println(":- index prdsloterm/4-2.");
-			writer.println(":- index prdsloterm/4-3.");
+			writer.println(":- index(prdsloterm/4-2).");
+			writer.println(":- index(prdsloterm/4-3).");
 			
 			// Assume a maximum tuple length of 10 
 			for (int i = 2; i < 11; i++)
 			{
 				writer.println(":- table tupterm/" + i + ".");
 				writer.println(":- table prdtupterm/" + (i + 1) + ".");
-				writer.println(":- index prdtupterm/" + (i + 1) + "-2.");
+				writer.println(":- index(prdtupterm/" + (i + 1) + "-2).");
 			}
 			
 			// Configure SWI
-			//writer.println(":- set_prolog_flag(unknown,fail).");  // Return false for (sub)queries using unknown predicates
+			writer.println(":- set_prolog_flag(unknown,fail).");  // Return false for (sub)queries using unknown predicates
 			//writer.println(":- import datime/1, local_datime/1 from standard.");  // Selectively import 2 predicates (works only for external calls inside KB rules)
 			
 			writer.print(kb);
