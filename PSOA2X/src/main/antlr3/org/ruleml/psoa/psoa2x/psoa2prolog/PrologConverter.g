@@ -238,7 +238,11 @@ psoa
                     else
                        replace(startIdx, 7, "tupterm");
                  }
-                 append(")");
+                 
+                 if (peekEnd(1).equals("("))  // Since ISO Prolog uses op instead of op(): trim previous '(' and do not append ')'
+					trimEnd(1);
+				 else
+                 	append(")");
               }
            |  slot
               {
@@ -269,8 +273,7 @@ psoa
 		             }
 		             else
 		             {
-		               // Nullary predicate/function
-		               append(")");	
+		               throw new TranslatorException("Unexpected op() after normalization");
 		             }
 		          }
 			  }
@@ -283,7 +286,7 @@ tuple returns [boolean isDependent]
           DEPSIGN  { $isDependent = $DEPSIGN.text.equals("+"); }
           (term { append(","); })*)
     {
-    	if (peekEnd(1).equals(","))  // Use trimEnd() only for trimming preceding comma, e.g. not for '(' in the conversion of p(+[])
+    	if (peekEnd(1).equals(","))  // Use trimEnd() only for trimming preceding comma, e.g. not for '(' in the conversion of op(+[])
        		trimEnd(1);
     }
     ;
