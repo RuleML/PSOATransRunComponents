@@ -139,7 +139,7 @@ public class PSOATransRunCmdLine {
 		ExecutionEngine engine = null;
 
 		// Display version number
-		println("PSOATransRun 1.3");  // TODO: Define method in PSOATransRun class, called here to return version		
+		println("PSOATransRun 1.3.1");  // TODO: Define method in PSOATransRun class, called here to return version		
 				
 		try {
 			if (lang == null || lang.equalsIgnoreCase("prolog"))
