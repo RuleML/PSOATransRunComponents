@@ -97,7 +97,8 @@ public class VampirePrimeEngine extends ReusableKBEngine {
 		
 		CommandLine cl = new CommandLine(m_config.binPath);
 		cl.addArguments(new String[] { "-t", String.valueOf(m_config.timeout),
-				"-m", "2048000", "--elim_def", "0", "--selection", "8",
+				"-m", "300000",    // For an improved VampirePrime, consider: "-m", "2048000",
+				"--elim_def", "0", "--selection", "8",
 				"--config", m_config.answerPredicatePath,
 				"--max_number_of_answers", "400",
 				"--inconsistencies_as_answers", "off",
