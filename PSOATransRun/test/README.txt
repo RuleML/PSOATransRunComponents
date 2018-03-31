@@ -11,6 +11,11 @@ between "KB" and ".psoa"), one or more query file
 <testCaseName>-answerJ.psoa for each query 
 <testCaseName>-queryJ.psoa.
 
+Query and answer files should be authored such that answer bindings 
+use only constants drawn from the KB ("certain answers") instead of
+system-generated ones (e.g., _oidcons, Skolem functions), which can 
+vary under different command-line options and implementations.
+
 The following command is used to manually execute
 <testCaseName>-queryJ.psoa on <testCaseName>-KB.psoa
 (the answers will go to the standard output):
