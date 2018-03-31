@@ -37,3 +37,5 @@ Running Tests
 * To test PSOATransRun with your own test directory, execute the following command line from \<local repo dir\>\PSOATransRun, where \<testDir\> is the path to the test directory:
 
   java -jar target\PSOATransRunLocal.jar --test -i \<testDir\>
+
+* For authoring test cases refer to https://github.com/RuleML/PSOATransRunComponents/blob/master/PSOATransRun/test/README.txt
