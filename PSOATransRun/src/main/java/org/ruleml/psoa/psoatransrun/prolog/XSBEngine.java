@@ -17,6 +17,7 @@ import com.declarativa.interprolog.XSBSubprocessEngine;
 public class XSBEngine extends PrologEngine {
 	private String m_xsbBinPath, m_xsbFolder;
 	private File m_transKBFile;
+	protected static final int MAX_TUPLE_LEN = 10;
 
 	/**
 	 * XSB engine configuration
@@ -129,7 +130,7 @@ public class XSBEngine extends PrologEngine {
 			writer.println(":- index prdsloterm/4-3.");
 			
 			// Assume a maximum tuple length of 10
-			for (int i = 1; i < 12; i++)
+			for (int i = 1; i < 2 + MAX_TUPLE_LEN; i++)
 			{
 				writer.println(":- table(tupterm/" + i + ").");
 				writer.println(":- table(prdtupterm/" + (i + 1) + ").");
