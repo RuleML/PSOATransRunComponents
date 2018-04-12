@@ -124,9 +124,9 @@ public class TestSuite {
 		out.print("Correctly answered queries: ");
 		out.println(m_correctQueries);
 		out.print("Degree of soundness: ");
-		out.format("%.2f", m_correctEngineAnswers / (double) m_engineAnswers).println();
+		out.format("%.5f", m_correctEngineAnswers / (double) m_engineAnswers).println();
 		out.print("Degree of completeness: ");
-		out.format("%.2f", m_correctEngineAnswers / (double) m_standardAnswers).println();
+		out.format("%.5f", m_correctEngineAnswers / (double) m_standardAnswers).println();
 		out.print("Avg. KB translation time per test case (ms): ");
 		out.format("%.2f", m_kbTranslateTime / (double) m_testCases.size()).println();
 		out.print("Avg. query translation time per test case (ms): ");
