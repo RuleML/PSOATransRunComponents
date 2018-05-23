@@ -1,4 +1,4 @@
 Document(
   Group (
-    p(a b c)
+    p(+[a b c])
 ) )
