@@ -1,1 +1,4 @@
 p(-[?x ?y ?z])
+% Correctness Criterion: Query for non-ground atom with independent single tuple of 
+%    three variable arguments
+%    against KB containing a matching ground atom answers with appropriate substitution.
