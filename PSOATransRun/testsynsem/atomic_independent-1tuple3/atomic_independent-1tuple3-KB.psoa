@@ -1,4 +1,10 @@
 RuleML(
   Assert(
+    % atomic-formula expressivity
+    % pn1 (perspeneutral)
+    % single tuple
+    %   independent tuple
+    %   3 elements
+    %     constant elements
     p(-[a b c])
 ) )
