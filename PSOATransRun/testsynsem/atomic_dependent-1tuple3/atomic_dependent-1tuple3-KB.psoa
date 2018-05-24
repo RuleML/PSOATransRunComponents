@@ -1,4 +1,4 @@
-Document(
-  Group (
+RuleML(
+  Assert(
     p(+[a b c])
 ) )
