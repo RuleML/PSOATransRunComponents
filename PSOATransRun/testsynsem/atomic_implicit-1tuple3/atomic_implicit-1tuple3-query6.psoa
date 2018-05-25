@@ -1,1 +1,3 @@
 p(+[a b c])
+% Correctness Criterion: Query for ground atom with explicit dependent single tuple of three arguments
+%    against KB containing only the implicit syntax for that ground atom answers "Yes".
