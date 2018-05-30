@@ -1,0 +1,5 @@
+i#p(+[?x ?y ?z])
+% (prdtupterm('_i','_p',Qx,Qy,Qz),memterm('_i','_p')).
+% Correctness Criterion: Query for oidful non-ground atom with explicit dependent single tuple of 
+%    three variable arguments
+%    against KB containing a matching ground atom answers with appropriate substitution.

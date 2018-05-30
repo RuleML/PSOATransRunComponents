@@ -1,0 +1,6 @@
+Document(
+  Group (
+    i#p(+[a b c])
+    % prdtupterm('_i','_p','_a','_b','_c').
+    % memterm('_i','_p').
+) )

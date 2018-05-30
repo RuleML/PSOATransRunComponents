@@ -1,0 +1,4 @@
+i#p(a b c)
+% (prdtupterm('_i','_p','_a','_b','_c'),memterm('_i','_p')).
+% Correctness Criterion: Query for oidful ground atom with implicit single tuple of three constant arguments
+%    against KB containing only the explicit syntax for that ground atom answers "Yes".
