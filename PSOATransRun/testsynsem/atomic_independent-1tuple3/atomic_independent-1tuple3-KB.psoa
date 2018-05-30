@@ -1,4 +1,6 @@
 Document(
   Group (
     p(-[a b c])
+    % tupterm('_1','_a','_b','_c').
+    % memterm('_1','_p').
 ) )

@@ -1,3 +1,4 @@
 p(-[a b c])
+% (tupterm(Q1,'_a','_b','_c'),memterm(Q1,'_p')).
 % Correctness Criterion: Query for ground atom with explicit independent single tuple of 
 %  three constant arguments against KB containing only that ground atom answers "Yes".
