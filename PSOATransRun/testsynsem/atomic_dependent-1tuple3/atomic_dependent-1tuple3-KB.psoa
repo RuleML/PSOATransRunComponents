@@ -1,4 +1,11 @@
-Document(
-  Group (
+RuleML(
+  Assert(
+    % atomic-formula expressivity
+    % relationships
+    % single tuple
+    %   dependent tuple
+    %     explicit tuple
+    %   3 elements
+    %     constant elements
     p(+[a b c])
 ) )
