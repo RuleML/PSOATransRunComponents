@@ -1,0 +1,3 @@
+p(a b c)
+% Correctness Criterion: Query for ground atom with implicit single tuple of 
+%   three constant arguments against KB containing only that ground atom answers "Yes".

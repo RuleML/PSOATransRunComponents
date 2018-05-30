@@ -1,0 +1,4 @@
+p(+[?x b c])
+% Correctness Criterion: Query for non-ground atom with explicit dependent single tuple of 
+%    one variable and two constant arguments
+%    against KB containing a matching ground atom answers with appropriate substitution.

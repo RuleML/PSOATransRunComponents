@@ -1,0 +1,12 @@
+RuleML(
+  Assert(
+    % atomic-formula expressivity
+    % pn1 (perspeneutral)
+    % single tuple
+    %   independent tuple
+    %   3 elements
+    %     constant elements
+    p(-[a b c])
+    % tupterm('_1','_a','_b','_c').
+    % memterm('_1','_p').
+) )

@@ -1,0 +1,11 @@
+RuleML(
+  Assert(
+    % atomic-formula expressivity
+    % relationships
+    % single tuple
+    %   dependent tuple
+    %     implicit tuple
+    %   3 elements
+    %     constant elements
+    p(a b c)
+) )

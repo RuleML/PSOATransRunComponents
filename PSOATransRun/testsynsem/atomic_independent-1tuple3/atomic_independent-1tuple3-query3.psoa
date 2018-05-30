@@ -1,0 +1,5 @@
+p(-[?x b c])
+% (tupterm(Q1,Qx,'_b','_c'),memterm(Q1,'_p')).
+% Correctness Criterion: Query for non-ground atom with independent single tuple of 
+%    one variable and two constant arguments
+%    against KB containing a matching ground atom answers with appropriate substitution.

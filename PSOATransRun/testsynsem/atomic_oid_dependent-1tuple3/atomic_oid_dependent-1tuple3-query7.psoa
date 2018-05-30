@@ -1,0 +1,5 @@
+i#p(-[a b c])
+% (tupterm('_i','_a','_b','_c'),memterm('_i','_p')).
+% Correctness Criterion: Query for oidful ground atom with independent single tuple of 
+%  three constant arguments
+%  against KB containing only the dependent version of that ground atom answers "No".
