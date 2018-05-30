@@ -1,0 +1,6 @@
+Top(+[a b c])
+% tupterm(Q1,'_a','_b','_c').
+% Correctness Criterion: Query for ground atom with explicit syntactically-Top-dependent 
+% single tuple of 
+%  three constant arguments against KB containing only the syntactically-independent version of that 
+% ground atom answers "Yes".
