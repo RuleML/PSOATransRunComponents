@@ -1,0 +1,5 @@
+i#?x
+% memterm('_i',Qx).
+% Correctness Criterion: Query for membership of a constant in any predicate
+%    against KB containing only an oidful ground atom with that constant as oid 
+%     answers with the appropriate substitution.
