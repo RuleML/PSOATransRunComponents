@@ -8,4 +8,5 @@ RuleML(
     %   3 elements
     %     constant elements
     p(+[a b c])
+    % '_p'('_a','_b','_c').
 ) )

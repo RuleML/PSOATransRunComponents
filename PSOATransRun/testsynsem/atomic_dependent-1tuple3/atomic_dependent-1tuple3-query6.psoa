@@ -1,3 +1,4 @@
 p(a b c)
+% '_p'('_a','_b','_c').
 % Correctness Criterion: Query for ground atom with implicit single tuple of three constant arguments
 %    against KB containing only the explicit syntax for that ground atom answers "Yes".
