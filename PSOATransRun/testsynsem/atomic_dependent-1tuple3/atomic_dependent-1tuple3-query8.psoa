@@ -1,0 +1,5 @@
+?#p(+[a b c])
+% (('_p'('_a','_b','_c'),'='(Q1,'_oidcons'('_p','_a','_b','_c')))).
+% Correctness Criterion: Query for oidful ground atom with dependent single tuple of 
+%    three constant arguments and variable oid
+%    against KB containing only the oidless version of that ground atom answers Yes.
