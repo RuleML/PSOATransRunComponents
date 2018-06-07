@@ -1,0 +1,12 @@
+Document(
+  Group (
+    % atomic-formula expressivity
+    % oidful
+    % single tuple
+    %   independent tuple
+    %   3 elements
+    %     constant elements
+    i#p(-[a b c])
+    % tupterm('_i','_a','_b','_c').
+    % memterm('_i','_p').
+) )

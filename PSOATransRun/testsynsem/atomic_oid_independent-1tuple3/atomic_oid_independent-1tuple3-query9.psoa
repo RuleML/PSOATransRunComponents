@@ -1,0 +1,4 @@
+Top(-[a b c])
+% tupterm(Q1,'_a','_b','_c').
+% Correctness Criterion: Query for ground Top atom with independent single tuple of 
+%   three constant arguments against KB containg a similar oidful ground 'p' atom answers "Yes".
