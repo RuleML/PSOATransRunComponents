@@ -1,6 +1,8 @@
-The 'package' PSOATransRunComponents, while listed as one of five siblings (along with PSOA2X, PSOACore, PSOATransRun, PSOATransRunWebService), acts as their root, creating a top-level tree structure.
+The package PSOATransRunComponents, while listed as one of five siblings (along with PSOA2X, PSOACore, PSOATransRun, PSOATransRunWebService), acts as their root, creating a top-level tree structure.
 
-Import Project into Eclipse using Eclipse's Built-in Git Plugin EGit (see https://eclipsesource.com/blogs/tutorials/egit-tutorial) and Prepare for Building
+## Eclipse Import and Preparation
+
+Import Project into Eclipse using Eclipse's Built-in Git Plugin EGit (see https://eclipsesource.com/blogs/tutorials/egit-tutorial) and Prepare for Building:
 1. Install JDK 8 or higher and Eclipse 4.2 or higher; configure Eclipse so it uses JDK (see http://techiedan.com/2009/10/19/set-up-jdk-in-eclipse/)
 2. If you want to submit your changes to this project as a non-collaborator, you need to fork this project under your own GitHub account
 3. Import project into Eclipse
@@ -21,7 +23,8 @@ Import Project into Eclipse using Eclipse's Built-in Git Plugin EGit (see https:
    7. Click "Finish" and follow the guideline to install m2e connectors for ANTLR. The installation will show a security warning "You are installing software that contains unsigned content". Click "OK" to ignore the warning.
    8. Restart Eclipse to finish the preparation process
 
-Building Project in Eclipse
+## Building Project in Eclipse
+
 * Right-click the PSOATransRunComponents project in the left panel, choose "Run As -> Maven install" to build the project. This does an incremental build of PSOATransRunComponents and all of its subprojects. The path of the output PSOATransRun jar file is as follows, where \<local repo dir\> typically ends in the segment \PSOATransRunComponents:
 
   \<local repo dir\>\PSOATransRun\target\PSOATransRunLocal.jar
@@ -29,7 +32,8 @@ Building Project in Eclipse
   In case Eclipse still shows errors for the projects (as tiny red crosses in the project icons) after a successful building process, right-click the PSOATransRunComponents project and choose "Maven -> Update Project".
 * For a clean (not just incremental) build, which is recommended for the last round of testing and release, click "Run As -> Maven clean" before doing the above "Maven install".
 
-Running Tests
+## Running Tests
+
 * To test PSOATransRun with provided test directory, execute the following command line from \<local repo dir\>\PSOATransRun
 
   java -jar target\PSOATransRunLocal.jar --test -i test
@@ -38,4 +42,4 @@ Running Tests
 
   java -jar target\PSOATransRunLocal.jar --test -i \<testDir\>
 
-* For authoring test cases refer to https://github.com/RuleML/PSOATransRunComponents/blob/master/PSOATransRun/test/README.txt
+* For authoring test cases refer to the README of https://github.com/RuleML/PSOATransRunComponents/tree/master/PSOATransRun/test
