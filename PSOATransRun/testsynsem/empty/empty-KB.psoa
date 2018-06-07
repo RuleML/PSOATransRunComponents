@@ -1,0 +1,4 @@
+RuleML(
+  Assert(
+    %  Empty KB.
+) )
