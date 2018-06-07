@@ -1,5 +1,6 @@
-?#Top(-[a b c])
-% tupterm(Q1,'_a','_b','_c').
+?x#Top(-[a b c])
+% tupterm(Qx,'_a','_b','_c').
 % Correctness Criterion: Query for ground atom with Top independent single tuple of three constant arguments
+%    and masked oid variable
 %    against KB containing only the independent version of that ground atom with 
 %    specific predicate answers "Yes".
