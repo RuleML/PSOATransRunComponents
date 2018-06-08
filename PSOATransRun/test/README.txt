@@ -12,8 +12,7 @@ Under this subdirectory, there exists
     module will ignore all files whose names contain anything 
     between "KB" and ".psoa"), 
   one or more query files <testCaseName>-queryJ.psoa, J=1,2,..., and 
-  one answer file <testCaseName>-answerJ.psoa for each query 
-  <testCaseName>-queryJ.psoa.
+  one answer file <testCaseName>-answerJ.psoa for each query <testCaseName>-queryJ.psoa.
   
 A query/answer pair of files (-queryJ/-answerJ) is called a "unit test".  
 
