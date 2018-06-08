@@ -7,7 +7,7 @@ Run Configurations
     Project: PSOATransRun
     Main class: org.ruleml.psoa.psoatransrun.PSOATransRunCmdLine
   Arguments
-    Program Arguments: --test -i ...\git\PSOATransRunComponents\PSOATransRun\test
+    Program Arguments: --test -i ...\git\PSOATransRunComponents\PSOATransRun\testsynsem
 OR
-    Program Arguments: --test -s -i ...\git\PSOATransRunComponents\PSOATransRun\test
+    Program Arguments: --test -s -i ...\git\PSOATransRunComponents\PSOATransRun\testsynsem
     
