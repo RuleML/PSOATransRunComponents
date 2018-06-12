@@ -43,3 +43,17 @@ Import Project into Eclipse using Eclipse's Built-in Git Plugin EGit (see https:
   java -jar target\PSOATransRunLocal.jar --test -i \<testDir\>
 
 * For authoring test cases refer to the README of https://github.com/RuleML/PSOATransRunComponents/tree/master/PSOATransRun/test
+
+## Release Procedure
+
+* On Github
+** In the PSOATransRunComponents repo
+*** Follow the instruction at https://help.github.com/articles/creating-releases, with the following entries
+**** Use Semantic Versioning https://semver.org together a specific prefix, e.g. PSOATransRun-v1.3.2-a
+**** Leave title and description blank
+**** Add no additional binaries
+**** In general do not check "pre-release", even though we use "-" notation of Semantic Versioning.
+
+** In the psoa-ruleml repo
+*** Copy the 
+* On the RuleML Wiki
