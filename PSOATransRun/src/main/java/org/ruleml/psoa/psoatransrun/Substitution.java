@@ -19,7 +19,7 @@ public class Substitution {
 	}
 	
 	public static Substitution parse(String result) {
-		// TODO: Handle special cases, e.g. ',' or '=' in constants, syntactic errors
+		// TODO: Handle special cases, e.g. '=' in constants, syntactic errors
 		Substitution b = new Substitution();
 		String[] pairs = result.split("\\ \\?");
 		boolean first = true;
@@ -66,10 +66,10 @@ public class Substitution {
 		for (Map.Entry<String, String> entry : m_binding.entrySet())
 		{
 			sb.append(entry.getKey()).append("=");
-			sb.append(entry.getValue()).append(",");
+			sb.append(entry.getValue()).append(" "); // Binding separator
 		}
 		
-		sb.setLength(sb.length() - 1);
+		sb.setLength(sb.length() - 1); // Truncate string to remove final binding separator
 		return sb.toString();
 	}
 	
