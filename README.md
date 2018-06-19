@@ -53,6 +53,7 @@ Import Project into Eclipse using Eclipse's Built-in Git Plugin EGit (see https:
             * Leave title and description blank
             * Add no additional binaries
             * In general, do not check "pre-release", even though we use "-" notation of Semantic Versioning.
+* In Eclipse
     * In the psoa-ruleml repo
         * Duplicate (as sibling) the most recent subdirectory of the directory /transrun in the psoa-ruleml repository, e.g. 1.3.1, and rename it, e.g. to 1.3.2-a
         * Delete the jar file in this new directory
