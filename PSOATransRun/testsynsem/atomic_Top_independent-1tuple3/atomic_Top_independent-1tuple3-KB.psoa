@@ -1,5 +1,5 @@
-Document(
-  Group (
+RuleML(
+  Assert (
     Top(-[a b c])
     % tupterm('_1','_a','_b','_c').
 ) )
