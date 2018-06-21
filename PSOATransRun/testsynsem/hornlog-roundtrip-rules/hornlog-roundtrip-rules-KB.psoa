@@ -1,0 +1,15 @@
+RuleML (
+  Assert (
+  % Relationship-to-Frame Rule (R2F):
+  Forall ?x ?y (
+    f5(?x ?y)#p4(m->?x n->?y) :- p1(?x ?y)
+  )
+
+  % Frame-to-Relationship Rule (F2R):
+  Forall ?x ?y (
+    p1(?x ?y) :- ?#p4(m->?x n->?y)
+  )
+
+  p1(M1 N1)
+  f5(M2 N2)#p4(m->M2 n->N2)
+) )

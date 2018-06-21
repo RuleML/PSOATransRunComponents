@@ -1,0 +1,3 @@
+p1(?a ?b)
+% Correctness Criterion: returns two identical bindings for the descriptor that is
+%   declared directly with p1, and one binding for the derived descriptor.
