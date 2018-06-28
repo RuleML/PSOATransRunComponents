@@ -58,16 +58,8 @@ options
     public boolean isRelational(String pred)
     {
         PredicateInfo pi = m_predicates.get(pred);
-
-        // Two special cases instead of evaluating pi.isRelational methods
-        if (!pred.startsWith("?"))  // Assumes pred cannot be null
-        {
-            return false;
-        }
-        else
-        {
-            return pi == null? !pred.equals("Top") : pi.isRelational();
-        }
+        
+        return pi == null? !pred.equals("Top") : pi.isRelational();
     }
     
     public void addPsoaTermInfo(String pred, Collection<Integer> positionalArities, boolean hasOID, 
