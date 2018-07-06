@@ -3,4 +3,5 @@
 % Correctness Criterion: Query for oidful ground atom with dependent single tuple of 
 %    three constant arguments and variable oid
 %    against KB containing only the oidless version of that ground atom answers with
-%    the appropriate bindings.
+%    the appropriate bindings based on '_oidcons' 
+%    when the static only option (-s) is absent.
