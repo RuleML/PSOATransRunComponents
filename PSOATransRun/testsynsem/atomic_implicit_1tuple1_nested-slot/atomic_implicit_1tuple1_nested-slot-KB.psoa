@@ -1,0 +1,16 @@
+RuleML(
+  Assert(
+    % atomic-formula expressivity
+    % relationships
+    % single tuple
+    %   dependent tuple
+    %     explicit tuple
+    %   3 elements
+    %     constant elements
+    p(q(a->b))
+    % Translated KB:
+    % sloterm('_1','_a','_b').
+    % memterm('_1','_q').
+    % prdtupterm('_2','_p','_1').
+    % memterm('_2','_p').
+) )
