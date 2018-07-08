@@ -1,0 +1,4 @@
+p(a)
+% (prdtupterm(Q1,'_p','_a'),memterm(Q1,'_p')).
+% Correctness Criterion: Query for oidless ground atom with implicit (dependent) tuple, arity 1
+% against KB containing only matching ground atom with fully mixed descriptor answers "Yes".

@@ -1,0 +1,4 @@
+p(m2+>n2)
+% (prdsloterm(Q1,'_p','_m2','_n2'),memterm(Q1,'_p')).
+% Correctness Criterion: Query for oidless Top atom with independent slot
+% against KB containing only matching ground atom with fully mixed descriptor answers "Yes".
