@@ -4,10 +4,13 @@ RuleML(
     % relationships
     % single tuple
     %   dependent tuple
-    %     explicit tuple
-    %   3 elements
-    %     constant elements
-    p(q(a->b))
+    %     implicit tuple
+    %   1 element
+    %     nested atom
+    %       oid
+    %       single slot, no tuple
+    %         constant arguments
+    p(o#q(a->b))
     % Translated KB:
     % sloterm('_1','_a','_b').
     % memterm('_1','_q').
