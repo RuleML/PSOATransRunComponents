@@ -8,11 +8,12 @@ RuleML(
     %   1 element
     %     nested atom
     %       oid (not optional, otherwise exception is thrown)
-    %       single slot, no tuple
+    %       two slots, no tuple
     %         constant arguments
-    p(o#q(a->b))
+    p(o#q(a->b c-> d))
     % Translated KB:
     % sloterm('_o','_a','_b').
+    % sloterm('_o','_c','_d').
     % memterm('_o','_q').
     % '_p'('_o').
 ) )
