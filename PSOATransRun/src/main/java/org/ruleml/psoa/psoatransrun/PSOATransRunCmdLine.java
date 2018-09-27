@@ -370,7 +370,8 @@ public class PSOATransRunCmdLine {
 		println("  -p,--printTrans   Print translated KB and queries to standard output");
 		println("  -o,--outputTrans  Save translated KB to the designated file");
 		println("  -x,--prologFolder Specifies Prolog installation folder. The default path is ");
-		println("                    obtained from the environment variable XSB_DIR");
+		println("                    obtained from the environment variable XSB_DIR for XSB Prolog,");
+		println("                    or from default install locations for SWI Prolog");
 		println("  -u,--undiff       Perform undifferentiated objectification");
 		println("  -s,--staticOnly   Perform static objectification only");
 		println("  -d,--denseErrorMsgs  Display dense error messages");
