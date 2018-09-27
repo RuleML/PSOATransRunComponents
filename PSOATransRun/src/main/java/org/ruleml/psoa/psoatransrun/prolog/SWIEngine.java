@@ -17,6 +17,9 @@ import com.declarativa.interprolog.SWISubprocessEngine;
 public class SWIEngine extends PrologEngine {
 	private String m_swiBinPath, m_swiFolder;
 	private File m_transKBFile;
+	
+	// Maximum tuple length of psoa atoms for tupterm/prdtupterm
+	protected static final int MAX_TUPLE_LEN_FOR_TABLING = 10;
 
 	/**
 	 * SWI engine configuration
@@ -41,73 +44,124 @@ public class SWIEngine extends PrologEngine {
 	 * @param delayStart    if true, start the engine at initialization time; otherwise, start the engine when KB is loaded
 	 * */
 	public SWIEngine(Config config, boolean delayStart) {
+		
 		System.out.println("Experimental SWI support");
-		//TODO: Actually configure SWI Engine
+		
 		// Configure swi installation folder
-		// For Linux the command providing the paths is 
-		// swipl --dump-runtime-variables
+		m_swiFolder = config.swiFolderPath;
+
+		if (m_swiFolder == null || !(new File(m_swiFolder)).exists())
+			// Search by default install locations
+			if (OS.isFamilyUnix() || OS.isFamilyMac())
+			{
+			    // Look for the executable at /usr/bin	
+			
+				File exec = new File("/usr/bin/swipl");
+				if (!(exec.exists()))
+				{
+					if (m_swiFolder == null)
+					{
+						if (OS.isFamilyUnix())
+							throw new PSOATransRunException(
+								  "Cannot find SWI binary: Please install SWI Prolog " 
+								+ "or specify a SWI Prolog directory.\n\n"
+								+ "You can install SWI Prolog through your package manager\n\n"
+								+ "If you are using Ubuntu/Mint try:\n" + " sudo apt-get install swi-prolog\n\n"
+								+ "If you are using OpenSUSE try:\n" + " sudo zypper in swipl");
+						if (OS.isFamilyMac())
+							throw new PSOATransRunException("Cannot find SWI binary: Please install SWI Prolog" 
+								+ "or specify a SWI Prolog directory.");
+					}
+					else
+						throw new PSOATransRunException("Cannot find SWI binary: " + m_swiFolder + " does not exist or is empty.");
+				}
+				else
+					m_swiFolder = "/usr/bin";
+			}
+			
+			else if (OS.isFamilyWindows())
+			{
+				// Search first at default installation location 
+				File exec = new File("C:\\Program Files\\swipl");
+				if (!(exec.exists()))
+				{
+					// Have a last look if the executable is located at C:\\Program Files (x86)\
+					File exec_32 = new File("C:\\Program Files (x86)\\swipl");
+					if (!(exec_32.exists() && exec_32.isDirectory()))
+					{
+						if (m_swiFolder == null)
+							throw new PSOATransRunException("Cannot find SWI binary: Please install SWI Prolog or specify a SWI Prolog directory.");
+						else
+							throw new PSOATransRunException("Cannot find SWI binary: " + m_swiFolder + " does not exist or is empty.");
+							
+					}
+					else
+					{
+						m_swiFolder = "C:\\Program Files (x86)\\swipl";
+					}
+								
+				}
+				else
+					m_swiFolder = "C:\\Program Files\\swipl";					
+			}
+				
+		if (m_swiFolder == null)
+			throw new PSOATransRunException("Unable to locate SWI installation folder.");
+		
+		File f = new File(m_swiFolder);
+		if (!(f.exists() && f.isDirectory()))
+			throw new PSOATransRunException("SWI installation folder " + m_swiFolder + " does not exist");
+		
+		// Find the path of SWI binary
 		if (OS.isFamilyUnix() || OS.isFamilyMac())
 		{
-			m_swiFolder = "/usr/bin";
+			if (m_swiFolder == "/usr/bin")
+				{
+				m_swiBinPath = m_swiFolder;
+				}
+			else
+			{
+				f = new File(f, "bin");
+				File[] subdirs = f.listFiles();
+				if (subdirs == null || subdirs.length == 0)
+					throw new PSOATransRunException("Cannot find SWI binary: " + f.getAbsolutePath() + " does not exist or is empty.");
+				
+				File swiFile = null;
+				for (File dir : subdirs)
+				{
+					File f1 = new File(dir, "swipl");
+					if (f1.canExecute())
+						swiFile = f1;
+				}
+				
+				if (swiFile != null)
+				{
+					m_swiBinPath = swiFile.getParentFile().getAbsolutePath();
+				}
+				else
+					throw new PSOATransRunException("Cannot find executable swi binary in " + f.getAbsolutePath());
+			}
+		}
+		else if (OS.isFamilyWindows())
+		{
+			f = new File(f, "bin");
+			File f1 = new File(f, "swipl-win.exe");
+			if (f1.canExecute())
+			{
+				m_swiBinPath = f.getAbsolutePath();
+			}
+			else
+				throw new PSOATransRunException("Cannot find executable swi binary in " + f.getAbsolutePath());
+		}
+
+		else
+		{
+			throw new PSOATransRunException("Unsupported operating system.");
 		}
 		
-//		m_swiFolder = config.swiFolderPath;
-//
-//		if (m_swiFolder == null || !(new File(m_swiFolder)).exists())
-//			{
-//			if (OS.isFamilyUnix() || OS.isFamilyMac())
-//			{
-//				//m_swiBinPath = "/usr/lib/swi-prolog/bin/amd64/";
-//				m_swiFolder = "/usr/bin";
-//			}
-//			}
-		
-//		if (m_swiFolder == null)
-//			throw new PSOATransRunException("Unable to locate SWI binary folder.");
-//		
-//		File f = new File(m_swiFolder);
-//		if (!(f.exists() && f.isDirectory()))
-//			throw new PSOATransRunException("SWI binary folder " + m_swiFolder + " does not exist");
-//		
-		// Find the path of SWI binary
-		
-
-//			f = new File(f, "config");
-//			File[] subdirs = f.listFiles();
-//			if (subdirs == null || subdirs.length == 0)
-//				throw new PSOATransRunException("Cannot find SWI binary: " + f.getAbsolutePath() + " does not exist or is empty.");
-//			
-//			File swiFile = null;
-//			for (File dir : subdirs)
-//			{
-//				// /usr/lib/swi-prolog/bin/amd64 for me
-//				//
-//				File f1 = new File(dir, "bin/xsb");
-//				if (f1.canExecute())
-//					swiFile = f1;
-//				
-//				if (dir.getName().contains("x86"))
-//					break;
-//			}
-//			
-//			if (swiFile != null)
-//				m_swiBinPath = swiFile.getAbsolutePath();
-//			else
-//				throw new PSOATransRunException("Cannot find executable xsb binary in " + f.getAbsolutePath());
-//		}
-//		else if (OS.isFamilyWindows())
-//		{
-//			f = new File(f, "config\\x86-pc-windows\\bin\\xsb");
-//			m_swiBinPath = f.getAbsolutePath();
-//		}
-//		else
-//		{
-//			throw new PSOATransRunException("Unsupported operating system.");
-//		}
-//		
 		// Start SWI engine
 		if (!delayStart)
-			m_engine = new SWISubprocessEngine(m_swiFolder);
+			m_engine = new SWISubprocessEngine(m_swiBinPath);
 		
 		// Set translated KB
 		String transKBPath = config.transKBPath;
@@ -139,19 +193,19 @@ public class SWIEngine extends PrologEngine {
 		{
 			writer.println(":- use_module(library(tabling)).");
 			writer.println(":- table memterm/2.");
-			writer.println(":- index(memterm/2-2).");
+			//writer.println(":- index(memterm/2-2).");
 			writer.println(":- table sloterm/3.");
-			writer.println(":- index(sloterm/3-2).");
+			//writer.println(":- index(sloterm/3-2).");
 			writer.println(":- table prdsloterm/4.");
-			writer.println(":- index(prdsloterm/4-2).");
-			writer.println(":- index(prdsloterm/4-3).");
+			//writer.println(":- index(prdsloterm/4-2).");
+			//writer.println(":- index(prdsloterm/4-3).");
 			
 			// Assume a maximum tuple length of 10 
-			for (int i = 2; i < 11; i++)
+			for (int i = 1; i < 2 + MAX_TUPLE_LEN_FOR_TABLING; i++)
 			{
 				writer.println(":- table tupterm/" + i + ".");
 				writer.println(":- table prdtupterm/" + (i + 1) + ".");
-				writer.println(":- index(prdtupterm/" + (i + 1) + "-2).");
+				//writer.println(":- index(prdtupterm/" + (i + 1) + "-2).");
 			}
 			
 			// Configure SWI
