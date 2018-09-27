@@ -1,0 +1,5 @@
+p(q(a))
+% '_p'('_q'('_a')).
+% Correctness Criterion: Query for ground atom with implicit tuple having arity 1 containing 
+%  a functional expression with one argument against KB containing only a 
+% similar ground nested atom answers "No".

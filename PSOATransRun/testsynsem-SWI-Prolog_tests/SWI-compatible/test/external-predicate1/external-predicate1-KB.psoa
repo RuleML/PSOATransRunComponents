@@ -1,0 +1,7 @@
+Document (
+  Prefix(pred: <http://www.w3.org/2007/rif-builtin-predicate#>)
+  Prefix(func: <http://www.w3.org/2007/rif-builtin-function#>)
+  
+  Group (
+  )
+)

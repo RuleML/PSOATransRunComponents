@@ -1,0 +1,9 @@
+Document
+(
+  Group
+  (
+    Forall ?M (
+      Exists ?O ( ?O#_betweenObjRel(_northPole ?M _southPole _dim->2 _orient->_northSouth) )
+    )
+  )
+)

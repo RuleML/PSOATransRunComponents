@@ -1,0 +1,5 @@
+Top()
+% true.
+% Correctness Criterion: Query for oidless, descriptorless ground Top atom 
+%  against KB containing only an implicit dependent version of ground 
+%  atom answers "Yes".

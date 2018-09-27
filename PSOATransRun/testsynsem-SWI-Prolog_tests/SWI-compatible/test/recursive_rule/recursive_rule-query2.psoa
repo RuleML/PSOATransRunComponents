@@ -1,0 +1,1 @@
+And(_isDescendentOf(?Who _Tom) ?Who#_Person(_sex->_Male _age->?Age))

@@ -1,0 +1,4 @@
+Top(-[b])
+% tupterm(Q1,'_b').
+% Correctness Criterion: Query for oidless Top atom with independent tuple, arity 1
+% against KB containing only matching ground atom with fully mixed descriptor answers "Yes".

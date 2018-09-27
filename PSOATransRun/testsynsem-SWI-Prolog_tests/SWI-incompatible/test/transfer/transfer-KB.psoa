@@ -1,0 +1,11 @@
+Document (
+    Group (
+      Forall ?Pers ?JobTitle ?Comp1 ?Comp2 (
+         _transfer(?Pers ?Comp1 ?Comp2) :- 
+             And(_work(?Pers ?Comp1 ?JobTitle)
+                 _acquire(_buyer->?Comp2 _seller->?Comp1)))
+      _e1#_transfer(_Tony _Rho4biz _Chi4corp _bonus->20000)
+      _work(_Kate _Rho4biz "Director")
+      _a1#_acquire(_buyer->_Chi4corp _seller->_Rho4biz)
+    )
+)

@@ -1,0 +1,4 @@
+q(a)
+% false.
+% Correctness Criterion: Query for ground atom of 1 tuple of arity 1
+%    against KB containing a ground atom with functional term syntactically matching query atom answers No.

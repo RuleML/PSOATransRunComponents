@@ -1,0 +1,26 @@
+RuleML ( 
+  Assert (
+
+    Forall ?customer ?product (
+      discount(?customer ?product "5.0 percent") :- 
+        And(premium(?customer) regular(?product))
+    )
+
+    Forall ?customer ?product (
+      discount(?customer ?product "7.5 percent") :- 
+        And(premium(?customer) luxury(?product))
+    )
+
+    Forall ?customer (
+      premium(?customer) :- 
+        spending(?customer "min 5000 euro" "previous year")
+    )
+
+    luxury(Porsche)
+
+    regular(Honda)
+
+    spending("Peter Miller" "min 5000 euro" "previous year")
+
+  )
+)

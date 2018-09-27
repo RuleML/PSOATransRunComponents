@@ -1,0 +1,3 @@
+p(m->v n->u)
+% (sloterm(Q1,'_m','_v'),sloterm(Q1,'_n','_u'),memterm(Q1,'_p')).
+% Correctness Criterion: query for the verbatim slotted atom in a KB answers Yes.

@@ -1,0 +1,1 @@
+And(?X1=External(isopl:floor(2.40)) ?X2=External(isopl:floor(-3.33)) ?X3=External(isopl:ceiling(0.10)) ?X4=External(isopl:ceiling(-2.99)))

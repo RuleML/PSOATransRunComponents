@@ -1,0 +1,3 @@
+p(a)
+% '_p'('_a')
+% Correctness Criterion: query for the first of two implicit atoms in a KB answers Yes.

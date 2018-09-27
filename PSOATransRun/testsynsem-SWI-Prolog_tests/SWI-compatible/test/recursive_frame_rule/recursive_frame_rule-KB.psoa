@@ -1,0 +1,15 @@
+Document (
+  Group (
+    Forall ?X ?Y (
+      ?X # _person(_descendent->?Y) :- ?X # _person(_child->?Y)
+    )
+    Forall ?X ?Y ?Z (
+      ?X # _person(_descendent->?Z) :-
+        And(?X # _person(_child->?Y)  ?Y # _person(_descendent->?Z))
+    )
+    _Tom # _person(_male _child->_Amy _job->_professor)
+    _Eva # _person(_female _child->_Amy)
+    _Amy # _person([_female] [_bcs _mcs _phd] _child->_Fred)
+    _Fred # _person(_school->_UNB)
+  )
+)

@@ -1,0 +1,19 @@
+RuleML(
+  Assert(
+    % atomic-formula expressivity
+    % relationships
+    % single tuple
+    %   dependent tuple
+    %     implicit tuple
+    %   1 element
+    %     nested atom
+    %       oid
+    %       single tuple
+    %         1 element
+    %           constant arguments
+    p(o#q(a))
+    % Translated KB:
+    % prdtupterm('_o','_q','_a').
+    % memterm('_o','_q').
+    % '_p'('_o').
+) )

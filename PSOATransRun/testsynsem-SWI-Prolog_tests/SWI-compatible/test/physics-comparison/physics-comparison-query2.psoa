@@ -1,0 +1,4 @@
+And(:lessThanDate(:date(2016 05 30) :date(2017 05 30))
+    :lessThanDate(:date(2017 04 30) :date(2017 05 30))
+    :lessThanDate(:date(2017 05 29) :date(2017 05 30)))
+    

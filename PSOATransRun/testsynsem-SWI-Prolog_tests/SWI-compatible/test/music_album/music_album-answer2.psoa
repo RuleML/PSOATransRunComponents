@@ -1,0 +1,6 @@
+?OID=<http://psoa.ruleml.org/exa/music_album#o1> ?Title="Astral Weeks" ?Artist="Van Morrison"
+?OID=<http://psoa.ruleml.org/exa/music_album#o2> ?Title="Sgt. Pepper's" ?Artist="Beatles"
+?OID=<http://psoa.ruleml.org/exa/music_album#o3> ?Title="Abbey Road" ?Artist="Beatles"
+?OID=<http://psoa.ruleml.org/exa/music_album#o4> ?Title="Sticky Fingers" ?Artist="Rolling Stones"
+?OID=<http://psoa.ruleml.org/exa/music_album#o5> ?Title="Hotel California" ?Artist="Eagles"
+?OID=<http://psoa.ruleml.org/exa/music_album#o6> ?Title="Goodbye Yellow Brick Road" ?Artist="Elton John"

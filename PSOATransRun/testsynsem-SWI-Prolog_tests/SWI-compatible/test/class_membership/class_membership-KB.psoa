@@ -1,0 +1,13 @@
+Document(
+  Prefix(fam: <http://example.org/family#>)
+
+  Group ( 
+    Forall ?X ?Y ( 
+      fam:isFatherOf(?Y ?X) :- And (fam:isChildOf(?X ?Y) ?Y#fam:Male  )
+    )
+
+    fam:isChildOf(fam:Adrian fam:Uwe)
+    fam:Adrian#fam:Male
+    fam:Uwe#fam:Male 
+  )
+)

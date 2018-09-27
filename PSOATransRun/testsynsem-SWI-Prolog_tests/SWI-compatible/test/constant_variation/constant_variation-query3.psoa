@@ -1,0 +1,5 @@
+And(
+  _p1("3"^^<http://www.w3.org/2001/XMLSchema#integer>)
+  _p1("4"^^<http://www.w3.org/2001/XMLSchema#integer>)
+  _p1("5"^^<http://www.w3.org/2001/XMLSchema#integer>)
+)

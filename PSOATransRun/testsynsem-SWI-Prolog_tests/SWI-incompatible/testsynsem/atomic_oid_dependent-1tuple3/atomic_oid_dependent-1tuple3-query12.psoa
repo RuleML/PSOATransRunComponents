@@ -1,0 +1,6 @@
+i#Top(-[a b c])
+% tupterm('_i','_a','_b','_c').
+% Correctness Criterion: Query for oidful ground atom with explicit Top-independent
+%  single tuple of 
+%  three constant arguments against KB containing only an oidful ground atom 'p'-dependent 
+%  answers "No".

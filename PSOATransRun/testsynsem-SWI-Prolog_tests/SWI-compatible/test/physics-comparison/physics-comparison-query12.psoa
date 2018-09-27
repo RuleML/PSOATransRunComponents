@@ -1,0 +1,4 @@
+And(:lessThanTime(:time(13 20 05) :time(14 20 05))
+    :lessThanTime(:time(14 19 05) :time(14 20 05))
+    :lessThanTime(:time(14 20 04) :time(14 20 05)))
+    

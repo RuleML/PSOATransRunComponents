@@ -1,0 +1,5 @@
+i#p(?x ?y ?x)
+% (prdtupterm('_i','_p',Qx,Qy,Qx),memterm('_i','_p')).
+% Correctness Criterion: Query for oidful non-ground atom with explicit dependent single tuple of 
+%    all variable arguments where one variable appears twice
+%    against KB containing a ground atom with distinct arguments answers with "No".

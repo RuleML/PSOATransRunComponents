@@ -1,0 +1,13 @@
+RuleML(
+  Assert(
+    % atomic-formula expressivity
+    % relationships
+    % single tuple
+    %   dependent tuple
+    %     explicit tuple
+    %   3 elements
+    %     constant elements
+    p(+[a b c])
+    % prdtupterm('_1','_p','_a','_b','_c').
+    % memterm('_1','_p').
+) )

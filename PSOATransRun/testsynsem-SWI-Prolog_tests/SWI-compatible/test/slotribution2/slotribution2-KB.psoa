@@ -1,0 +1,22 @@
+Document(
+  Prefix(: <http://psoa.ruleml.org/test#>)  
+  Prefix(func: <http://www.w3.org/2007/rif-builtin-function#>)
+  
+  Group(
+    Forall ?C ?X (
+      ?C#:Country(_capital->?X) :-
+                  :geo-in(:government(?C) ?X)
+    )
+
+    Forall ?S ?X ?F ?V (
+      ?S#:Startup(_capital->?X) :-
+                  And(:founder-capital(?S ?F)
+                      :venture-capital(?S ?V)
+                      ?X = External(func:numeric-add(?F ?V)))
+    )
+    
+    :geo-in(:government(:Canada) :Ottawa)
+    :founder-capital("XYZ Inc." 100000)
+    :venture-capital("XYZ Inc." 200000)
+  )
+)

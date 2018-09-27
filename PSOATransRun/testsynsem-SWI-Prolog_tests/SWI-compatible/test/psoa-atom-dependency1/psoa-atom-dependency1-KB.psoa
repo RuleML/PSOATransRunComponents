@@ -1,0 +1,6 @@
+Document(  
+  Group (
+    _John#_Teacher(+[_Wed _Thu] _dept+>_physics _salary+>19400 _income->19400)
+    _John#_Student(+[_Mon _Tue _Fri] _dept+>_math _gender->_male)
+  )
+)

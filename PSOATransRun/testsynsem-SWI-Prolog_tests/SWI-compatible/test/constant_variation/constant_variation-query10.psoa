@@ -1,0 +1,1 @@
+And(:p3(:f("str1"^^xs:string)) :p3(:f("str2"^^xs:string)) :p3(:f("str3"^^xs:string)))

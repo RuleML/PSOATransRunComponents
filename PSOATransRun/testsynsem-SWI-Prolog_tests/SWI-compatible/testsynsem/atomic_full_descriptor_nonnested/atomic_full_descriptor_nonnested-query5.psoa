@@ -1,0 +1,4 @@
+Top(m1->n1)
+% sloterm(Q1,'_m1','_n1').
+% Correctness Criterion: Query for oidless Top atom with independent slot
+% against KB containing only matching ground atom with fully mixed descriptor answers "Yes".

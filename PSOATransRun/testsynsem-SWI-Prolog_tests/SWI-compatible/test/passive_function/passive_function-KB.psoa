@@ -1,0 +1,5 @@
+Document(
+  Group(
+    Forall ?x ( _eq(_f(?x) ?x))
+  )
+)

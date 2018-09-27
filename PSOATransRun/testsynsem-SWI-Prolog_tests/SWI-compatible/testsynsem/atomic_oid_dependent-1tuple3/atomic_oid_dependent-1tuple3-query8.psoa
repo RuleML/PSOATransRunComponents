@@ -1,0 +1,5 @@
+i#p
+% memterm('_i','_p').
+% Correctness Criterion: Query for membership of a constant in a predicate
+%    against KB containing only an oidful ground atom of that predicate 
+%    with that constant as oid answers "Yes".

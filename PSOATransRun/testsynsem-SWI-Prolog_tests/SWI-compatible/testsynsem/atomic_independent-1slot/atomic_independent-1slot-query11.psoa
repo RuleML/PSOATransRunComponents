@@ -1,0 +1,4 @@
+?z(?x->?y)
+% (sloterm(Q1,Qx,Qy),memterm(Q1,Qz)).
+% Correctness Criterion: query for the predicate of the slotted atom in the KB answers with
+%   the appropriate binding.

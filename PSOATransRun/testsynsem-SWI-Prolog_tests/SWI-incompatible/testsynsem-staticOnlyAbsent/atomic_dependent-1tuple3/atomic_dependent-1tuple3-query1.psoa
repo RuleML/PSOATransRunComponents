@@ -1,0 +1,7 @@
+?(+[a b c])
+% (prdtupterm(Q2,Q1,'_a','_b','_c'),memterm(Q2,Q1)).
+% Query contains "don't care" predicate variable (should yield Warning msg)
+% Correctness Criterion: Query for oidless ground atom with dependent single tuple of 
+%    three constant arguments and "don't care" variable predicate
+%    against KB containing only a matching ground atom answers No when the option
+%    -s (static only) is absent (incompleteness).
