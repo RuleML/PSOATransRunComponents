@@ -1,0 +1,4 @@
+p(a b c)
+% (prdtupterm(Q1,'_p','_a','_b','_c'),memterm(Q1,'_p')).
+% Correctness Criterion: Query for ground atom with implicit dependent single tuple of three constant arguments
+%    against KB containing only the independent version of that ground atom answers "No".

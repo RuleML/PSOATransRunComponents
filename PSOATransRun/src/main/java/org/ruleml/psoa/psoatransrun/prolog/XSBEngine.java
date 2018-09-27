@@ -17,6 +17,10 @@ import com.declarativa.interprolog.XSBSubprocessEngine;
 public class XSBEngine extends PrologEngine {
 	private String m_xsbBinPath, m_xsbFolder;
 	private File m_transKBFile;
+	
+	// Maximum tuple length of psoa atoms for tupterm/prdtupterm tabling
+	protected static final int MAX_TUPLE_LEN_FOR_TABLING = 10;
+	
 
 	/**
 	 * XSB engine configuration
@@ -128,8 +132,7 @@ public class XSBEngine extends PrologEngine {
 			writer.println(":- index prdsloterm/4-2.");
 			writer.println(":- index prdsloterm/4-3.");
 			
-			// Assume a maximum tuple length of 10
-			for (int i = 1; i < 12; i++)
+			for (int i = 1; i < 2 + MAX_TUPLE_LEN_FOR_TABLING; i++)
 			{
 				writer.println(":- table(tupterm/" + i + ").");
 				writer.println(":- table(prdtupterm/" + (i + 1) + ").");

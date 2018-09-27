@@ -1,0 +1,4 @@
+p(c b a)
+% '_p'('_c','_b','_a').
+% Correctness Criterion: Query for ground atom with implicit single tuple of three constant arguments
+%    against KB containing a similar ground atom with permuted arguments answers "No".

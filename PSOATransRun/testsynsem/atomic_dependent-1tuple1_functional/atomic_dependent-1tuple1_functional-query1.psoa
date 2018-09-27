@@ -1,0 +1,4 @@
+p(+[q(+[a])])
+% '_p'('_q'('_a')).
+% Correctness Criterion: Query for ground atom with explicit dependent single tuple of 
+%  one nested argument against KB containing only that ground atom answers "Yes".

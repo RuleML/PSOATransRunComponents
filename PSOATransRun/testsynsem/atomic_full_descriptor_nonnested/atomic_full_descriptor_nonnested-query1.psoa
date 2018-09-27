@@ -1,0 +1,4 @@
+o#p(+[a] -[b] m1->n1 m2+>n2)
+% (prdtupterm('_o','_p','_a'),tupterm('_o','_b'),sloterm('_o','_m1','_n1'),prdsloterm('_o','_p','_m2','_n2'),memterm('_o','_p')).
+% Correctness Criterion: Query for ground atom with fully mixed descriptor
+% against KB containing only that ground atom answers "Yes".

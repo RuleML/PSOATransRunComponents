@@ -1,0 +1,5 @@
+?x#p
+% memterm(Qx,'_p').
+% Correctness Criterion: Query for any membership in a predicate
+%    against KB containing only an oidful ground atom of that predicate 
+%     answers with the appropriate substitution.

@@ -1,0 +1,18 @@
+RuleML(
+  Assert(
+    % atomic-formula expressivity
+    % relationships
+    % single tuple
+    %   dependent tuple
+    %     implicit tuple
+    %   1 element
+    %     nested atom
+    %       oid (not optional, otherwise exception is thrown)
+    %       single slot, no tuple
+    %         constant arguments
+    p(o#q(a->b))
+    % Translated KB:
+    % sloterm('_o','_a','_b').
+    % memterm('_o','_q').
+    % '_p'('_o').
+) )

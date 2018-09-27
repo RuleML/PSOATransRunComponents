@@ -1,0 +1,4 @@
+p(?x)
+% '_p'(Qx).
+% Correctness Criterion: query for the an implicit atom with query variable matching
+%   both of two implicit atoms in a KB answers with both bindings.

@@ -246,6 +246,7 @@ psoa[boolean isAtomic]
     -> { !isAtomic || 
          (   m_dynamic 
           && !m_KBInfo.hasHeadOnlyVariables()
+	  && $type.tree.getType() != VAR_ID
           && m_KBInfo.isRelational($type.tree)) }?
           ^(PSOA ^(INSTANCE $type) tuple* slot*)
     // differentiated static objectification for psoa terms in rule conditions or queries

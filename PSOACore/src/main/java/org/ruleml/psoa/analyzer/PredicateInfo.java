@@ -9,12 +9,14 @@ import java.util.*;
 public class PredicateInfo
 {
 	private String m_name;
+	private boolean m_isTop;
 	SortedSet<Integer> m_positionalArities;
 	boolean m_hasOID, m_hasSlot, m_hasIndepTuple, m_hasMultiTuple, m_hasNoDesc;
 	
 	public PredicateInfo(String name)
 	{
 		m_name = name;
+		m_isTop = name.equals("Top");
 		m_positionalArities = new TreeSet<Integer>();
 		m_hasOID = false;
 		m_hasSlot = false;
@@ -25,7 +27,7 @@ public class PredicateInfo
 	
 	public boolean isRelational()
 	{
-		return !m_hasOID && !m_hasSlot && !m_hasIndepTuple && !m_hasMultiTuple && !m_hasNoDesc;
+		return !m_hasOID && !m_hasSlot && !m_hasIndepTuple && !m_hasMultiTuple && !m_hasNoDesc && !m_isTop;
 	}
 	
 	public SortedSet<Integer> getPositionalArities()

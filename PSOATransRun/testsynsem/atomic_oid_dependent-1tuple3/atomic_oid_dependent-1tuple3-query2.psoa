@@ -1,0 +1,4 @@
+i#p(+[c b a])
+% (prdtupterm('_i','_p','_c','_b','_a'),memterm('_i','_p')).
+% Correctness Criterion: Query for oidful ground atom with explicit dependent single tuple of three constant arguments
+%    against KB containing a similar ground atom with permuted arguments answers "No".

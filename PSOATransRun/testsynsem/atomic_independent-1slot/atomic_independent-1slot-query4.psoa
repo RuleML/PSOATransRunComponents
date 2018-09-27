@@ -1,0 +1,4 @@
+p(?x->?y)
+% (sloterm(Q1,Qx,Qy),memterm(Q1,'_p')).
+% Correctness Criterion: query for the slot role and filler of the atom in the KB answers with
+%   the appropriate binding.

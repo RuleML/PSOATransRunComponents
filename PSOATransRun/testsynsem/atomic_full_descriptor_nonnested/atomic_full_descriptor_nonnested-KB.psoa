@@ -1,0 +1,13 @@
+RuleML(
+  Assert(
+    % atomic-formula expressivity
+    % oidful
+    % mixed descriptor
+    o#p(+[a] -[b] m1->n1 m2+>n2)
+    % Translated KB:
+    % prdtupterm('_o','_p','_a').
+    % tupterm('_o','_b').
+    % sloterm('_o','_m1','_n1').
+    % prdsloterm('_o','_p','_m2','_n2').
+    % memterm('_o','_p').    
+) )

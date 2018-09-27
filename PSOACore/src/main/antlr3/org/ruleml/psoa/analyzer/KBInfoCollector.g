@@ -59,7 +59,7 @@ options
     {
         PredicateInfo pi = m_predicates.get(pred);
         
-        return pi == null || pi.isRelational();
+        return pi == null? !pred.equals("Top") : pi.isRelational();
     }
     
     public void addPsoaTermInfo(String pred, Collection<Integer> positionalArities, boolean hasOID, 
