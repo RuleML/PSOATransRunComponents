@@ -46,7 +46,6 @@ public class SWIEngine extends PrologEngine {
 	public SWIEngine(Config config, boolean delayStart) {
 		
 		System.out.println("Experimental SWI support");
-		
 		// Configure swi installation folder
 		m_swiFolder = config.swiFolderPath;
 
@@ -54,29 +53,43 @@ public class SWIEngine extends PrologEngine {
 			// Search by default install locations
 			if (OS.isFamilyUnix() || OS.isFamilyMac())
 			{
-			    // Look for the executable at /usr/bin	
-			
-				File exec = new File("/usr/bin/swipl");
+			    // Look for the executable at /usr/bin (Linux),
+				// /Applications/SWI-Prolog.app/Contents/MacOS/swipl or/usr/local/bin/swipl	(MacOS)
+				
+				String bin_path;
+				
+				if (OS.isFamilyMac())
+					bin_path = "/Applications/SWI-Prolog.app/Contents/MacOS/swipl";
+				else
+					bin_path = "/usr/bin/swipl";
+				File exec = new File(bin_path);
 				if (!(exec.exists()))
 				{
 					if (m_swiFolder == null)
 					{
-						if (OS.isFamilyUnix())
+						if (!OS.isFamilyMac())
 							throw new PSOATransRunException(
 								  "Cannot find SWI binary: Please install SWI Prolog " 
 								+ "or specify a SWI Prolog directory.\n\n"
 								+ "You can install SWI Prolog through your package manager\n\n"
-								+ "If you are using Ubuntu/Mint try:\n" + " sudo apt-get install swi-prolog\n\n"
+								+ "If you are using debian/mint/ubuntu try:\n" + " sudo apt-get install swi-prolog\n\n"
 								+ "If you are using OpenSUSE try:\n" + " sudo zypper in swipl");
-						if (OS.isFamilyMac())
-							throw new PSOATransRunException("Cannot find SWI binary: Please install SWI Prolog" 
+						else
+						{
+							// Search for brew install
+							File exec_brew = new File("/usr/local/bin/swipl");
+							if (exec_brew.exists())
+								m_swiFolder = exec_brew.getParentFile().getAbsolutePath();			
+							else
+								throw new PSOATransRunException("Cannot find SWI binary: Please install SWI Prolog" 
 								+ "or specify a SWI Prolog directory.");
+						}
 					}
 					else
 						throw new PSOATransRunException("Cannot find SWI binary: " + m_swiFolder + " does not exist or is empty.");
 				}
 				else
-					m_swiFolder = "/usr/bin";
+					m_swiFolder = exec.getParentFile().getAbsolutePath();
 			}
 			
 			else if (OS.isFamilyWindows())
@@ -114,10 +127,13 @@ public class SWIEngine extends PrologEngine {
 		
 		// Find the path of SWI binary
 		if (OS.isFamilyUnix() || OS.isFamilyMac())
-		{
-			if (m_swiFolder == "/usr/bin")
+		{	
+			if (m_swiFolder.equals("/usr/bin") || 
+					m_swiFolder.equals("/Applications/SWI-Prolog.app/Contents/MacOS") || 
+					m_swiFolder.equals("/usr/local/bin"))
 				{
 				m_swiBinPath = m_swiFolder;
+				System.out.println("Using SWI Prolog executable found at: " + m_swiFolder) ;
 				}
 			else
 			{
