@@ -140,7 +140,7 @@ public class PSOATransRunCmdLine {
 		ExecutionEngine engine = null;
 
 		// Display version number
-		println("PSOATransRun 1.3.2-b");  // TODO: Define method in PSOATransRun class, called here to return version		
+		println("PSOATransRun 1.3.2-b-SWI");  // TODO: Define method in PSOATransRun class, called here to return version		
 				
 		try {
 			if (lang == null || lang.equalsIgnoreCase("prolog"))
@@ -192,7 +192,7 @@ public class PSOATransRunCmdLine {
 				engine = new VampirePrimeEngine(engineConfig);
 				
 				if (prologPath != null)
-					printErrln("Ignore -x option: only applicable for the target language Prolog");
+					printErrln("Ignore -x option: only applicable for the target languages XSB Prolog (prolog), SWI Prolog (swi)");
 			}
 			else
 			{
@@ -219,8 +219,13 @@ public class PSOATransRunCmdLine {
 			{
 				printErrlnAndExit(e.getMessage());
 			}
-			// TestSuite already calls system.shutdown(), hence
-			// no finally block is needed
+			// Old comment: "TestSuite already calls system.shutdown(), 
+			// hence no finally block is needed", but no such call exists on test suite 
+			// resulting test cases not terminating for Linux. Added the "finally" block
+			// with System.exit(), as system shutdown was not always working
+			finally {
+				System.exit(0);
+			}
 		}
 		
 		try {
