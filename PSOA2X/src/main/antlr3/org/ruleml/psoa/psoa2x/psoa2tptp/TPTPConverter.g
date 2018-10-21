@@ -280,7 +280,11 @@ psoa
                     else
                        replace(startIdx, 7, "sloterm");
                  }
-                 append(")");
+				 else
+				 {
+		         	throw new TranslatorException("Slotted expressions are not supported");
+				 }
+		         append(")");
               }
            |  // No slot or tuples  
 		      {
