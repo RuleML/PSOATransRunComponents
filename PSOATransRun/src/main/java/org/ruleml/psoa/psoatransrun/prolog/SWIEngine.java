@@ -225,7 +225,7 @@ public class SWIEngine extends PrologEngine {
 			}
 			
 			// Configure SWI
-			writer.println(":- set_prolog_flag(unknown,fail).");  // Return false for (sub)queries using unknown predicates
+			//writer.println(":- set_prolog_flag(unknown,fail).");  // Return false for (sub)queries using unknown predicates
 			//writer.println(":- import datime/1, local_datime/1 from standard.");  // Selectively import 2 predicates (works only for external calls inside KB rules)
 			writer.println(":- set_prolog_flag(iso,true)."); // Select ISO prolog compatibility
 			
