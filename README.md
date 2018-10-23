@@ -46,14 +46,17 @@ Import Project into Eclipse using Eclipse's Built-in Git Plugin EGit (see https:
 
 ## Release Procedure
 
-* On Github
+* On Github (possibly before "On Eclipse")
     * In the PSOATransRunComponents repo
         * Follow the instruction at https://help.github.com/articles/creating-releases, with the following entries:
-            * Use Semantic Versioning https://semver.org together with a specific prefix, e.g. PSOATransRun-v1.3.2-a
+            * In "Tag version" field, enter name of new release (also for the co-created new tag), e.g. PSOATransRun-v1.3.2-a
+                * Use Semantic Versioning https://semver.org together with a specific prefix, here PSOATransRun-v1.3.2-a
+            * Leave "Target:master" unchanged
             * Leave title and description blank
             * Add no additional binaries
-            * In general, do not check "pre-release", even though we use "-" notation of Semantic Versioning.
-* In Eclipse
+            * In general, do not check "pre-release", even though we use "-" notation of Semantic Versioning
+            * Click "Publish release"
+* On Eclipse (possibly before "On Github")
     * In the psoa-ruleml repo
         * Duplicate (as sibling) the most recent subdirectory of the directory /transrun in the psoa-ruleml repository, e.g. 1.3.1, and rename it, e.g. to 1.3.2-a
         * Delete the jar file in this new directory
