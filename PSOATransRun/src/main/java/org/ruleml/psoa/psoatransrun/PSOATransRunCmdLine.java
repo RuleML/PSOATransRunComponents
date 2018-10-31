@@ -29,6 +29,7 @@ public class PSOATransRunCmdLine {
 				new LongOpt("help", LongOpt.NO_ARGUMENT, null, '?'),
 				new LongOpt("longhelp", LongOpt.NO_ARGUMENT, null, '~'),
 				new LongOpt("targetLang", LongOpt.REQUIRED_ARGUMENT, null, 'l'),
+				new LongOpt("backend", LongOpt.REQUIRED_ARGUMENT, null, 'b'),
 				new LongOpt("input", LongOpt.REQUIRED_ARGUMENT, null, 'i'),
 				new LongOpt("query", LongOpt.REQUIRED_ARGUMENT, null, 'q'),
 				new LongOpt("explicitLocalConstants", LongOpt.NO_ARGUMENT, null, 'c'),
@@ -47,12 +48,13 @@ public class PSOATransRunCmdLine {
 				new LongOpt("dense", LongOpt.NO_ARGUMENT, null, 'd')
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?l:i:q:tn:epo:x:am:csuvzd", opts);
+		Getopt optionsParser = new Getopt("", args, "?l:i:b:q:tn:epo:x:am:csuvzd", opts);
 
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
 				isTest = false, dense = false, verbose = false, reconstruct = true;
-		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null, prologPath = null;
+		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null,
+			   prologPath = null, prologBackend = null;
 		int timeout = -1, numRuns = 1;
 		
 		for (int opt = optionsParser.getopt(); opt != -1; opt = optionsParser
@@ -66,6 +68,9 @@ public class PSOATransRunCmdLine {
 				return;
 			case 'l':
 				lang = optionsParser.getOptarg();
+				break;
+			case 'b':
+				prologBackend = optionsParser.getOptarg();
 				break;
 			case 'd':
 				dense = true;
@@ -143,7 +148,8 @@ public class PSOATransRunCmdLine {
 		println("PSOATransRun 1.3.2-b-SWI");  // TODO: Define method in PSOATransRun class, called here to return version		
 				
 		try {
-			if (lang == null || lang.equalsIgnoreCase("prolog"))
+			if ((lang == null || lang.equalsIgnoreCase("prolog")) && 
+				(prologBackend == null || prologBackend.equalsIgnoreCase("xsb")))
 			{
 				PrologTranslator.Config transConfig = new PrologTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
@@ -160,7 +166,8 @@ public class PSOATransRunCmdLine {
 				if (timeout > 0)
 					printErrln("Ignore -t option: only applicable for the target language TPTP");
 			}
-			else if (lang.equalsIgnoreCase("swi"))
+			else if ((lang == null || lang.equalsIgnoreCase("prolog")) && prologBackend.equalsIgnoreCase("swi"))
+				
 			{
 				PrologTranslator.Config transConfig = new PrologTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
@@ -192,7 +199,9 @@ public class PSOATransRunCmdLine {
 				engine = new VampirePrimeEngine(engineConfig);
 				
 				if (prologPath != null)
-					printErrln("Ignore -x option: only applicable for the target languages XSB Prolog (prolog), SWI Prolog (swi)");
+					printErrln("Ignore -x option: only applicable for the target language \"prolog\"");
+				if (prologBackend != null)
+					printErrln("Ignore -b option: only applicable for the target language \"prolog\"");
 			}
 			else
 			{
@@ -365,6 +374,8 @@ public class PSOATransRunCmdLine {
 		println("Usage: java -jar PSOATransRun.jar -i <kb> [-e] [-p] [-c] [-o <translated KB output>] [-q <query>] [-a] [-u] [-s] [-x <xsb folder>]");
 		println("Options:");
 		println("  -?,--help         Print the help message");
+		// --help should contain --longhelp
+		println("     --longhelp     Print the help message, including commands for internal use");
 		println("  -a,--allAns       Retrieve all answers for each query at once");
 		println("  -i,--input        Input Knowledge Base (KB)");
 		println("  -e,--echoInput    Echo input KB to standard output");
@@ -384,8 +395,10 @@ public class PSOATransRunCmdLine {
 		if (isLong)
 		{
 			println("     --longhelp     Print the help message, including commands for internal use");
-			println("  -l,--targetLang   Translation target language (currently support");
-			println("                    \"prolog\", \"swi\" and \"tptp\")"); //TODO: remove swi when -b option is complete
+			println("  -l,--targetLang   Translation target language (current options available");
+			println("                    for \"prolog\" and \"tptp\")");
+			println("  -b,--backend      Backend for target language \"prolog\", (current options");
+			println("                    available \"xsb\" and \"swi\")");
 			println("  -t,--test         Run PSOATransRun tests (-i specifies the directory");
 			println("                    for the test suite)");
 			println("  -n,--numRuns      Number of runs for each test case");
