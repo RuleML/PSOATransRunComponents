@@ -209,10 +209,13 @@ public class SWIEngine extends PrologEngine {
 		{
 			writer.println(":- use_module(library(tabling)).");
 			writer.println(":- table memterm/2.");
+			writer.println(":- discontiguous 'memterm tabled'/2.");
 			//writer.println(":- index(memterm/2-2).");
 			writer.println(":- table sloterm/3.");
+			writer.println(":- discontiguous 'sloterm tabled'/3.");
 			//writer.println(":- index(sloterm/3-2).");
 			writer.println(":- table prdsloterm/4.");
+			writer.println(":- discontiguous 'prdsloterm tabled'/4.");
 			//writer.println(":- index(prdsloterm/4-2).");
 			//writer.println(":- index(prdsloterm/4-3).");
 			
@@ -220,7 +223,9 @@ public class SWIEngine extends PrologEngine {
 			for (int i = 1; i < 2 + MAX_TUPLE_LEN_FOR_TABLING; i++)
 			{
 				writer.println(":- table tupterm/" + i + ".");
+				writer.println(":- discontiguous 'tupterm tabled'/" + i + ".");
 				writer.println(":- table prdtupterm/" + (i + 1) + ".");
+				writer.println(":- discontiguous 'prdtupterm tabled'/" + i + 1 + "-2.");
 				//writer.println(":- index(prdtupterm/" + (i + 1) + "-2).");
 			}
 			

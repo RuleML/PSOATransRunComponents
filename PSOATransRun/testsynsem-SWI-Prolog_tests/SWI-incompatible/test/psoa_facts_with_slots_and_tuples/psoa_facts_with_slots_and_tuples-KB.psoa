@@ -1,8 +1,0 @@
-Document(
-  Group(
-    _f1#_family(_John _Mary _child->_Tom)
-    _f2#_family([_Tom _Jane] _income->100000)
-    _f3#_family([_Mike _Jessie] [1951] _child->_Fred _child->_Jane)
-    _Jane#_Person([_female] [_bcs _mcs _phd] _job->_engineer)
-  )
-)
