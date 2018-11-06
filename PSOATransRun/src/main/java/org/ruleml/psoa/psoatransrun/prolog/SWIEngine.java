@@ -219,13 +219,13 @@ public class SWIEngine extends PrologEngine {
 			//writer.println(":- index(prdsloterm/4-2).");
 			//writer.println(":- index(prdsloterm/4-3).");
 			
-			// Assume a maximum tuple length of 10 
+			// Assume a maximum tuple length of MAX_TUPLE_LEN_FOR_TABLING 
 			for (int i = 1; i < 2 + MAX_TUPLE_LEN_FOR_TABLING; i++)
 			{
 				writer.println(":- table tupterm/" + i + ".");
 				writer.println(":- discontiguous 'tupterm tabled'/" + i + ".");
 				writer.println(":- table prdtupterm/" + (i + 1) + ".");
-				writer.println(":- discontiguous 'prdtupterm tabled'/" + i + 1 + "-2.");
+				writer.println(":- discontiguous 'prdtupterm tabled'/" + (i + 1) + "-2.");
 				//writer.println(":- index(prdtupterm/" + (i + 1) + "-2).");
 			}
 			
