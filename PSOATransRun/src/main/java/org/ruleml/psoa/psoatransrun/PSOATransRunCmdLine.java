@@ -129,6 +129,9 @@ public class PSOATransRunCmdLine {
 			}
 		}
 		
+		// Display system name
+		println(PSOATransRun.getSystemName(lang));
+		
 		// Check whether input KB file / directory has been specified
 		if (inputKBPath == null) {
 			printErrlnAndExit("No input KB specified");
@@ -137,9 +140,6 @@ public class PSOATransRunCmdLine {
 		// Initialize PSOATransRun
 		Translator translator = null;
 		ExecutionEngine engine = null;
-
-		// Display version number
-		println("PSOATransRun 1.3.2-b");  // TODO: Define method in PSOATransRun class, called here to return version		
 				
 		try {
 			if (lang == null || lang.equalsIgnoreCase("prolog"))
