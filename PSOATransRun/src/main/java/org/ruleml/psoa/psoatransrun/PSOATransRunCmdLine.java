@@ -136,7 +136,7 @@ public class PSOATransRunCmdLine {
 		}
 		
 		// Display system name
-		println(PSOATransRun.getSystemName(lang));
+		println(PSOATransRun.getSystemName(lang, prologBackend));
 		
 		// Check whether input KB file / directory has been specified
 		if (inputKBPath == null) {
