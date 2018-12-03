@@ -205,7 +205,14 @@ public class PSOATransRunCmdLine {
 			}
 			else
 			{
-				printErrlnAndExit("Unsupported language: ", lang);
+				if (lang == null || lang.equalsIgnoreCase("prolog"))
+				{
+					printErrlnAndExit("Unsupported Prolog backend: ", prologBackend);
+				}
+				else
+				{
+					printErrlnAndExit("Unsupported language: ", lang);
+				}
 			}
 		}
 		catch (PSOATransRunException e) {
