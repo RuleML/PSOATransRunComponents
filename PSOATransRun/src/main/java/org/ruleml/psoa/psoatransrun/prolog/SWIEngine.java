@@ -71,7 +71,19 @@ public class SWIEngine extends PrologEngine {
 				{
 					if (m_swiFolder == null)
 					{
-						if (!OS.isFamilyMac())							throw new PSOATransRunException(								  "Cannot find SWI binary: Please install SWI Prolog " 								+ "or specify a SWI Prolog directory.\n\n"								+ "You can install SWI Prolog through your package manager\n\n"								+ "If you are using debian/mint/ubuntu try:\n" + " sudo apt-get install swi-prolog\n\n"								+ "If you are using OpenSUSE try:\n" + " sudo zypper in swipl");						else							throw new PSOATransRunException("Cannot find SWI binary: Please install SWI Prolog" 							+ "or specify a SWI Prolog directory.");						}					else						throw new PSOATransRunException("Cannot find SWI binary: " + m_swiFolder + " does not exist or is empty.");
+						if (!OS.isFamilyMac())
+							throw new PSOATransRunException(
+									"Cannot find SWI binary: Please install SWI Prolog "
+								+ "or specify a SWI Prolog directory.\n\n"
+								+ "You can install SWI Prolog through your package manager\n\n"
+								+ "If you are using debian/mint/ubuntu try:\n" + " sudo apt-get install swi-prolog\n\n"
+								+ "If you are using OpenSUSE try:\n" + " sudo zypper in swipl");
+						else
+							throw new PSOATransRunException("Cannot find SWI binary: Please install SWI Prolog"
+									+ "or specify a SWI Prolog directory.");
+						}
+					else
+						throw new PSOATransRunException("Cannot find SWI binary: " + m_swiFolder + " does not exist or is empty.");
 				}
 				else
 					m_swiFolder = exec.getParentFile().getAbsolutePath();
@@ -140,7 +152,7 @@ public class SWIEngine extends PrologEngine {
 					m_swiBinPath = swiFile.getParentFile().getAbsolutePath();
 				}
 				else
-					throw new PSOATransRunException("Cannot find executable swi binary in " + f.getAbsolutePath());
+					throw new PSOATransRunException("Cannot find SWI binary in " + f.getAbsolutePath());
 			}
 		}
 		else if (OS.isFamilyWindows())
@@ -152,7 +164,7 @@ public class SWIEngine extends PrologEngine {
 				m_swiBinPath = f.getAbsolutePath();
 			}
 			else
-				throw new PSOATransRunException("Cannot find executable swi binary in " + f.getAbsolutePath());
+				throw new PSOATransRunException("Cannot find SWI binary in " + f.getAbsolutePath());
 		}
 
 		else
@@ -195,14 +207,10 @@ public class SWIEngine extends PrologEngine {
 			writer.println(":- use_module(library(tabling)).");
 			writer.println(":- table memterm/2.");
 			writer.println(":- discontiguous 'memterm tabled'/2.");
-			//writer.println(":- index(memterm/2-2).");
 			writer.println(":- table sloterm/3.");
 			writer.println(":- discontiguous 'sloterm tabled'/3.");
-			//writer.println(":- index(sloterm/3-2).");
 			writer.println(":- table prdsloterm/4.");
 			writer.println(":- discontiguous 'prdsloterm tabled'/4.");
-			//writer.println(":- index(prdsloterm/4-2).");
-			//writer.println(":- index(prdsloterm/4-3).");
 			
 			// Assume a maximum tuple length of MAX_TUPLE_LEN_FOR_TABLING 
 			for (int i = 1; i < 2 + MAX_TUPLE_LEN_FOR_TABLING; i++)
@@ -211,12 +219,9 @@ public class SWIEngine extends PrologEngine {
 				writer.println(":- discontiguous 'tupterm tabled'/" + i + ".");
 				writer.println(":- table prdtupterm/" + (i + 1) + ".");
 				writer.println(":- discontiguous 'prdtupterm tabled'/" + (i + 1) + "-2.");
-				//writer.println(":- index(prdtupterm/" + (i + 1) + "-2).");
 			}
 			
 			// Configure SWI
-			//writer.println(":- set_prolog_flag(unknown,fail).");  // Return false for (sub)queries using unknown predicates
-			//writer.println(":- import datime/1, local_datime/1 from standard.");  // Selectively import 2 predicates (works only for external calls inside KB rules)
 			writer.println(":- set_prolog_flag(iso,true)."); // Select ISO prolog compatibility
 			
 			writer.print(kb);
