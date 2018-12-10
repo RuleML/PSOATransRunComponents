@@ -381,8 +381,6 @@ public class PSOATransRunCmdLine {
 		println("Usage: java -jar PSOATransRun.jar -i <kb> [-e] [-p] [-c] [-o <translated KB output>] [-q <query>] [-a] [-u] [-s] [-x <xsb folder>]");
 		println("Options:");
 		println("  -?,--help         Print the help message");
-		// --help should contain --longhelp
-		println("     --longhelp     Print the help message, including commands for internal use");
 		println("  -a,--allAns       Retrieve all answers for each query at once");
 		println("  -i,--input        Input Knowledge Base (KB)");
 		println("  -e,--echoInput    Echo input KB to standard output");
@@ -392,6 +390,10 @@ public class PSOATransRunCmdLine {
 		println("  -c,--explicitLocalConstants  Require explicit underscores for local constants");
 		println("  -p,--printTrans   Print translated KB and queries to standard output");
 		println("  -o,--outputTrans  Save translated KB to the designated file");
+		println("  -l,--targetLang   Translation target language (currently support");
+		println("                    \"prolog\" (default) and \"tptp\")");
+		println("  -b,--backend      Backend for target language \"prolog\" (currently support");
+		println("                    \"xsb\" (default) and \"swi\")");
 		println("  -x,--prologFolder Specifies Prolog installation folder. The default path is ");
 		println("                    obtained from the environment variable XSB_DIR for XSB Prolog,");
 		println("                    or from default install locations for SWI Prolog");
@@ -402,10 +404,6 @@ public class PSOATransRunCmdLine {
 		if (isLong)
 		{
 			println("     --longhelp     Print the help message, including commands for internal use");
-			println("  -l,--targetLang   Translation target language (current options available");
-			println("                    for \"prolog\" and \"tptp\")");
-			println("  -b,--backend      Backend for target language \"prolog\", (current options");
-			println("                    available \"xsb\" and \"swi\")");
 			println("  -t,--test         Run PSOATransRun tests (-i specifies the directory");
 			println("                    for the test suite)");
 			println("  -n,--numRuns      Number of runs for each test case");
