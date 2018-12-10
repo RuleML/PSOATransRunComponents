@@ -229,18 +229,11 @@ public class PSOATransRunCmdLine {
 				TestSuite ts = new TestSuite(inputKBPath, system, numRuns, verbose);
 				ts.run();
 				ts.outputSummary();
-				return;
+				System.exit(0);
 			}
 			catch (PSOATransRunException e)
 			{
 				printErrlnAndExit(e.getMessage());
-			}
-			// Old comment: "TestSuite already calls system.shutdown(), 
-			// hence no finally block is needed", but no such call exists on test suite 
-			// resulting test cases not terminating for Linux. Added the "finally" block
-			// with System.exit(), as system shutdown was not always working
-			finally {
-				System.exit(0);
 			}
 		}
 		
