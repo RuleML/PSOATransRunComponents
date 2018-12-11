@@ -1,0 +1,2 @@
+And (?Ancestor1 # _person(_male _descendent->_Fred)
+     ?Ancestor2 # _person(_female _descendent->_Fred))

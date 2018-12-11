@@ -1,0 +1,1 @@
+Or(:currentDateUTC(:date(?)) :currentDateUTC(:date(? ?)) :currentDateUTC(:date(? ? ? ?)))

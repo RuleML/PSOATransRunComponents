@@ -1,0 +1,16 @@
+Document(
+  Group(
+    Forall ?anc ?par ?des (
+      _isDescendentOf(?des ?anc) :- And (_isChildOf(?des ?par) _isDescendentOf(?par ?anc))
+    )
+    Forall ?par ?ch (
+      _isDescendentOf(?ch ?par) :- _isChildOf(?ch ?par)
+    )
+    _isChildOf(_Pete _Sue)
+    _isChildOf(_Sue _John)
+    _isChildOf(_John _Tom)
+    _Pete#_Person(_sex->_Male _age->24)
+    _Sue#_Person(_sex->_Female _age->47)
+    _John#_Person(_sex->_Male _age->77)
+  )
+)

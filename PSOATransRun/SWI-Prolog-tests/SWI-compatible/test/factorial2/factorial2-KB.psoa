@@ -1,0 +1,17 @@
+Document(
+  Group(
+    Forall ?x ?y ?fx ?fy (
+      _eq(?fy _factorial(?y)) :- 
+         And(_eq(?y _sum(?x 1)) _eq(?fx _factorial(?x)) _eq(?fy _multiply(?fx ?y)))
+    )
+    _eq(1 _factorial(0))
+    _eq(1 _sum(0 1))
+    _eq(1 _multiply(1 1))
+    _eq(2 _sum(1 1))
+    _eq(2 _multiply(1 2))
+    _eq(3 _sum(2 1))
+    _eq(6 _multiply(2 3))
+    _eq(4 _sum(3 1))
+    _eq(24 _multiply(6 4))
+  )
+)

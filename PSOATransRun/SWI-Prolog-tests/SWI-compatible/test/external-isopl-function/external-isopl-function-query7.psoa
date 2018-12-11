@@ -1,0 +1,1 @@
+And(?X1=External(isopl:truncate(20.64)) ?X2=External(isopl:truncate(-15.40)) ?X3=External(isopl:round(19.4)) ?X4=External(isopl:round(-0.10)))

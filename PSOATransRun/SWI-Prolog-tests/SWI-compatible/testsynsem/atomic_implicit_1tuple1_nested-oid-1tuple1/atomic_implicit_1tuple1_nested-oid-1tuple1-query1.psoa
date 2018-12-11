@@ -1,0 +1,4 @@
+p(?#q(a))
+% ((prdtupterm(Q1,'_q','_a'),memterm(Q1,'_q')),'_p'(Q1)).
+% Correctness Criterion: Query for ground atom with implicit tuple having arity 1 containing 
+%  one nested oidful (don't care variable) atom with one argument against KB containing only a matching ground atom answers "Yes".

@@ -1,0 +1,5 @@
+p(?x ?y ?x)
+% '_p'(Qx,Qy,Qx).
+% Correctness Criterion: Query for non-ground atom with implicit single tuple of 
+%    all variable arguments where one variable appears twice
+%    against KB containing a similar ground atom with distinct arguments answers with "No".

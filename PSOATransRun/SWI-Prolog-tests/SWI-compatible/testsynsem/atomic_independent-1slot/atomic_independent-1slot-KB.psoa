@@ -1,0 +1,11 @@
+RuleML(
+  Assert(
+    % atomic-formula expressivity
+    % single slot
+    %   independent slot
+    %     constant name
+    %     constant filler
+    p(m->v)
+    % sloterm('_1','_m','_v').
+    % memterm('_1','_p').
+) )

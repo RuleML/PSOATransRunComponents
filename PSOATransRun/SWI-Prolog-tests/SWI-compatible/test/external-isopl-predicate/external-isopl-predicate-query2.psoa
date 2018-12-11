@@ -1,0 +1,1 @@
+And(External(isopl:eq(10 10)) External(isopl:eq(-42 -42)) External(isopl:eq(42.50 42.50)) External(isopl:eq(-64.8 -64.8)) External(isopl:eq(2.0 2)))

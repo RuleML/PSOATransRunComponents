@@ -1,0 +1,14 @@
+Document(
+  Group (
+    _a2#_betweenObjRel(_canada _usa _mexico _dim->2 _orient->_northSouth)
+    _a3#_betweenObjRel(_pacific _usa _atlantic _dim->2 _orient->_westEast)
+    
+    Forall ?Out1 ?Out2 ?Out3 ?Out4 ?In ?O1 ?O2 (
+        Exists ?O (
+          ?O#_compassRose(?In _west->?Out3 _north->?Out1 _east->?Out4 _south->?Out2)
+        ) :-
+        And(?O1#_betweenObjRel(?Out1 ?In ?Out2 _orient->_northSouth)
+            ?O2#_betweenObjRel(?Out3 ?In ?Out4 _orient->_westEast))
+    )
+  )
+)

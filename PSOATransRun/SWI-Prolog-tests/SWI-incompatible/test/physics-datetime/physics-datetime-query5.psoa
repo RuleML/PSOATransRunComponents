@@ -1,0 +1,1 @@
+Or(:currentTime(:time(?)) :currentTime(:time(? ?)) :currentTime(:time(? ? ? ?)))

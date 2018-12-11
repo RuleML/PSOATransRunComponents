@@ -1,0 +1,12 @@
+Document(
+  Group(
+    _Adam#_Person(_father->_John)
+    _Jack#_Person(_father->_John)
+    _Tom#_Person(_father->_John)
+
+    Forall ?Ch ?M
+    (
+       ?M#_Male(_child->?Ch) :- ?Ch#_Person(_father->?M)
+    )
+  )
+)

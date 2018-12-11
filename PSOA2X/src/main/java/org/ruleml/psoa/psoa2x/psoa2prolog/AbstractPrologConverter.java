@@ -19,7 +19,7 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 	{
 		// Taken from W3C RIF-DTB library
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-equal", "\'=:=\'");
-		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-not-equal", "\'=\\=\'");
+		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-not-equal", "\'=\\\\=\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than", "\'>\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than-or-equal", "\'>=\'");
 		s_builtInMap.put("http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than", "\'<\'");
@@ -63,7 +63,7 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		s_builtInMap.put("https://www.iso.org/standard/21413.html#float", "float");  // Test if shortcut or xs:double float number (represented as double) [Currently redundant because of above same-named coerce]
 		s_builtInMap.put("https://www.iso.org/standard/21413.html#number", "number");  // Test if number
 		s_builtInMap.put("https://www.iso.org/standard/21413.html#eq", "\'=:=\'");                // XSB's special character tokens ...
-		s_builtInMap.put("https://www.iso.org/standard/21413.html#not_eq", "\'=\\=\'");           //
+		s_builtInMap.put("https://www.iso.org/standard/21413.html#not_eq", "\'=\\\\=\'");           //
 		s_builtInMap.put("https://www.iso.org/standard/21413.html#greater_than", "\'>\'");        //
 		s_builtInMap.put("https://www.iso.org/standard/21413.html#greater_than_or_eq", "\'>=\'"); //
 		s_builtInMap.put("https://www.iso.org/standard/21413.html#less_than", "\'<\'");           //

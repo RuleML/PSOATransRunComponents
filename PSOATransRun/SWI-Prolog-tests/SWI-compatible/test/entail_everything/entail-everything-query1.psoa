@@ -1,0 +1,5 @@
+And(
+  ex:A(2)
+  ex:A("any string")
+  ex:A(<http://some.example.org>)
+)

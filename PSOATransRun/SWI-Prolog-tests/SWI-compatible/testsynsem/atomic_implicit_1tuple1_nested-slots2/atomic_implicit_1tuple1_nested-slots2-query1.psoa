@@ -1,0 +1,4 @@
+p(?#q(a->b))
+% ((sloterm(Q1,'_a','_b'),memterm(Q1,'_q')),'_p'(Q1)).
+% Correctness Criterion: Query for ground atom with implicit single tuple of 
+%  one nested atom with slot against KB containing only that ground atom answers "Yes".

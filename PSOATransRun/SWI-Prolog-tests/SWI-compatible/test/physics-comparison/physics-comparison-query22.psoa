@@ -1,0 +1,3 @@
+And(:lessThanDatetime(:datetime(2017 5 30 13 20 5) :datetime(2017 5 30 14 20 5))
+    :lessThanDatetime(:datetime(2016 5 30 14 20 5) :datetime(2017 5 30 14 20 5))
+    :lessThanDatetime(:datetime(2016 5 30 13 20 5) :datetime(2017 5 30 14 20 5)))

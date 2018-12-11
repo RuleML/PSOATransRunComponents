@@ -1,0 +1,8 @@
+RuleML (
+  Prefix (: <http://psoa.ruleml.org/exa/psoa-abridged-constants#>)
+  
+  Assert (
+	o#c(+[:a1 a2] -[b1 b2] :p1+>v1 p2->:v2) :- o#c(+[:a1 a2] p2->:v2)
+	o#c(+[:a1 a2] p2->:v2)
+  )
+)

@@ -1,0 +1,5 @@
+p(-[?x ?y ?x])
+% (tupterm(Q1,Qx,Qy,Qx),memterm(Q1,'_p')).
+% Correctness Criterion: Query for non-ground atom with independent single tuple of 
+%    all variable arguments where one variable appears twice
+%    against KB containing a similar ground atom with distinct arguments answers with "No".

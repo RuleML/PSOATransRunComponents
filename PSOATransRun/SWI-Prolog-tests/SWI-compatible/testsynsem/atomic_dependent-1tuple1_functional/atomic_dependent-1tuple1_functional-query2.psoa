@@ -1,0 +1,4 @@
+p(+[?x])
+% '_p'(Qx).
+% Correctness Criterion: Query for non-ground atom with one tuple of arity one
+%    against KB containing a matching nested ground atom answers with appropriate binding.

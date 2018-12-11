@@ -1,0 +1,12 @@
+Document(
+  Group(
+    Forall ?X ( ?X#_block(_color->_blue _size->_big) )
+    _b1#_book
+    _b2#_book(_title->"Java Programming")
+    _o#_albmergeObj( _artist->"Elton John" _tivorite->"Goodbye Yellow Brick Road" )
+    Forall ?OID ?Tivorite
+    (
+      ?OID#_albsplitObj(_title->?Tivorite _favorite->?Tivorite) :- ?OID#_albmergeObj(_tivorite->?Tivorite)
+    )
+  )
+)

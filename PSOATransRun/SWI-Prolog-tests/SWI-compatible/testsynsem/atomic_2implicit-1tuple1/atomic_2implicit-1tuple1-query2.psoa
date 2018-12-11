@@ -1,0 +1,3 @@
+p(b)
+% '_p'('_b')
+% Correctness Criterion: query for the second of two implicit atoms in a KB answers Yes.

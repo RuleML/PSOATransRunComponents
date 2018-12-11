@@ -1,0 +1,8 @@
+Document(
+  Group(
+    Forall ?x ?y (
+      _g(?y ?x) :- _f(?x ?y)
+    )
+    _f(_a _b)
+  )
+)

@@ -90,18 +90,24 @@ public class PSOATransRun {
 	 * 
 	 * @param lang   language name
 	 * */
-	public static String getSystemName(String lang)
+	public static String getSystemName(String lang, String prologBackend)
 	{
 		String systemInstantiation = new String();
-		if (lang == null || lang.equalsIgnoreCase("prolog")) 
+		if ((lang == null || lang.equalsIgnoreCase("prolog")) && 
+				(prologBackend == null || prologBackend.equalsIgnoreCase("xsb"))) 
 		{
 			systemInstantiation = "[PSOA2Prolog,XSBProlog]";
+		}
+		else if ((lang == null || lang.equalsIgnoreCase("prolog")) && 
+				prologBackend.equalsIgnoreCase("swi"))
+		{
+			systemInstantiation = "[PSOA2Prolog,SWIProlog]";
 		}
 		else if (lang.equalsIgnoreCase("tptp")) 
 		{
 			systemInstantiation = "[PSOA2TPTP,VampirePrime]";
 		}
-		return "PSOATransRun" + "1.3.2" + systemInstantiation;
+		return "PSOATransRun" + "1.4" + systemInstantiation;
 	}
 	
 	/***

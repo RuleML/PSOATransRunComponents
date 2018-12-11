@@ -1,0 +1,4 @@
+And(
+  ?x1 = External(func:numeric-divide(126 3))
+  ?x2 = External(func:numeric-divide(127 4))
+)
