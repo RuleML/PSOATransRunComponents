@@ -60,9 +60,11 @@ Import Project into Eclipse using Eclipse's Built-in Git Plugin EGit (see https:
     * In the psoa-ruleml repo
         * Duplicate (as sibling) the most recent subdirectory of the directory /transrun in the psoa-ruleml repository, e.g. 1.3.1, and rename it, e.g. to 1.3.2-a
         * Delete the jar file in this new directory
+        * Commit the two files README.txt and README.html (do not commit .project) and push to Github
+           * Use the commit message: prepare next release directory with current README for diffing
         * Copy the jar PSOATransRunLocal.jar from the PSOATransRun/target directory in the PSOATransRunComponents repository to the psoa-ruleml repository
         * Modify the README.txt
-        * Commit the three files .jar, README.txt, and README.html (do not commit .project) and push to Github
+        * Commit the two files PSOATransRunLocal.jar and README.txt (do not commit .project) and push to Github
 * On the RuleML Server
     * The cron job running on the RuleML webhost automatically updates from the psoa-ruleml Github repository to http://psoa.ruleml.org/transrun . Verify that the new directory has been uploaded and the README.html (redirect) is functioning properly
 * On the RuleML Wiki
