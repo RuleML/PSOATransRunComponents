@@ -1,0 +1,1 @@
+And(External(isopl:generic_not_eq(bob -42)) External(isopl:generic_not_eq(bob alice)) External(isopl:generic_not_eq(alice -1.0)) External(isopl:generic_not_eq(bo bob)))

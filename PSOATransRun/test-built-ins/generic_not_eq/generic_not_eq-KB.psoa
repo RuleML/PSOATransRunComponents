@@ -1,0 +1,17 @@
+RuleML (
+  Prefix(isopl: <https://www.iso.org/standard/21413.html#>)
+
+  Assert (
+    
+    Forall ?X ?Y (
+      MarriedTo(?X ?Y) :-
+        And(
+          Person(?X)
+          Person(?Y)
+          External(isopl:generic_not_eq(?X ?Y))
+      )  
+    )
+    Person(Bob)
+    Person(Alice)
+  ) 
+)

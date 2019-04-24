@@ -1,0 +1,2 @@
+% Queries subsumed by generic_not_eq
+And(External(isopl:not_eq(10 -10)) External(isopl:not_eq(42 43)) External(isopl:not_eq(42.50 40)) External(isopl:not_eq(64.8 -64.8)) External(isopl:not_eq(40.50 40.70)))
