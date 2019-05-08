@@ -1,0 +1,70 @@
+RuleML (
+  Prefix(func: <http://www.w3.org/2007/rif-builtin-function#>)
+  Prefix(isopl: <https://www.iso.org/standard/21413.html#>)
+  Prefix(pred: <http://www.w3.org/2007/rif-builtin-predicate#>)
+
+  Assert (
+        
+    Forall ?X (                % External wrappers on all levels
+      o1#p1(v1+>?X) :-
+        And(
+          ?Y = 62
+          ?Z = 10
+          ?X = External(func:numeric-add(   
+                                        External(isopl:sub(
+                                                            ?Y
+                                                            External(isopl:truncate(10.17))
+                                                          )
+                                                )
+                                        External(isopl:sub(
+                                                            ?Z
+                                                            External(isopl:mul(4 5))
+                                                          )
+                                                )
+                                        )   
+                        )
+            )
+    )
+    
+    Forall ?X (                % External wrapper only on the top-level
+      o2#p2(v2+>?X) :-
+        And(
+          ?Y = 62
+          ?Z = 10
+          ?X = External(func:numeric-add(   
+                                        isopl:sub(
+                                                 ?Y
+                                                 isopl:truncate(10.17)
+                                                 )
+
+                                        isopl:sub(
+                                                 ?Z
+                                                 isopl:mul(4 5)
+                                                 )
+                                        )   
+                        )
+            )
+    )
+
+    Forall ?X (                % External wrappers on the top-level and partially on inner levels
+      o3#p3(v3+>?X) :-
+        And(
+          ?Y = 62
+          ?Z = 10
+          ?X = External(func:numeric-add(   
+                                        isopl:sub(
+                                                 ?Y
+                                                 External(isopl:truncate(10.17))
+                                                 )
+
+                                        isopl:sub(
+                                                 ?Z
+                                                 isopl:mul(4 5)
+                                                 )
+                                        )   
+                        )
+            )
+    )
+    
+  )
+)

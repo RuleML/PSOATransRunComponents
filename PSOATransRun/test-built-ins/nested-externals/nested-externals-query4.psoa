@@ -1,0 +1,2 @@
+% ?X will yield 42, add 10, compare it with 52.0 (External wrappers on the top-level and partially on inner levels)
+And ( o3#p3(v3+>?X) External(pred:numeric-equal( func:numeric-add(?X 10) External(isopl:add(42 10))  )))
