@@ -1,2 +1,2 @@
 % add 2.0 to X and subtract Y (External wrappers on the top-level and partially on inner levels)
-And (?X=1.5 ?Y=2 ?Z=External( isopl:sub( func:numeric-add(?X 2.0)  ?Y)) )
+And (?X=1.5 ?Y=2 ?Z=External( isopl:sub( func:numeric-add( 1 External(isopl:add(1 ?X)) ) ?Y )) )
