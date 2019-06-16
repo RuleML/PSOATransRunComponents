@@ -1,0 +1,1 @@
+And( bird(?X) not:Naf(can_fly(?X)) )
