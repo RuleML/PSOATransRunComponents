@@ -165,7 +165,7 @@ $(document).ready(function() {
 		});
 	});
 	$("#transQueryBtn").click(function() {
-		translate(null, encode(psoaQuery()), function(result) {
+		translate(encode(psoaKB()), encode(psoaQuery()), function(result) {
 			translatedQuery = result.query;
 			queryVariables = result.queryVars;
 			$("#transQuery").val(translatedQuery);
@@ -203,8 +203,9 @@ $(document).ready(function() {
 			<textarea id="PSOAKB" rows="20" cols="80"></textarea><br/><br/>
 			<div>
 			Target Language: 
-			<input type="radio" name="translatorTarget" value="prolog" /> Prolog
+			<input type="radio" name="translatorTarget" value="prolog" disabled/> Prolog
 			<input type="radio" name="translatorTarget" value="tptp" checked="checked" /> TPTP <br/>
+			<small><small><em>Target language "Prolog" not implemented for PSOATransRun WebService</em></small></small><br/>
 			</div>
 			<div style="visibility:hidden">
 			<input type="radio" name="translatorType" value="Direct" /> Direct Translator

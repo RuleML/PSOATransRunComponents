@@ -1,0 +1,8 @@
+---
+applications:
+ - name: psoademo
+   random-route: true
+   path: target/PSOATransRunWebService.war
+   memory: 256M
+   instances: 1
+   buildpack: liberty-for-java

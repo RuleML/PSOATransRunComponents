@@ -3,7 +3,9 @@ package org.ruleml.psoa.psoatransrun.restful.resources;
 import static org.ruleml.psoa.psoatransrun.utils.Collections.set;
 
 import java.util.Set;
+import javax.ws.rs.ApplicationPath;
 
+@ApplicationPath("/ws/*")
 public class Application extends javax.ws.rs.core.Application {
 	private Set<Object> singletons = set();
 	private Set<Class<?>> empty = set();
