@@ -8,27 +8,59 @@
 <script type="text/javascript" src="js/jquery-ui-1.8.20.custom.min.js"></script>
 <script type="text/javascript">
 
-const SamplePSOAKB=
-"Document(\n" +
-"    Group (\n" +
-"        Forall ?Hu ?Ch ?o (\n" +
-"            ?o#_family(_child->?Ch) :-\n" +
-"                And(?o#_family(_husb->?Hu)\n" +
-"                      _kid(?Hu ?Ch))\n" +
-"        )\n" +
-"        Forall ?Wi ?Ch ?o (\n" +
-"            ?o#_family(_child->?Ch) :-\n" +
-"                And(?o#_family(_wife->?Wi)\n" +
-"                      _kid(?Wi ?Ch))\n" +
-"        )\n\n" +
+// const SamplePSOAKB=
+// "RuleML (\n" +
+// "    Assert (\n" +
+// "        Forall ?Hu ?Ch ?o (\n" +
+// "            ?o#_family(_child->?Ch) :-\n" +
+// "                And(?o#_family(_husb->?Hu)\n" +
+// "                      _kid(?Hu ?Ch))\n" +
+// "        )\n" +
+// "        Forall ?Wi ?Ch ?o (\n" +
+// "            ?o#_family(_child->?Ch) :-\n" +
+// "                And(?o#_family(_wife->?Wi)\n" +
+// "                      _kid(?Wi ?Ch))\n" +
+// "        )\n\n" +
 
-"        _f1#_family(_husb->_Joe _wife->_Sue)\n" +
-"        _kid(_Sue _Pete)\n" +
-"        _f2#_family(_wife->_Dee)\n" +
-"        _kid(_Dee _Clare)\n" +
+// "        _f1#_family(_husb->_Joe _wife->_Sue)\n" +
+// "        _kid(_Sue _Pete)\n" +
+// "        _f2#_family(_wife->_Dee)\n" +
+// "        _kid(_Dee _Clare)\n" +
+// "    )\n" +
+// ")";
+const SamplePSOAKB=
+"RuleML (\n" +
+"  Assert (\n" +
+"                                % Taxonomy\n" +
+"    Teacher##Scholar\n" +
+"    Student##Scholar\n" +
+"    TA##Teacher\n" +
+"    TA##Student\n" +
+"                                % Data (modify to coursehours+>0 for one or both)\n" +
+"    John#Teacher(+[Wed Thu]\n" +
+"                 coursehours+>20 dept+>Physics salary+>29400\n" +
+"                                               income->29400)\n" +
+"    John#Student(+[Mon Tue Fri] -[1995 8 17]\n" +
+"                 coursehours+>20 dept+>Math gender->male)\n" +
+"\n" +
+"                                % Rules (derive all three workmixes for some Data)\n" +
+"    Forall ?o (\n" +
+"      ?o#TA(workmix+>nonteaching) :-\n" +
+"        ?o#Teacher(coursehours+>0)\n" +
 "    )\n" +
-")";
-const SamplePSOAQuery="?f#_family(_husb->_Joe _wife->?Wi _child->?Ch)";
+"    Forall ?o (\n" +
+"      ?o#TA(workmix+>nonstudying) :-\n" +
+"        ?o#Student(coursehours+>0)\n" +
+"    )\n" +
+"    Forall ?o ?hx (\n" +
+"      ?o#TA(workmix+>equalized) :-         % Same coursehours\n" +
+"        And(?o#Teacher(coursehours+>?hx)   % as  Teacher\n" +
+"            ?o#Student(coursehours+>?hx))  % and Student\n" +
+"    )\n" +
+"  )\n" +
+")" ;
+//const SamplePSOAQuery="?f#_family(_husb->_Joe _wife->?Wi _child->?Ch)";
+const SamplePSOAQuery="And(?oid#?pred(coursehours+>?hours) ?oid#TA(workmix+>?kind))";
 //const App = "psoa2tptp-trans";
 const Translate = "translate";
 const Slash = "/";
@@ -217,6 +249,7 @@ $(document).ready(function() {
 		</div>
 		<div id="tab-2">
 			<h3>Translated KB</h3>
+			<small><small><em>Constants surrounded by '_...'. Variables prefixed with Q.</em></small></small><br/>
 			<textarea id="transKB" rows="18" cols="80"></textarea>
 			<h3>Query</h3>
 	        <textarea id="PSOAQuery" rows="1" cols="80"></textarea><br/><br/>
@@ -228,10 +261,14 @@ $(document).ready(function() {
 		</div>
 		<div id="tab-3">
 			<h3>Execution Result</h3>
-			<h5>Note: If a query is successful, all of its proofs will be shown, 
+			<!-- <h5>Note: If a query is successful, all of its proofs will be shown, 
 				with one answer-variable <br>
 				substitution at the bottom of each proof.
-				If a query fails, "proof not found" will be printed.</h5>
+				If a query fails, "proof not found" will be printed.</h5> -->
+			<small><small><em>If a non-ground query is successful, all of its results will be shown, 
+			with one answer-variable <br>
+			substitution line for each result.
+			If a query fails, "No" will be printed.</em></small></small><br/>
 			<!-- textarea id="vpOutput" rows="20" cols="80" style="border: 0"> -->
 			<textarea id="vpOutput" rows="20" cols="80">
 			</textarea>
