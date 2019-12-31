@@ -29,38 +29,42 @@
 // "    )\n" +
 // ")";
 const SamplePSOAKB=
-"RuleML (\n" +
-"  Assert (\n" +
-"                                % Taxonomy\n" +
-"    Teacher##Scholar\n" +
-"    Student##Scholar\n" +
-"    TA##Teacher\n" +
-"    TA##Student\n" +
-"                                % Data (modify to coursehours+>0 for one or both)\n" +
-"    John#Teacher(+[Wed Thu]\n" +
-"                 coursehours+>20 dept+>Physics salary+>29400\n" +
-"                                               income->29400)\n" +
-"    John#Student(+[Mon Tue Fri] -[1995 8 17]\n" +
-"                 coursehours+>20 dept+>Math gender->male)\n" +
-"\n" +
-"                                % Rules (derive all three workmixes for some Data)\n" +
-"    Forall ?o (\n" +
-"      ?o#TA(workmix+>nonteaching) :-\n" +
-"        ?o#Teacher(coursehours+>0)\n" +
-"    )\n" +
-"    Forall ?o (\n" +
-"      ?o#TA(workmix+>nonstudying) :-\n" +
-"        ?o#Student(coursehours+>0)\n" +
-"    )\n" +
-"    Forall ?o ?hx (\n" +
-"      ?o#TA(workmix+>equalized) :-         % Same coursehours\n" +
-"        And(?o#Teacher(coursehours+>?hx)   % as  Teacher\n" +
-"            ?o#Student(coursehours+>?hx))  % and Student\n" +
-"    )\n" +
-"  )\n" +
-")" ;
+	"RuleML (\n" +
+	"  Assert (\n" +
+	"                              % Taxonomy\n" +
+	"    Teacher##Scholar\n" +
+	"    Student##Scholar\n" +
+	"    TA##Teacher\n" +
+	"    TA##Student\n" +
+	"                              % Data (modify to coursehours+>0 for one or both)\n" +
+	"    John#Teacher(+[Wed Thu]\n" +
+	"                 coursehours+>20 dept+>Physics salary+>29400\n" +
+	"                                               income->29400)\n" +
+	"    John#Student(+[Mon Tue Fri] -[1995 8 17]\n" +
+	"                 coursehours+>20 dept+>Math gender->male)\n" +
+	"\n" +
+	"                              % Rules (derive all three workmixes for some Data)\n" +
+	"    Forall ?o (\n" +
+	"      ?o#TA(workmix+>teachbreak) :-\n" +
+	"        ?o#Teacher(coursehours+>0)\n" +
+	"    )\n" +
+	"    Forall ?o (\n" +
+	"      ?o#TA(workmix+>studybreak) :-\n" +
+	"        ?o#Student(coursehours+>0)\n" +
+	"    )\n" +
+	"    Forall ?o ?hx (\n" +
+	"      ?o#TA(workmix+>equalized) :-         % Same coursehours\n" +
+	"        And(?o#Teacher(coursehours+>?hx)   % as  Teacher\n" +
+	"            ?o#Student(coursehours+>?hx))  % and Student\n" +
+	"    )\n" +
+	"  )\n" +
+	")" ;
 //const SamplePSOAQuery="?f#_family(_husb->_Joe _wife->?Wi _child->?Ch)";
-const SamplePSOAQuery="And(?oid#?pred(coursehours+>?hours) ?oid#TA(workmix+>?kind))";
+const SamplePSOAQuery=
+"% An atom having retrievable coursehours slot dependent on ?pred variable\n" +
+"% is ?oid-coreferencing a conjoined\n" +
+"% atom having derivable workmix slot dependent on predicate constant TA\n" +
+"And(?oid#?pred(coursehours+>?hours) ?oid#TA(workmix+>?kind))" ;
 //const App = "psoa2tptp-trans";
 const Translate = "translate";
 const Slash = "/";
@@ -224,11 +228,15 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<h1>PSOATransRun</h1>
+	<h1>PSOATransRun Web-based Service</h1>
+	<small>Online access to built-in-free <b>PSOA</b> RuleML: Interactively create/change 
+	Knowledge Bases (KBs) and Queries,<br> <b>Trans</b>lating them from Source 
+	(PSOA Presentation Syntax) to Target (TPTP) form for execution in 
+	<b>Run</b>time system.</small>
 	<div id="tabs">
 		<ul>
-			<li><a href="#tab-1">PSOA KB</a></li>
-			<li><a href="#tab-2">Translation Result</a></li>
+			<li><a href="#tab-1">KB Source</a></li>
+			<li><a href="#tab-2">KB Target + Query</a></li>
 			<li><a href="#tab-3">Execution Result</a></li>
 		</ul>
 		<div id="tab-1">
@@ -237,25 +245,25 @@ $(document).ready(function() {
 			Target Language: 
 			<input type="radio" name="translatorTarget" value="prolog" disabled/> Prolog
 			<input type="radio" name="translatorTarget" value="tptp" checked="checked" /> TPTP <br/>
-			<small><small><em>Target language "Prolog" not implemented for PSOATransRun WebService</em></small></small><br/>
+			<small><small><em>Target language "Prolog" not yet provided for PSOATransRun Web-based Service</em></small></small><br/>
 			</div>
 			<div style="visibility:hidden">
 			<input type="radio" name="translatorType" value="Direct" /> Direct Translator
 			<input type="radio" name="translatorType" value="TPTPASO" checked="checked" /> TPTP-ASO-based Translator<br/>
 			</div>
-			<input id="transKBBtn" type="button" value="Translate Rulebase" /> 
-			<input id="showSampleKBBtn" type="button" value="Sample Rulebase" /> 
+			<input id="transKBBtn" type="button" value="Translate KB" /> 
+			<input id="showSampleKBBtn" type="button" value="Sample KB" /> 
 			<input id="resetKBBtn" type="button" value="Reset" />
 		</div>
 		<div id="tab-2">
-			<h3>Translated KB</h3>
-			<small><small><em>Constants surrounded by '_...'. Variables prefixed with Q.</em></small></small><br/>
+			<h3>KB Target</h3>
+			<small><small><em>Constants "..." and "_..." become "'_...'". Variables "?..." become "Q...".</em></small></small><br/>
 			<textarea id="transKB" rows="18" cols="80"></textarea>
-			<h3>Query</h3>
-	        <textarea id="PSOAQuery" rows="1" cols="80"></textarea><br/><br/>
+			<h3>Query Source</h3>
+	        <textarea id="PSOAQuery" rows="4" cols="80"></textarea><br/><br/>
 	        <input id="transQueryBtn" type="button" value="Translate Query" />
 			<input id="showSampleQueryBtn" type="button" value="Sample Query" /><br/>
-	        <h3>Translated Query</h3>
+	        <h3>Query Target</h3>
 	        <textarea id="transQuery" rows="7" cols="80"></textarea><br/><br/>
 	        <input id="runQueryBtn" type="button" value="Execute" /><br/>
 		</div>
