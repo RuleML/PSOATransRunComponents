@@ -31,6 +31,10 @@ public abstract class TranslatorConfig {
 		m_transConfig.omitMemtermInNegativeAtoms = omitMemtermInNegativeAtoms;
 	}
 	
+	public void setNoUniversalClosure(boolean noUniversalClosure) {
+	    m_transConfig.noUniversalClosure = noUniversalClosure;
+	}
+	
 	public void setReconstruct(boolean reconstruct) {
 		m_parserConfig.reconstruct = reconstruct;
 	}

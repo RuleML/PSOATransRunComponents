@@ -45,14 +45,16 @@ public class PSOATransRunCmdLine {
 				new LongOpt("undiff", LongOpt.NO_ARGUMENT, null, 'u'),
 				new LongOpt("verbose", LongOpt.NO_ARGUMENT, null, 'v'),
 				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z'),
-				new LongOpt("dense", LongOpt.NO_ARGUMENT, null, 'd')
+				new LongOpt("dense", LongOpt.NO_ARGUMENT, null, 'd'),
+				new LongOpt("noClosUni", LongOpt.NO_ARGUMENT, null, 'f'),
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?l:i:b:q:tn:epo:x:am:csuvzd", opts);
+		Getopt optionsParser = new Getopt("", args, "?l:i:b:q:tn:epo:x:am:csuvzdf", opts);
 
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
-				isTest = false, dense = false, verbose = false, reconstruct = true;
+				isTest = false, dense = false, verbose = false, reconstruct = true,
+				noClosUni = false;
 		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null,
 			   prologPath = null, prologBackend = null;
 		int timeout = -1, numRuns = 1;
@@ -130,6 +132,8 @@ public class PSOATransRunCmdLine {
 			case 'z':
 				omitNegMem = true;
 				break;
+			case 'f':
+				noClosUni = true;
 			default:
 				assert false;
 			}
@@ -154,6 +158,7 @@ public class PSOATransRunCmdLine {
 				PrologTranslator.Config transConfig = new PrologTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
 				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
+				transConfig.setNoUniversalClosure(noClosUni);
 				transConfig.setDifferentiateObj(differentiated);
 				transConfig.setReconstruct(reconstruct);
 				translator = new PrologTranslator(transConfig);
