@@ -280,7 +280,7 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 	
 	public PSOAKB checkQuantification(boolean noUniversalClosure)
 	{
-		return transform("validation", stream -> {
+		return transform("schemalessChecking", stream -> {
 			SchemalessChecker checker = new SchemalessChecker(stream);
 			checker.setNoUniversalClosure(noUniversalClosure);
 			return checker.document();

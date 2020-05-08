@@ -46,7 +46,7 @@ public class PSOATransRunCmdLine {
 				new LongOpt("verbose", LongOpt.NO_ARGUMENT, null, 'v'),
 				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z'),
 				new LongOpt("dense", LongOpt.NO_ARGUMENT, null, 'd'),
-				new LongOpt("noClosUni", LongOpt.NO_ARGUMENT, null, 'f'),
+				new LongOpt("fAllWrap", LongOpt.NO_ARGUMENT, null, 'f'),
 		};
 
 		Getopt optionsParser = new Getopt("", args, "?l:i:b:q:tn:epo:x:am:csuvzdf", opts);
@@ -54,7 +54,7 @@ public class PSOATransRunCmdLine {
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
 				isTest = false, dense = false, verbose = false, reconstruct = true,
-				noClosUni = false;
+				fAllWrap = false;
 		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null,
 			   prologPath = null, prologBackend = null;
 		int timeout = -1, numRuns = 1;
@@ -133,7 +133,7 @@ public class PSOATransRunCmdLine {
 				omitNegMem = true;
 				break;
 			case 'f':
-				noClosUni = true;
+				fAllWrap = true;
 			default:
 				assert false;
 			}
@@ -158,7 +158,7 @@ public class PSOATransRunCmdLine {
 				PrologTranslator.Config transConfig = new PrologTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
 				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
-				transConfig.setNoUniversalClosure(noClosUni);
+				transConfig.setNoUniversalClosure(fAllWrap);
 				transConfig.setDifferentiateObj(differentiated);
 				transConfig.setReconstruct(reconstruct);
 				translator = new PrologTranslator(transConfig);
@@ -177,6 +177,7 @@ public class PSOATransRunCmdLine {
 				PrologTranslator.Config transConfig = new PrologTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
 				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
+				transConfig.setNoUniversalClosure(fAllWrap);
 				transConfig.setDifferentiateObj(differentiated);
 				transConfig.setReconstruct(reconstruct);
 				translator = new PrologTranslator(transConfig);
@@ -194,6 +195,7 @@ public class PSOATransRunCmdLine {
 				TPTPTranslator.Config transConfig = new TPTPTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
 				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
+				transConfig.setNoUniversalClosure(fAllWrap);
 				transConfig.setDifferentiateObj(differentiated);
 				transConfig.setReconstruct(reconstruct);
 				translator = new TPTPTranslator(transConfig);
@@ -398,6 +400,7 @@ public class PSOATransRunCmdLine {
 		println("  -u,--undiff       Perform undifferentiated objectification");
 		println("  -s,--staticOnly   Perform static objectification only");
 		println("  -d,--denseErrorMsgs  Display dense error messages");
+		println("  -f,--fAllWrap     Throw an exception upon discovery of unquantified free variables");
 		
 		if (isLong)
 		{
