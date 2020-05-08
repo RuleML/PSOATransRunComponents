@@ -54,7 +54,14 @@ options
 }
 
 document
-    :   ^(DOCUMENT base? prefix* importDecl* group?)
+    :   ^(DOCUMENT 
+    {
+        if ($DOCUMENT.text.equals("Document")) 
+        {
+           printErrln("Warning: \"Document\" is deprecated. Use \"RuleML\" instead.");
+        }
+    }
+    base? prefix* importDecl* group?)
     ;
 
 base
@@ -70,7 +77,14 @@ importDecl
     ;
 
 group
-    :   ^(GROUP group_element*)
+    :   ^(GROUP 
+    {
+        if ($GROUP.text.equals("Group"))
+        {
+           printErrln("Warning: \"Group\" is deprecated. Use \"Assert\" instead.");
+        }
+    }
+    group_element*)
     ;
 
 group_element
