@@ -1,7 +1,7 @@
 /**
- * This grammar file is used to perform schemaless checking. If the --noUniClos option was specified
+ * This grammar file is used to perform schemaless checking. If the --fAllWrap option was specified
  * at the command line, an exception is thrown if any unquantified variables are found within the enclosing clause. 
- * If --noUniClos was not specified, a warning is printed to standard error instead.
+ * If --fAllWrap was not specified, a warning is printed to standard error instead.
  * 
  **/
 
@@ -108,23 +108,24 @@ rule
 {
 	if (!m_freeVars.isEmpty()) {
 	   if (m_noUniversalClosure) {
-	      throw new PSOARuntimeException("Variables not explicitly quantified: " + m_freeVars + " in: " + $rule.text);
-	   } else {
-	      printErrln("Warning: Variables not explicitly quantified: " + m_freeVars + " in: " + $rule.text);
+	      throw new PSOARuntimeException("Variables not explicitly quantified: " + String.join(", ", m_freeVars) + " in the rule: \n" + $rule.text);
+	   } 
+	   else {
+	      printErrln("Warning: Variables not explicitly quantified: " + String.join(", ", m_freeVars) + " in the rule: \n" + $rule.text);
 	   }
 	}
 }
     :  ^(FORALL { m_hasForall = true; } (VAR_ID { m_quantifiedVars.add($VAR_ID.text); })+ clause)
     |   clause
+    {
+        if (!m_hasForall && !m_freeVars.isEmpty()) {
+            printErrln("Warning: \"Forall\" wrapper is missing from the rule: \n" + $clause.text);
+        }
+    }
     ;
 
 clause
     :   ^(IMPLICATION head { m_isRuleBody = true; } formula { m_isRuleBody = false; })
-    {
-        if (!m_hasForall && !m_freeVars.isEmpty()) {
-            printErrln("Warning: \"Forall\" wrapper is missing from the conclusion: " + $head.text);
-        }
-    }
     |   head
     ;
     
