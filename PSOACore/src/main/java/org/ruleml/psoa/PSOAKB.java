@@ -278,9 +278,9 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 		});
 	}
 	
-	public PSOAKB checkQuantification(boolean noUniversalClosure)
+	public PSOAKB schemalessChecking(boolean noUniversalClosure)
 	{
-		return transform("schemalessChecking", stream -> {
+		return transform("schemaless checking", stream -> {
 			SchemalessChecker checker = new SchemalessChecker(stream);
 			checker.setNoUniversalClosure(noUniversalClosure);
 			return checker.document();
@@ -342,8 +342,8 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 	 * */
 	@Override
 	public PSOAKB FOLnormalize(RelationalTransformerConfig config) {
-		return unnest().
-			   checkQuantification(config.noUniversalClosure).
+		return schemalessChecking(config.noUniversalClosure).
+			   unnest().
 			   rewriteSubclass().
 			   objectify(config.differentiateObj, config.dynamicObj).
 			   describute(config.omitMemtermInNegativeAtoms);

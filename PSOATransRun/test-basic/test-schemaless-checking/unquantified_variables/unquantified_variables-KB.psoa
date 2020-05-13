@@ -57,10 +57,25 @@ RuleML (
         And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
             Exists ?obj3 (?obj3#kid(?Hu ?Ch)) )
     )
+    Forall ?o1 ?x (
+       Exists ?o2 (?o1#p(?o2#q(?x))) :- 
+        ?o1=?x % No warning/exception.
+    )
+    Forall ?o1 ?x (
+       Exists ?o2 (?o1#p(?o2#q(?x)) :- 
+        ?o1=?o2 % Unquantified variable: ?o2.
+    )
+    Forall ?o2 (
+       Exists ?o1 (?o1#p(?o2#q(?x))) :-
+        ?o2=?x % Unquantified variable: ?x.
+    )
+    Exists ?o2 (?o1#p(?o2#q(?x))) :- 
+        ?o1=?x % Unquantified variables: ?o1, ?x. Warning about lack of Forall.
     _1#married(Joe Sue)
     _2#kid(Sue Pete)
     _3#kid(Joe Pete)
     child(?x) :- kid(?p ?x) % Unquantified variables ?p, ?x, missing Forall.
+    child(Pete) :- kid(Sue Pete)
     my_concat(?x "" ?x) % Unquantified variable ?x, missing Forall.
   )
 )
