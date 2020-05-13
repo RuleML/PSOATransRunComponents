@@ -1,0 +1,66 @@
+RuleML (
+  Assert (
+    Forall ?Hu ?Wi ?Ch ( % No warnings/exceptions.
+      Exists ?obj1 (?obj1#family(husb->?Hu wife->?Wi child->?Ch)) :-
+        And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
+            Exists ?obj3 (?obj3#kid(?Hu ?Ch)) )
+    )
+
+    Exists ?obj1 (?obj1#family(husb->?Hu wife->?Wi child->?Ch)) :- % Warning about lack of Forall wrapper and about unquantified variables ?Hu, ?Wi, ?Ch.
+      And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
+          Exists ?obj3 (?obj3#kid(?Hu ?Ch)) )
+    
+    Forall ?Wi ?Ch (
+      Exists ?obj1 (?obj1#family(husb->?Hu wife->?Wi child->?Ch)) :- % Unquantified variable ?Hu.
+        And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
+            Exists ?obj3 (?obj3#kid(?Hu ?Ch)) )
+    )
+    Forall ?Hu ?Wi ?Ch (
+      Exists ?obj1 (?obj1#family(husb->?Hu wife->?Wi child->?Ch)) :-
+        And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
+            Exists ?obj3 (?obj3#kid(?Hu ?Ch)) 
+	    	?obj3#kid(?Hu ?Ch) % Unquantified variable: ?obj3.
+	    )
+    )
+    Forall ?Hu ?Wi ?Ch (
+      Exists ?obj1 (?obj1#family(husb->?Hu wife->?Wi child->?Ch)) :-
+        And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
+            Exists ?obj3 (?obj3#kid(?Hu ?Ch)) 
+	    ?obj1#kid(?Hu ?Ch) % ?obj1 is unquantified.
+	    )
+    )
+    Forall ?Hu ?Wi ?Ch (
+      Exists ?obj1 (?obj1#family(husb->?Hu wife->?Wi child->?Ch)) :-
+        And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
+            Exists ?obj3 (?obj3#kid(?Hu ?Ch)) 
+	    ?obj1#kid(?Hu ?Ch) % ?obj1 and ?obj3 are unquantified.
+	    ?obj3#kid(?Hu ?Ch) 
+	    )
+    )
+    Forall ?Hu ?Ch (
+      Exists ?obj1 (?obj1#family(husb->?Hu wife->?Wi child->?Ch)) :- % ?Wi is unquantified.
+        And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
+            Exists ?obj3 (?obj3#kid(?Hu ?Ch)) )
+    )
+    Forall ?Hu ?Wi ?Ch1 ( % Unquantified: ?Ch2.
+      Exists ?obj1 (?obj1#family(husb->?Hu wife->?Wi child->?Ch1 child->?Ch2)) :-
+        And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
+            Exists ?obj3 (?obj3#kid(?Hu ?Ch1)) )
+    )
+    Forall ?Hu ?Wi ?Ch1 (
+      Exists ?obj1 (?obj1#family(+[?Ch1 ?Ch2] husb->?Hu wife->?Wi)) :- % Unquantified variable: ?Ch2.
+        And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
+            Exists ?obj3 (?obj3#kid(?Hu ?Ch1)) )
+    )
+    Forall ?Hu ?Wi ?Ch ( % no warnings/exceptions.
+      ?obj1#family(husb->?Hu wife->?Wi child->?Ch) :- % Unquantified variable: ?obj1.
+        And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
+            Exists ?obj3 (?obj3#kid(?Hu ?Ch)) )
+    )
+    _1#married(Joe Sue)
+    _2#kid(Sue Pete)
+    _3#kid(Joe Pete)
+    child(?x) :- kid(?p ?x) % Unquantified variables ?p, ?x, missing Forall.
+    my_concat(?x "" ?x) % Unquantified variable ?x, missing Forall.
+  )
+)

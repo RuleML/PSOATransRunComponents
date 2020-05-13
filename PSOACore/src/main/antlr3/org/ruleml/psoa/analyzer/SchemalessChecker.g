@@ -108,10 +108,10 @@ rule
 {
 	if (!m_freeVars.isEmpty()) {
 	   if (m_noUniversalClosure) {
-	      throw new PSOARuntimeException("Variables not explicitly quantified: " + String.join(", ", m_freeVars) + " in the rule: \n" + $rule.text);
+	      throw new PSOARuntimeException("Variable(s) not explicitly quantified: ?" + String.join(", ?", m_freeVars) + " in the clause: \n" + $rule.text);
 	   } 
 	   else {
-	      printErrln("Warning: Variables not explicitly quantified: " + String.join(", ", m_freeVars) + " in the rule: \n" + $rule.text);
+	      printErrln("Warning: Variable(s) not explicitly quantified: ?" + String.join(", ?", m_freeVars) + " in the clause: \n" + $rule.text + "\n");
 	   }
 	}
 }
@@ -119,7 +119,7 @@ rule
     |   clause
     {
         if (!m_hasForall && !m_freeVars.isEmpty()) {
-            printErrln("Warning: \"Forall\" wrapper is missing from the rule: \n" + $clause.text);
+            printErrln("Warning: \"Forall\" wrapper is missing from the clause: \n" + $clause.text);
         }
     }
     ;

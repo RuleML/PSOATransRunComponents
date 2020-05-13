@@ -150,10 +150,9 @@ public class PSOATransRunCmdLine {
 		// Initialize PSOATransRun
 		Translator translator = null;
 		ExecutionEngine engine = null;
-				
+		
 		try {
-			if ((lang == null || lang.equalsIgnoreCase("prolog")) && 
-				(prologBackend == null || prologBackend.equalsIgnoreCase("xsb")))
+			if (lang == null || lang.equalsIgnoreCase("prolog"))
 			{
 				PrologTranslator.Config transConfig = new PrologTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
@@ -163,32 +162,30 @@ public class PSOATransRunCmdLine {
 				transConfig.setReconstruct(reconstruct);
 				translator = new PrologTranslator(transConfig);
 				
-				XSBEngine.Config engineConfig = new XSBEngine.Config();
-				engineConfig.transKBPath = transKBPath;
-				engineConfig.xsbFolderPath = prologPath;
-				engine = new XSBEngine(engineConfig);
+				if (prologBackend == null || prologBackend.equalsIgnoreCase("xsb"))
+				{
+					XSBEngine.Config engineConfig = new XSBEngine.Config();
+					engineConfig.transKBPath = transKBPath;
+					engineConfig.xsbFolderPath = prologPath;
+					engine = new XSBEngine(engineConfig);
 				
-				if (timeout > 0)
-					printErrln("Ignore -t option: only applicable for the target language TPTP");
-			}
-			else if ((lang == null || lang.equalsIgnoreCase("prolog")) && prologBackend.equalsIgnoreCase("swi"))
+					if (timeout > 0)
+						printErrln("Ignore -t option: only applicable for the target language TPTP");
+				}	
+				else if (prologBackend.equalsIgnoreCase("swi"))
+				{
+					SWIEngine.Config engineConfig = new SWIEngine.Config();
+					engineConfig.transKBPath = transKBPath;
+					engineConfig.swiFolderPath = prologPath;
+					engine = new SWIEngine(engineConfig);
 				
-			{
-				PrologTranslator.Config transConfig = new PrologTranslator.Config();
-				transConfig.setDynamicObj(dynamicObj);
-				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
-				transConfig.setNoUniversalClosure(fAllWrap);
-				transConfig.setDifferentiateObj(differentiated);
-				transConfig.setReconstruct(reconstruct);
-				translator = new PrologTranslator(transConfig);
-				
-				SWIEngine.Config engineConfig = new SWIEngine.Config();
-				engineConfig.transKBPath = transKBPath;
-				engineConfig.swiFolderPath = prologPath;
-				engine = new SWIEngine(engineConfig);
-				
-				if (timeout > 0)
-					printErrln("Ignore -t option: only applicable for the target language TPTP");
+					if (timeout > 0)
+						printErrln("Ignore -t option: only applicable for the target language TPTP");
+				} 
+				else
+				{
+					printErrlnAndExit("Unsupported Prolog backend: ", prologBackend);
+				}
 			}
 			else if (lang.equalsIgnoreCase("tptp"))
 			{
@@ -212,14 +209,7 @@ public class PSOATransRunCmdLine {
 			}
 			else
 			{
-				if (lang == null || lang.equalsIgnoreCase("prolog"))
-				{
-					printErrlnAndExit("Unsupported Prolog backend: ", prologBackend);
-				}
-				else
-				{
-					printErrlnAndExit("Unsupported language: ", lang);
-				}
+				printErrlnAndExit("Unsupported language: ", lang);
 			}
 		}
 		catch (PSOATransRunException e) {
