@@ -52,7 +52,7 @@ RuleML (
         And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
             Exists ?obj3 (?obj3#kid(?Hu ?Ch1)) )
     )
-    Forall ?Hu ?Wi ?Ch ( % no warnings/exceptions.
+    Forall ?Hu ?Wi ?Ch (
       ?obj1#family(husb->?Hu wife->?Wi child->?Ch) :- % Unquantified variable: ?obj1.
         And(Exists ?obj2 (?obj2#married(?Hu ?Wi))
             Exists ?obj3 (?obj3#kid(?Hu ?Ch)) )
