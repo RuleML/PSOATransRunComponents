@@ -189,7 +189,7 @@ subclass
     
 term
     :   constant
-    |   VAR_ID { if (!m_quantifiedVars.contains($VAR_ID.text)) m_freeVars.add($VAR_ID.text); }
+    |   VAR_ID { if (!$VAR_ID.text.isEmpty() && !m_quantifiedVars.contains($VAR_ID.text)) m_freeVars.add($VAR_ID.text); }
     |   psoa
     |   external
     ;
