@@ -62,7 +62,7 @@ RuleML (
         ?o1=?x % No warning/exception.
     )
     Forall ?o1 ?x (
-       Exists ?o2 (?o1#p(?o2#q(?x)) :- 
+       Exists ?o2 (?o1#p(?o2#q(?x))) :- 
         ?o1=?o2 % Unquantified variable: ?o2.
     )
     Forall ?o2 (
