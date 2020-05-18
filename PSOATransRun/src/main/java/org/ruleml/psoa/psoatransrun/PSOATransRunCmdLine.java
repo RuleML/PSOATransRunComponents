@@ -45,14 +45,16 @@ public class PSOATransRunCmdLine {
 				new LongOpt("undiff", LongOpt.NO_ARGUMENT, null, 'u'),
 				new LongOpt("verbose", LongOpt.NO_ARGUMENT, null, 'v'),
 				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z'),
-				new LongOpt("dense", LongOpt.NO_ARGUMENT, null, 'd')
+				new LongOpt("dense", LongOpt.NO_ARGUMENT, null, 'd'),
+				new LongOpt("fAllWrap", LongOpt.NO_ARGUMENT, null, 'f'),
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?l:i:b:q:tn:epo:x:am:csuvzd", opts);
+		Getopt optionsParser = new Getopt("", args, "?l:i:b:q:tn:epo:x:am:csuvzdf", opts);
 
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
-				isTest = false, dense = false, verbose = false, reconstruct = true;
+				isTest = false, dense = false, verbose = false, reconstruct = true,
+				fAllWrap = false;
 		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null,
 			   prologPath = null, prologBackend = null;
 		int timeout = -1, numRuns = 1;
@@ -130,6 +132,9 @@ public class PSOATransRunCmdLine {
 			case 'z':
 				omitNegMem = true;
 				break;
+			case 'f':
+				fAllWrap = true;
+				break;
 			default:
 				assert false;
 			}
@@ -146,49 +151,49 @@ public class PSOATransRunCmdLine {
 		// Initialize PSOATransRun
 		Translator translator = null;
 		ExecutionEngine engine = null;
-				
+		
 		try {
-			if ((lang == null || lang.equalsIgnoreCase("prolog")) && 
-				(prologBackend == null || prologBackend.equalsIgnoreCase("xsb")))
+			if (lang == null || lang.equalsIgnoreCase("prolog"))
 			{
 				PrologTranslator.Config transConfig = new PrologTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
 				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
+				transConfig.setNoUniversalClosure(fAllWrap);
 				transConfig.setDifferentiateObj(differentiated);
 				transConfig.setReconstruct(reconstruct);
 				translator = new PrologTranslator(transConfig);
 				
-				XSBEngine.Config engineConfig = new XSBEngine.Config();
-				engineConfig.transKBPath = transKBPath;
-				engineConfig.xsbFolderPath = prologPath;
-				engine = new XSBEngine(engineConfig);
+				if (prologBackend == null || prologBackend.equalsIgnoreCase("xsb"))
+				{
+					XSBEngine.Config engineConfig = new XSBEngine.Config();
+					engineConfig.transKBPath = transKBPath;
+					engineConfig.xsbFolderPath = prologPath;
+					engine = new XSBEngine(engineConfig);
 				
-				if (timeout > 0)
-					printErrln("Ignore -t option: only applicable for the target language TPTP");
-			}
-			else if ((lang == null || lang.equalsIgnoreCase("prolog")) && prologBackend.equalsIgnoreCase("swi"))
+					if (timeout > 0)
+						printErrln("Ignore -t option: only applicable for the target language TPTP");
+				}	
+				else if (prologBackend.equalsIgnoreCase("swi"))
+				{
+					SWIEngine.Config engineConfig = new SWIEngine.Config();
+					engineConfig.transKBPath = transKBPath;
+					engineConfig.swiFolderPath = prologPath;
+					engine = new SWIEngine(engineConfig);
 				
-			{
-				PrologTranslator.Config transConfig = new PrologTranslator.Config();
-				transConfig.setDynamicObj(dynamicObj);
-				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
-				transConfig.setDifferentiateObj(differentiated);
-				transConfig.setReconstruct(reconstruct);
-				translator = new PrologTranslator(transConfig);
-				
-				SWIEngine.Config engineConfig = new SWIEngine.Config();
-				engineConfig.transKBPath = transKBPath;
-				engineConfig.swiFolderPath = prologPath;
-				engine = new SWIEngine(engineConfig);
-				
-				if (timeout > 0)
-					printErrln("Ignore -t option: only applicable for the target language TPTP");
+					if (timeout > 0)
+						printErrln("Ignore -t option: only applicable for the target language TPTP");
+				} 
+				else
+				{
+					printErrlnAndExit("Unsupported Prolog backend: ", prologBackend);
+				}
 			}
 			else if (lang.equalsIgnoreCase("tptp"))
 			{
 				TPTPTranslator.Config transConfig = new TPTPTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
 				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
+				transConfig.setNoUniversalClosure(fAllWrap);
 				transConfig.setDifferentiateObj(differentiated);
 				transConfig.setReconstruct(reconstruct);
 				translator = new TPTPTranslator(transConfig);
@@ -205,14 +210,7 @@ public class PSOATransRunCmdLine {
 			}
 			else
 			{
-				if (lang == null || lang.equalsIgnoreCase("prolog"))
-				{
-					printErrlnAndExit("Unsupported Prolog backend: ", prologBackend);
-				}
-				else
-				{
-					printErrlnAndExit("Unsupported language: ", lang);
-				}
+				printErrlnAndExit("Unsupported language: ", lang);
 			}
 		}
 		catch (PSOATransRunException e) {
@@ -393,6 +391,7 @@ public class PSOATransRunCmdLine {
 		println("  -u,--undiff       Perform undifferentiated objectification");
 		println("  -s,--staticOnly   Perform static objectification only");
 		println("  -d,--denseErrorMsgs  Display dense error messages");
+		println("  -f,--fAllWrap     Turn warning into error upon discovery of unquantified free variables in clauses");
 		
 		if (isLong)
 		{

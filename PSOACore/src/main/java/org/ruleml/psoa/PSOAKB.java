@@ -7,6 +7,7 @@ import java.util.*;
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.ruleml.psoa.analyzer.KBInfoCollector;
+import org.ruleml.psoa.analyzer.SchemalessChecker;
 import org.ruleml.psoa.parser.PSOAPSParser;
 import org.ruleml.psoa.transformer.*;
 import org.ruleml.psoa.utils.ANTLRTreeStreamConsumer;
@@ -277,6 +278,15 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 		});
 	}
 	
+	public PSOAKB schemalessChecking(boolean noUniversalClosure)
+	{
+		return transform("schemaless checking", stream -> {
+			SchemalessChecker checker = new SchemalessChecker(stream);
+			checker.setNoUniversalClosure(noUniversalClosure);
+			return checker.document();
+		});
+	}
+	
 	public PSOAKB flatten()
 	{
 		return transform("flattening", stream -> (new ExternalFlattener(stream)).document());
@@ -332,7 +342,8 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 	 * */
 	@Override
 	public PSOAKB FOLnormalize(RelationalTransformerConfig config) {
-		return unnest().
+		return schemalessChecking(config.noUniversalClosure).
+			   unnest().
 			   rewriteSubclass().
 			   objectify(config.differentiateObj, config.dynamicObj).
 			   describute(config.omitMemtermInNegativeAtoms);
