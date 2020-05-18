@@ -1,6 +1,8 @@
 /**
- * This grammar file is used to perform schemaless checking. If the --fAllWrap option was specified
- * at the command line, an error is raised if any unquantified variables are found within the enclosing clause. 
+ * This grammar file is used to perform schemaless checking. 
+ *
+ * Forall wrapping: If the --fAllWrap option was specified at the command line, an 
+ * error is raised if any unquantified variables are found within the enclosing clause. 
  * If --fAllWrap was not specified, a warning is printed to standard error instead.
  * 
  **/
