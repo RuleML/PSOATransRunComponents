@@ -1,4 +1,4 @@
-Document ( % Deprecated "Document" warning.
-  Group ( % Deprecated "Group" warning.
+Document ( % Yields a warning: "Document" is deprecated, use "RuleML" instead.
+  Group ( % Yields a warning: "Group" is deprecated, use "Assert" instead.
   )
 )

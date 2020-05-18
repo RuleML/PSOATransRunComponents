@@ -134,6 +134,7 @@ public class PSOATransRunCmdLine {
 				break;
 			case 'f':
 				fAllWrap = true;
+				break;
 			default:
 				assert false;
 			}
@@ -390,7 +391,7 @@ public class PSOATransRunCmdLine {
 		println("  -u,--undiff       Perform undifferentiated objectification");
 		println("  -s,--staticOnly   Perform static objectification only");
 		println("  -d,--denseErrorMsgs  Display dense error messages");
-		println("  -f,--fAllWrap     Throw an exception upon discovery of unquantified free variables");
+		println("  -f,--fAllWrap     Turn warning into error upon discovery of unquantified free variables in clauses");
 		
 		if (isLong)
 		{

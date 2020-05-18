@@ -1,6 +1,6 @@
 /**
  * This grammar file is used to perform schemaless checking. If the --fAllWrap option was specified
- * at the command line, an exception is thrown if any unquantified variables are found within the enclosing clause. 
+ * at the command line, an error is raised if any unquantified variables are found within the enclosing clause. 
  * If --fAllWrap was not specified, a warning is printed to standard error instead.
  * 
  **/
@@ -10,21 +10,21 @@ tree grammar SchemalessChecker;
 options 
 {
     output = AST;
-	ASTLabelType = CommonTree;
-	tokenVocab = PSOAPS;
-	rewrite = false;
-	k = 1;
+    ASTLabelType = CommonTree;
+    tokenVocab = PSOAPS;
+    rewrite = false;
+    k = 1;
 }
 
 @header
 {
-	package org.ruleml.psoa.analyzer;
-		
-	import java.util.Set;
-	import java.util.HashSet;
-	
-	import org.ruleml.psoa.transformer.PSOARuntimeException;
-	import static org.ruleml.psoa.utils.IOUtil.*;
+    package org.ruleml.psoa.analyzer;
+        
+    import java.util.Set;
+    import java.util.HashSet;
+    
+    import org.ruleml.psoa.transformer.PSOARuntimeException;
+    import static org.ruleml.psoa.utils.IOUtil.*;
 }
 
 @members
@@ -54,11 +54,12 @@ options
 }
 
 document
-    :   ^(DOCUMENT 
+    :   ^(DOCUMENT
+    //  Deprecation Warning: If "Document" was used instead of "RuleML", warn the user at load time to use "RuleML" instead, as support for "Document" will eventually be removed. 
     {
         if ($DOCUMENT.text.equals("Document")) 
         {
-           printErrln("Warning: \"Document\" is deprecated. Use \"RuleML\" instead.");
+           printErrln("Warning: \"Document\" is deprecated and will be removed in a future release. Use \"RuleML\" instead.");
         }
     }
     base? prefix* importDecl* group?)
@@ -77,11 +78,12 @@ importDecl
     ;
 
 group
-    :   ^(GROUP 
+    :   ^(GROUP
+    //  Deprecation Warning: If "Group" was used instead of "Assert", warn the user at load time to use "Assert" instead, as support for "Group" will eventually be removed. 
     {
         if ($GROUP.text.equals("Group"))
         {
-           printErrln("Warning: \"Group\" is deprecated. Use \"Assert\" instead.");
+           printErrln("Warning: \"Group\" is deprecated and will be removed in a future release. Use \"Assert\" instead.");
         }
     }
     group_element*)
@@ -106,14 +108,14 @@ rule
 }
 @after 
 {
-	if (!m_freeVars.isEmpty()) {
-	   if (m_noUniversalClosure) {
-	      throw new PSOARuntimeException("Variable(s) not explicitly quantified: ?" + String.join(", ?", m_freeVars) + " in the clause: \n" + $rule.text);
-	   } 
-	   else {
-	      printErrln("Warning: Variable(s) not explicitly quantified: ?" + String.join(", ?", m_freeVars) + " in the clause: \n" + $rule.text + "\n");
-	   }
-	}
+    if (!m_freeVars.isEmpty()) {
+       if (m_noUniversalClosure) {
+          throw new PSOARuntimeException("Variable(s) not explicitly quantified: ?" + String.join(", ?", m_freeVars) + " in the clause: \n" + $rule.text);
+       } 
+       else {
+          printErrln("Warning: Variable(s) not explicitly quantified: ?" + String.join(", ?", m_freeVars) + " in the clause: \n" + $rule.text + "\n");
+       }
+    }
 }
     :  ^(FORALL { m_hasForall = true; } (VAR_ID { m_quantifiedVars.add($VAR_ID.text); })+ clause)
     |   clause
@@ -141,7 +143,7 @@ scope
 @after 
 {
     for (String v : $head::existVars) {
-    	m_quantifiedVars.remove(v);    	
+        m_quantifiedVars.remove(v);     
     }
 }
     :   atomic
@@ -158,7 +160,7 @@ scope {
 }
 @after {
     for (String v : $formula::existVars) {
-    	m_quantifiedVars.remove(v);    	
+        m_quantifiedVars.remove(v);     
     }
 }
     :   ^(AND formula+)

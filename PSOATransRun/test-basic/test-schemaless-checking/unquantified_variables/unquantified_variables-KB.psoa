@@ -74,8 +74,8 @@ RuleML (
     _1#married(Joe Sue)
     _2#kid(Sue Pete)
     _3#kid(Joe Pete)
-    child(?x) :- kid(?p ?x) % Unquantified variables ?p, ?x, missing Forall.
     child(Pete) :- kid(Sue Pete)
+    child(?x) :- kid(?p ?x) % Unquantified variables ?p, ?x, missing Forall.
     my_concat(?x "" ?x) % Unquantified variable ?x, missing Forall.
   )
 )
