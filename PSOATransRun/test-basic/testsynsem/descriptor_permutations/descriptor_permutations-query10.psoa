@@ -1,0 +1,1 @@
+rule_with_implicit_body(?a ?b ?c ?s+>?v)

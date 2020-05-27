@@ -1,0 +1,2 @@
+And(tuple_first_free_form(?s2->v2 s1->?v1 -[?a3 b3 c3] -[a4 ?b4 c4] +[a1 b1 ?c1] s3+>v3  +[?a2 b2 ?c2])
+    tuple_first_free_form(-[?a3 b3 c3] ?s2->v2 s1->?v1 -[a4 ?b4 c4] +[a1 b1 ?c1] s3+>v3  +[?a2 b2 ?c2]))

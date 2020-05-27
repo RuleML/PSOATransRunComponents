@@ -1,0 +1,4 @@
+And(rule_with_free_form_body(?a ?b ?c ?s->?v)
+    rule_with_free_form_body_2(?a ?b ?c ?s->?v)
+    rule_with_free_form_body_3(?a ?b ?c ?s->?v)
+    rule_with_free_form_body_4(?a ?b ?c ?s->?v))

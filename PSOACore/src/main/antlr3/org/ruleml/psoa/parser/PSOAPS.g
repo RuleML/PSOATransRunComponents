@@ -249,14 +249,64 @@ psoa_rest
     -> ^(INSTANCE simple_term) tuples_and_slots?
     ;
 
+/*
+ *  tuples_and_slots parses a sequence of tuples and slots inside a PSOA atom.
+ *
+ *  The analysis considers two cases, distinguished by the presence (absence)
+ *  of an implicit tuple, a sequence of terms unenclosed by square brackets.
+ *
+ *  An implicit tuple:
+ *    * cannot be written in an atom containing conventional ("explicit") tuples,
+ *    * requires its surrounding atom to be written in left tuple normal form.
+ *
+ *  An atom without an implicit tuple allows explicit tuples and slots to be
+ *  written in any order.
+ *
+ *  tuples_and_slots keeps a list of terms called "terms" whose extent
+ *  indicates the presence of an implicit tuple.
+ *
+ *  The rule expands on the pattern
+ *
+ *  ALT1: term* term ( SLOT_ARROW term (tuple:"raises error unless term* is empty" | slot)* )?
+ *  ALT2: (tuple | slot)+
+ *
+ *  where the ALT1 and ALT2 alternatives are combined in a context-sensitive way.
+ *  This is done to improve error detection and reporting.
+ */
 tuples_and_slots
-    :   tuple+ slot* -> tuple+ slot*
-    |   terms+=term ({ checkPrecedingWhitespace(); } terms+=term)* { boolean hasSlot = false; }
-        (SLOT_ARROW first_slot_value=term { hasSlot = true; } slot* )? // Syntactic sugar for psoa terms which has only one tuple
-    -> {!hasSlot}? ^(TUPLE DEPSIGN["+"] {getTupleTree($terms, $terms.size()) } ) // single tuple
-    -> {$terms.size() == 1}?  // No tuple, only slot(s)
-        ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get(0)} $first_slot_value) slot* // slot only
-    ->  ^(TUPLE DEPSIGN["+"] {getTupleTree($terms, $terms.size() - 1)}) ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get($terms.size() - 1)} $first_slot_value) slot* // tuples and slots
+    :   { boolean hasSlot = false; boolean hasExplTuple = false; boolean preSlotArrowTuple = false;
+          int line = input.LT(1).getLine();}
+        ((terms += term {preSlotArrowTuple = false; }) | (tuple {preSlotArrowTuple = true; hasExplTuple = true; }))
+         // If "terms" is non-empty, its contents belong to a single
+         // implicit tuple, except for the last term, which is the slot name.
+         ({ checkPrecedingWhitespace(); }
+         ((terms += term {preSlotArrowTuple = false; }) | (tuple {preSlotArrowTuple = true; hasExplTuple = true; })))*
+        ( SLOT_ARROW first_slot_value=term { hasSlot = true; } (slot | (tuple {hasExplTuple = true; }))* )?
+        {
+            if (hasSlot && preSlotArrowTuple)
+            {
+                throw new PSOARuntimeException("Explicit tuple as slot name at line " + line);
+            }
+            else if (hasExplTuple && hasSlot && $terms == null)
+            {
+                throw new PSOARuntimeException("Missing valid slot name at line " + line);
+            }
+            else if (hasExplTuple && ((!hasSlot && $terms != null) || (hasSlot && $terms.size() > 1)))
+            {
+                throw new PSOARuntimeException("Implicit tuple in atom with one or more explicit tuples at line " + line);
+            }
+        }
+    ->  {!hasSlot && hasExplTuple}?  // explicit tuples, no implicit tuple
+        tuple+
+    ->  {!hasSlot}?  // single implicit tuple
+        ^(TUPLE DEPSIGN["+"] {getTupleTree($terms, $terms.size()) } )
+    ->  {$terms.size() == 1}?  // no implicit tuple, leading slot
+        // normalize to right-slot normal form
+        tuple* ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get(0)} $first_slot_value) slot*
+    ->  // leading implicit tuple, followed by slots
+        ^(TUPLE DEPSIGN["+"] {getTupleTree($terms, $terms.size() - 1)})
+        // normalize to right-slot normal form
+        ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] {$terms.get($terms.size() - 1)} $first_slot_value) slot*
     ;
 
 tuple

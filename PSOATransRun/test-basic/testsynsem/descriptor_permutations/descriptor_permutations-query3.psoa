@@ -1,0 +1,5 @@
+And(has_an_embedded_atom_5(+[embedded_oid_4#p(s14+>v14 +[e f g] ?s24+>?v24 -[a2 b2 c4])] s34->v34)
+    has_an_embedded_atom(embedded_oid#p(-[?a1 b1 ?c1] s11->v11 ?s21->v21) s31->?v31)
+    has_an_embedded_atom_2(embedded_oid_2#p(?s22->v22 -[?e f ?g] s12->?v12 +[a2 ?b2 ?c2]) ?s32->?v32)
+    has_an_embedded_atom_3(embedded_oid_3#p(+[?a3 b3 ?c3] s13+>v13 ?s23+>v23 +[?e ?f ?g]) s33+>?v33)
+    has_an_embedded_atom_4(embedded_oid_4#p(+[e f g] s24+>v24 -[a2 b2 c4] s14+>v14) embedded_oid_5#p(s14+>v14 +[e f g] s24+>v24 -[a2 b2 c4]) s34->v34))

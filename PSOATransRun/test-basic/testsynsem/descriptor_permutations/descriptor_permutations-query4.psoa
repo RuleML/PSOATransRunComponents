@@ -1,0 +1,5 @@
+And(left_implicit_tuple(a b c)
+    left_implicit_tuple_with_indep_slot(a b c s->v)
+    left_implicit_tuple_with_dep_slot(a b c s+>v)
+    left_implicit_tuple_with_indep_and_dep_slots(?a b ?c s1+>?v1 ?s2->?v2 s3+>?v3)
+    implicit_tuple_with_slots(s2+>v2 +[?a ?b ?c] ?s1->v1))

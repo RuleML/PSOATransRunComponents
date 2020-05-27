@@ -1,0 +1,7 @@
+And(empty_atom()
+    empty_tuple(+[])
+    empty_dep_tuple_with_indep_slot(s->v +[])
+    empty_dep_tuple_with_dep_slot(+[] s+>v)
+    empty_dep_tuple_with_dep_slot_in_right_tuple_nf(s+>v +[])
+    empty_dep_tuple_with_indep_slot(+[] s->v)
+    empty_dep_tuple_with_indep_slot_in_right_tuple_nf(s->v +[]))

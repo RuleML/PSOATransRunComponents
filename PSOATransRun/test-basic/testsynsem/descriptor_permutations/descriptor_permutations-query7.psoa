@@ -1,0 +1,5 @@
+And(multi_left_tuple_with_indep_slot(+[a b c] -[d e f] +[g h i j] s->v)
+    free_multi_tuple_with_dep_and_indep_slots(+[a1 b1 c1] s11->v11 -[d1 e1 f1] s21+>v21 +[g1 h1 i1 j1] s31+>v31)
+    free_multi_tuple_2_with_dep_and_indep_slots(+[a2 b2 c2] -[g2 h2 i2 j2] s12->v12 +[d2 e2 f2] s32->v32 s22+>v22)
+    free_multi_tuple_2_slots_with_dep_and_indep_slots(s13+>?v13 +[?a3 b3 c3] +[?d3 e3 f3] s23->v23 -[g3 h3 ?i3 j3])
+    free_multi_tuple_2_slots_2_with_dep_and_indep_slots(?s14->v14 +[a4 b4 ?c4] +[?d4 e4 ?f4] s24+>?v24 -[?g4 ?h4 ?i4 ?j4]))
