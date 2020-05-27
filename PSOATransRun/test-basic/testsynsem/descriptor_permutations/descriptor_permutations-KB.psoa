@@ -1,0 +1,118 @@
+RuleML (
+  Assert (
+
+    % Tuple-first free form
+    tuple_first_free_form(+[a1 b1 c1] s1->v1 s2->v2 +[a2 b2 c2] s3+>v3 -[a3 b3 c3] -[a4 b4 c4])  
+
+
+    multi_left_tuple(+[a b c] -[d e f] +[g h i j] s->v)
+    free_multi_tuple(+[a1 b1 c1] s11->v11 -[d1 e1 f1] s21->v21 +[g1 h1 i1 j1] s31->v31)
+    free_multi_tuple_2(s12->v12 +[a2 b2 c2] +[d2 e2 f2] s22->v22 -[g2 h2 i2 j2] s32->v32)
+    free_multi_tuple_2_slots(+[a3 b3 c3] s13->v13 +[d3 e3 f3] s23->v23 -[g3 h3 i3 j3])
+    free_multi_tuple_2_slots_2(s14->v14 s24->v24 +[a4 b4 c4] +[d4 e4 f4] -[g4 h4 i4 j4])
+
+
+    has_an_embedded_atom(embedded_oid#p(s11->v11 -[a1 b1 c1] s21->v21) s31->v31)
+    has_an_embedded_atom_2(embedded_oid_2#p(-[e f g] s12->v12 +[a2 b2 c2] s22->v22) s32->v32)
+    has_an_embedded_atom_3(embedded_oid_3#p(+[e f g] s13+>v13 +[a3 b3 c3] s23+>v23) s33+>v33)
+
+
+    % The embedded atom is the single term of an implicit tuple, but it is preceded by a slot, which is an error condition.
+    
+    % has_an_embedded_atom_4_error(s34->v34 embedded_oid_4#p(s14+>v14 +[e f g] -[a2 b2 c4] s24+>v24))  
+
+    % The embedded atoms are the two terms of an implicit tuple.
+    has_an_embedded_atom_4(
+      embedded_oid_4#p(+[e f g] -[a2 b2 c4] s14+>v14 s24+>v24)
+      embedded_oid_5#p(+[e f g] -[a2 b2 c4] s14+>v14 s24+>v24)
+      s34->v34
+    )
+
+    % The embedded atom is the single term of an explicit tuple, which may be preceded by a slot.
+    has_an_embedded_atom_5(s34->v34 +[embedded_oid_4#p(s14+>v14 +[e f g] -[a2 b2 c4] s24+>v24)])  
+
+
+    % Left-implicit tuples.
+    left_implicit_tuple(a b c)
+    left_implicit_tuple_with_indep_slot(a b c s->v)
+    left_implicit_tuple_with_dep_slot(a b c s+>v)
+    % left_implicit_tuple_with_indep_and_dep_slots_expl_tuple_error(a b c s+>v +[a b c] -[e f g] s2->v3 s3+>v3)
+    left_implicit_tuple_with_indep_and_dep_slots(a b c s1+>v1 s2->v3 s3+>v3)
+
+
+    % The adjoining test query specifies the terms of the implicit tuple in an explicit tuple.
+    implicit_tuple_with_slots(a b c s1->v1 s2+>v2)
+
+
+    % implicit_tuple_with_disordered_dep_slot_1_error(a b s+>v c)
+    % implicit_tuple_with_disordered_dep_slot_2_error(a s+>v b c)
+    % implicit_tuple_with_disordered_dep_slot_3_error(s+>v a b c)
+
+
+    % Implicit singleton tuple.
+    implicit_singleton_tuple(a)
+    implicit_singleton_tuple_with_indep_slot(a s->v)
+    implicit_singleton_tuple_with_dep_slot(a s+>v)
+
+
+    empty_atom()
+    empty_tuple(+[])
+    empty_dep_tuple_with_indep_slot(+[] s->v)
+    empty_dep_tuple_with_dep_slot(+[] s+>v)
+    empty_dep_tuple_with_dep_slot_in_right_tuple_nf(s+>v +[])
+    empty_dep_tuple_with_indep_slot(+[] s->v)
+    empty_dep_tuple_with_indep_slot_in_right_tuple_nf(s->v +[])
+
+
+%   explicit_tuple_with_tuple_slot_filler_error(+[a b c]+>v)
+%   implicit_tuple_with_interspersed_slot_error(a d e s+>v b c)
+%   implicit_tuple_with_initial_explicit_tuple_error(+[e f g] a b c s->v)
+%   implicit_tuple_with_explicit_tuple_error(a b s->v -[a s])
+%   implicit_tuple_with_explicit_tuple_error(a b -[a s] s->v)
+
+
+    multi_left_tuple_with_dep_slot(+[a b c] -[d e f] +[g h i j] s+>v)
+    free_multi_tuple_with_dep_slots(+[a1 b1 c1] s11+>v11 -[d1 e1 f1] s21+>v21 +[g1 h1 i1 j1] s31+>v31)
+    free_multi_tuple_2_with_dep_slots(+[a2 b2 c2] s12+>v12 +[d2 e2 f2] s22+>v22 -[g2 h2 i2 j2] s32+>v32)
+    free_multi_tuple_2_slots_with_dep_slots(+[a3 b3 c3] s13+>v13 +[d3 e3 f3] s23+>v23 -[g3 h3 i3 j3])
+    free_multi_tuple_2_slots_2_with_dep_slots(+[a4 b4 c4] s14+>v14 s24+>v24 +[d4 e4 f4] -[g4 h4 i4 j4])
+    free_multi_tuple_2_slots_3_with_dep_slots(s15+>v15 s25+>v25 +[a5 b5 c5] +[d5 e5 f5] -[g5 h5 i5 j5])
+
+
+    multi_left_tuple_with_indep_slot(+[a b c] -[d e f] +[g h i j] s->v)
+    free_multi_tuple_with_dep_and_indep_slots(+[a1 b1 c1] s11->v11 -[d1 e1 f1] s21+>v21 +[g1 h1 i1 j1] s31+>v31)
+    free_multi_tuple_2_with_dep_and_indep_slots(+[a2 b2 c2] s12->v12 +[d2 e2 f2] s22+>v22 -[g2 h2 i2 j2] s32->v32)
+    free_multi_tuple_2_slots_with_dep_and_indep_slots(+[a3 b3 c3] s13+>v13 +[d3 e3 f3] s23->v23 -[g3 h3 i3 j3])
+    free_multi_tuple_2_slots_2_with_dep_and_indep_slots(+[a4 b4 c4] s14->v14 s24+>v24 +[d4 e4 f4] -[g4 h4 i4 j4])
+
+
+    sky(color->blue) % Slotted fact for the condition of the rules.
+    rule_with_implicit_tuple_in_head_and_indep_slot(a b c s->v) :- sky(color->blue)
+    rule_with_implicit_tuple_in_head_and_dep_slot(a b c s+>v) :- sky(color->blue)
+    rule_with_implicit_tuple_in_head_and_indep_slots(a b c s1->v1 s2->v2) :- sky(color->blue)
+    rule_with_implicit_tuple_in_head_and_dep_slots(a b c s1+>v1 s2+>v2) :- sky(color->blue)
+    rule_with_implicit_tuple_in_head_and_indep_and_dep_slots(a b c s1+>v1 s2+>v2 s3->v3 s4->v4) :- sky(color->blue)
+    rule_with_implicit_tuple_in_head_and_indep_and_dep_slots_2(a b c s1+>v1 s3->v3 s2+>v2 s4->v4) :- sky(color->blue)
+    rule_with_implicit_tuple_in_head_and_indep_and_dep_slots_3(a b c s1+>v1 s3->v3 s4->v4 s2+>v2) :- sky(color->blue)
+    rule_with_implicit_tuple_in_head_and_indep_and_dep_slots_4(a b c s3->v3 s4->v4 s1+>v1 s2+>v2) :- sky(color->blue)
+    rule_with_explicit_tuple_in_head(+[a b c] s1->v1 s2+>v2) :- sky(color->blue)
+    rule_with_explicit_tuple_in_head_2(s1->v1 +[a b c] s2+>v2) :- sky(color->blue)
+    rule_with_explicit_tuple_in_head_3(s1->v1 s2+>v2 +[a b c]) :- sky(color->blue)
+
+
+    p42(s->v +[a b c])
+    p42(+[a b c] s->v)
+    p42(-[a b c] s->v)
+    p42(-[a b c] s+>v)
+
+    rule_with_free_form_body(a b c s->v) :- p42(s->v +[a b c])
+    rule_with_free_form_body_2(a b c s->v) :- p42(+[a b c] s->v)
+    rule_with_free_form_body_3(a b c s->v) :- p42(-[a b c] s->v)
+    rule_with_free_form_body_4(a b c s->v) :- p42(-[a b c] s+>v)
+
+
+    rule_with_implicit_body(a b c s+>v) :- p42(a b c s->v)
+    rule_with_implicit_body(a b c s+>v) :- p42(a b c s+>v)
+    rule_with_implicit_body(a b c s+>v) :- p42(a b c s1+>v1 s2->v2 s3+>v3)
+  )
+)
