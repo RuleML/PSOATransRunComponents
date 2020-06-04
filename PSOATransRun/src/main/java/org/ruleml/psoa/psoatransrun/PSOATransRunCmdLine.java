@@ -158,7 +158,7 @@ public class PSOATransRunCmdLine {
 				PrologTranslator.Config transConfig = new PrologTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
 				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
-				transConfig.setNoUniversalClosure(fAllWrap);
+				transConfig.setForallWrap(fAllWrap);
 				transConfig.setDifferentiateObj(differentiated);
 				transConfig.setReconstruct(reconstruct);
 				translator = new PrologTranslator(transConfig);
@@ -193,7 +193,7 @@ public class PSOATransRunCmdLine {
 				TPTPTranslator.Config transConfig = new TPTPTranslator.Config();
 				transConfig.setDynamicObj(dynamicObj);
 				transConfig.setOmitMemtermInNegativeAtoms(omitNegMem);
-				transConfig.setNoUniversalClosure(fAllWrap);
+				transConfig.setForallWrap(fAllWrap);
 				transConfig.setDifferentiateObj(differentiated);
 				transConfig.setReconstruct(reconstruct);
 				translator = new TPTPTranslator(transConfig);

@@ -38,7 +38,7 @@ options
     // but we are only concerned with free variables in rule. thus, we need 
     // context sensitivity.
     private boolean m_isRuleBody;
-    private boolean m_noUniversalClosure;
+    private boolean m_forallWrap;
     
     private Set<String> m_freeVars = new HashSet<String>();
     private Set<String> m_quantifiedVars = new HashSet<String>();  
@@ -50,8 +50,8 @@ options
         }
     }
     
-    public void setNoUniversalClosure(boolean noUniversalClosure) {
-        m_noUniversalClosure = noUniversalClosure;
+    public void setForallWrap(boolean forallWrap) {
+        m_forallWrap = forallWrap;
     }
 }
 
@@ -111,7 +111,7 @@ rule
 @after 
 {
     if (!m_freeVars.isEmpty()) {
-       if (m_noUniversalClosure) {
+       if (m_forallWrap) {
           throw new PSOARuntimeException("Variable(s) not explicitly quantified: ?" + String.join(", ?", m_freeVars) + " in the clause: \n" + $rule.text);
        } 
        else {
@@ -203,7 +203,7 @@ external
     ;
     
 psoa
-    :   ^(PSOA term? ^(INSTANCE term) tuple* slot*)
+    :   ^(PSOA term? ^(INSTANCE term) tuple* (slots+=slot)*)          
     ;
 
 tuple
