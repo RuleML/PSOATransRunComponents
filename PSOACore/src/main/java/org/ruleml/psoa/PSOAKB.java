@@ -278,11 +278,11 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 		});
 	}
 	
-	public PSOAKB schemalessChecking(boolean noUniversalClosure)
+	public PSOAKB schemalessChecking(boolean fAllWrap)
 	{
 		return transform("schemaless checking", stream -> {
 			SchemalessChecker checker = new SchemalessChecker(stream);
-			checker.setNoUniversalClosure(noUniversalClosure);
+			checker.setForallWrap(fAllWrap);
 			return checker.document();
 		});
 	}
@@ -342,7 +342,7 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 	 * */
 	@Override
 	public PSOAKB FOLnormalize(RelationalTransformerConfig config) {
-		return schemalessChecking(config.noUniversalClosure).
+		return schemalessChecking(config.forallWrap).
 			   unnest().
 			   rewriteSubclass().
 			   objectify(config.differentiateObj, config.dynamicObj).
