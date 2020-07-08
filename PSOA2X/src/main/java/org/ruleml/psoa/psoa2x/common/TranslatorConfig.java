@@ -35,11 +35,11 @@ public abstract class TranslatorConfig {
 		m_transConfig.forallWrap = forallWrap;
 	}
 	
-	public void setReconstruct(boolean reconstruct) {  // For reconstructing local constants 
+	public void setReconstruct(boolean reconstruct) {  // Reconstruct underscores for local constants 
 		m_parserConfig.reconstruct = reconstruct;
 	}
 	
-	public void setLTNFFinding(boolean ltnfFinding) {
+	public void setLTNFFinding(boolean ltnfFinding) {  // Activate findings for atoms not in left-tuple normal form
 		m_parserConfig.ltnfFinding = ltnfFinding;	
 	}
 }

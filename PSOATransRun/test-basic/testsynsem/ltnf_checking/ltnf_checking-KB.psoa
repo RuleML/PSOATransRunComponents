@@ -1,5 +1,6 @@
 RuleML (
    Assert (
+   
       % Neither of these atoms is in LTNF, hence "not in LTNF" findings for each when -k/--checkLTNF is flagged.
       % Since they are copies of each other up to descriptor re-ordering, querying against them produces only one
       % answer.
@@ -31,26 +32,18 @@ RuleML (
       % Both the outer and embedded atoms (p5 and p resp.) are in LTNF.
       p5(-[o7#p(-[a1 b1 c1] s11->v11 s21->v21)] s31->v31)
 
-
-      % Left-tuple normal forms:
-      
+      % Left-tuple normal forms.
       _John#_Student(_Mon _Tue _Fri _coursehours+>20 _dept+>_Math _gender->_male)
       _John#_Student(-[1995 8 17])
       _John#_Student(+[_Mon _Tue _Fri] -[1995 8 17] _coursehours+>20 _dept+>_Math _gender->_male)
       _John#_Student(-[1995 8 17] +[_Mon _Tue _Fri] _coursehours+>20 _gender->_male _dept+>_Math)  % Not left-tuple left-dependent normal form
 
-
-      % Left-implicit-tuple normal forms:
-      
-      _John#_Student(_Mon _Tue _Fri _coursehours+>20 _dept+>_Math _gender->_male)
-      _John#_Student(-[1995 8 17])
-      _John#_Student(+[_Mon _Tue _Fri] -[1995 8 17] _coursehours+>20 _dept+>_Math _gender->_male)
-      _John#_Student(-[1995 8 17] +[_Mon _Tue _Fri] _coursehours+>20 _gender->_male _dept+>_Math)  % Not left-implicit-tuple left-dependent normal form
-
+      % Left-implicit-tuple normal forms.
       _John#_Student(+[_Mon _Tue _Fri] _coursehours+>20 _dept+>_Math _gender->_male -[1995 8 17])  % Not left-tuple normal form
       _John#_Student(_coursehours+>20 _dept+>_Math _gender->_male +[_Mon _Tue _Fri] -[1995 8 17])  % Not left-tuple normal form
       _John#_Student(_coursehours+>20 _dept+>_Math _gender->_male +[_Mon _Tue _Fri])               % Not left-tuple normal form
       _John#_Student(+[_Mon _Tue _Fri] _coursehours+>20 -[1995 8 17] _dept+>_Math _gender->_male)  % Not left-tuple normal form
       _John#_Student(_coursehours+>20 _dept+>_Math +[_Mon _Tue _Fri] _gender->_male -[1995 8 17])  % Not left-tuple normal form
+      
    )
 )
