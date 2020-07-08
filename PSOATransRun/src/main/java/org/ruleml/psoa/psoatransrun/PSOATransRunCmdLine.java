@@ -47,14 +47,15 @@ public class PSOATransRunCmdLine {
 				new LongOpt("omitNegMem", LongOpt.NO_ARGUMENT, null, 'z'),
 				new LongOpt("dense", LongOpt.NO_ARGUMENT, null, 'd'),
 				new LongOpt("fAllWrap", LongOpt.NO_ARGUMENT, null, 'f'),
+				new LongOpt("checkLTNF", LongOpt.NO_ARGUMENT, null, 'k')
 		};
 
-		Getopt optionsParser = new Getopt("", args, "?l:i:b:q:tn:epo:x:am:csuvzdf", opts);
+		Getopt optionsParser = new Getopt("", args, "?l:i:b:q:tn:epo:x:am:csuvzdfk", opts);
 
 		boolean outputTrans = false, showOrigKB = false, getAllAnswers = false, 
 				dynamicObj = true, omitNegMem = false, differentiated = true,
 				isTest = false, dense = false, verbose = false, reconstruct = true,
-				fAllWrap = false;
+				fAllWrap = false, ltnfFinding = false;
 		String inputKBPath = null, inputQueryPath = null, lang = null, transKBPath = null,
 			   prologPath = null, prologBackend = null;
 		int timeout = -1, numRuns = 1;
@@ -135,6 +136,9 @@ public class PSOATransRunCmdLine {
 			case 'f':
 				fAllWrap = true;
 				break;
+			case 'k':
+			    ltnfFinding = true;
+			    break;
 			default:
 				assert false;
 			}
@@ -161,6 +165,7 @@ public class PSOATransRunCmdLine {
 				transConfig.setForallWrap(fAllWrap);
 				transConfig.setDifferentiateObj(differentiated);
 				transConfig.setReconstruct(reconstruct);
+				transConfig.setLTNFFinding(ltnfFinding);
 				translator = new PrologTranslator(transConfig);
 				
 				if (prologBackend == null || prologBackend.equalsIgnoreCase("xsb"))
@@ -196,6 +201,7 @@ public class PSOATransRunCmdLine {
 				transConfig.setForallWrap(fAllWrap);
 				transConfig.setDifferentiateObj(differentiated);
 				transConfig.setReconstruct(reconstruct);
+				transConfig.setLTNFFinding(ltnfFinding);
 				translator = new TPTPTranslator(transConfig);
 				VampirePrimeEngine.Config engineConfig = new VampirePrimeEngine.Config();
 				if (timeout > 0)
@@ -392,6 +398,7 @@ public class PSOATransRunCmdLine {
 		println("  -s,--staticOnly   Perform static objectification only");
 		println("  -d,--denseErrorMsgs  Display dense error messages");
 		println("  -f,--fAllWrap     Turn warning into error upon discovery of unquantified free variables in clauses");
+		println("  -k,--checkLTNF    Print findings about atoms not in left tuple normal form (LTNF)");
 		
 		if (isLong)
 		{
