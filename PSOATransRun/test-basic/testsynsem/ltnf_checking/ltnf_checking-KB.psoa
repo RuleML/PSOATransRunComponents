@@ -1,0 +1,56 @@
+RuleML (
+   Assert (
+      % Neither of these atoms is in LTNF, hence "not in LTNF" findings for each when -k/--checkLTNF is flagged.
+      % Since they are copies of each other up to descriptor re-ordering, querying against them produces only one
+      % answer.
+      o#p(s1+>v1 +[a b c] s2->v2)
+      o#p(s1+>v1 s2->v2 +[a b c])
+
+      % In the first atom, the o3 argument is the only term of an implicit tuple.
+      % In the second atom, the embedded o3#q atom again is the only term of an implicit tuple. 
+      o2#p(o3 s2+>v2 s3+>v3)
+      o2#p(o3#q(s0+>v0 -[a b c] s1->v1) s2+>v2 s3+>v3)
+
+      % Neither the outer p atom nor the embedded q atom are in LTNF.
+      o3#p(s1->v1 +[o4#q(s0+>v0 -[a2 b2 c2] s3->v3)] s2+>v2)
+
+      % In both cases, the embedded p atom is the only term of an implicit independent tuple, and it is
+      % followed by a slot.
+      p2(o4#p(s11->v11 -[a1 b1 c1] s21->v21) s31->v31)
+      p2(o5#p(s11->v11 -[a1 b1 c1] % Test comment
+              s21->v21)
+         s31->v31)
+
+      % Oidless variant of o2#p.
+      p3(o6#p(-[a1 b1 c1] s11->v11 s21->v21) s31->v31)
+
+      % The embedded p atom is the only term of an explicit independent tuple, and it is preceded by a slot,
+      % which causes an LTNF finding to be printed.
+      p4(s31->v31 -[o7#p(-[a1 b1 c1] s11->v11 s21->v21)])
+
+      % Both the outer and embedded atoms (p5 and p resp.) are in LTNF.
+      p5(-[o7#p(-[a1 b1 c1] s11->v11 s21->v21)] s31->v31)
+
+
+      % Left-tuple normal forms:
+      
+      _John#_Student(_Mon _Tue _Fri _coursehours+>20 _dept+>_Math _gender->_male)
+      _John#_Student(-[1995 8 17])
+      _John#_Student(+[_Mon _Tue _Fri] -[1995 8 17] _coursehours+>20 _dept+>_Math _gender->_male)
+      _John#_Student(-[1995 8 17] +[_Mon _Tue _Fri] _coursehours+>20 _gender->_male _dept+>_Math)  % Not left-tuple left-dependent normal form
+
+
+      % Left-implicit-tuple normal forms:
+      
+      _John#_Student(_Mon _Tue _Fri _coursehours+>20 _dept+>_Math _gender->_male)
+      _John#_Student(-[1995 8 17])
+      _John#_Student(+[_Mon _Tue _Fri] -[1995 8 17] _coursehours+>20 _dept+>_Math _gender->_male)
+      _John#_Student(-[1995 8 17] +[_Mon _Tue _Fri] _coursehours+>20 _gender->_male _dept+>_Math)  % Not left-implicit-tuple left-dependent normal form
+
+      _John#_Student(+[_Mon _Tue _Fri] _coursehours+>20 _dept+>_Math _gender->_male -[1995 8 17])  % Not left-tuple normal form
+      _John#_Student(_coursehours+>20 _dept+>_Math _gender->_male +[_Mon _Tue _Fri] -[1995 8 17])  % Not left-tuple normal form
+      _John#_Student(_coursehours+>20 _dept+>_Math _gender->_male +[_Mon _Tue _Fri])               % Not left-tuple normal form
+      _John#_Student(+[_Mon _Tue _Fri] _coursehours+>20 -[1995 8 17] _dept+>_Math _gender->_male)  % Not left-tuple normal form
+      _John#_Student(_coursehours+>20 _dept+>_Math +[_Mon _Tue _Fri] _gender->_male -[1995 8 17])  % Not left-tuple normal form
+   )
+)

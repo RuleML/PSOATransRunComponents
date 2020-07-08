@@ -32,10 +32,14 @@ public abstract class TranslatorConfig {
 	}
 	
 	public void setForallWrap(boolean forallWrap) {
-	    m_transConfig.forallWrap = forallWrap;
+		m_transConfig.forallWrap = forallWrap;
 	}
 	
-	public void setReconstruct(boolean reconstruct) {
+	public void setReconstruct(boolean reconstruct) {  // For reconstructing local constants 
 		m_parserConfig.reconstruct = reconstruct;
+	}
+	
+	public void setLTNFFinding(boolean ltnfFinding) {
+		m_parserConfig.ltnfFinding = ltnfFinding;	
 	}
 }
