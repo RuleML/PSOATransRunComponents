@@ -169,8 +169,13 @@ scope {
     |   ^(OR formula+)
     |   ^(EXISTS (VAR_ID { if (m_isRuleBody) recordExistentialVar($formula::existVars, $VAR_ID.text); })+ formula)
     |   FALSITY
+    |   naf_formula
     |   atomic
     |   external
+    ;
+    
+naf_formula
+    :   ^(NAF formula)
     ;
 
 atomic

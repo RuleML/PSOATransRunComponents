@@ -185,8 +185,13 @@ formula
     |   ^(OR formula+)
     |   FALSITY
     |   ^(EXISTS VAR_ID+ formula)
+    |   naf_formula
     |   atomic
     |   external
+    ;
+
+naf_formula
+    :   ^(NAF formula)
     ;
 
 atomic

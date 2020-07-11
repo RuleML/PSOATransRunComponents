@@ -123,6 +123,7 @@ formula
             append(numSubformulas > 0? ")" : "false");  // Or() is translated to false
          }
     |    FALSITY { append("false"); }
+    |   naf_formula
     |   ^(EXISTS
             (VAR_ID { if (isQuery) existVars.add($VAR_ID.text); })+
             formula)
@@ -132,6 +133,10 @@ formula
     }
     |   atomic
     |   external
+    ;
+
+naf_formula
+    : ^(NAF { append("\\+ "); } formula)  // The application parentheses for Naf are already added as grouping parentheses
     ;
 
 atomic

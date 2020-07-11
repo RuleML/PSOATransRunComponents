@@ -169,6 +169,7 @@ formula
     |   ^(OR formula+)
     |   FALSITY
     |   ^(EXISTS (VAR_ID { m_clauseVars.add($VAR_ID.text); } )+ formula)
+    |   naf_formula
     |   atomic
     -> { m_extEqs.isEmpty() }? atomic
     // Create a conjunction if there exists a nested external function application
@@ -177,6 +178,10 @@ formula
     -> { m_extEqs.isEmpty() }? external
     // Create a conjunction if there exists a nested external function application
     -> ^(AND { getExtEquals() } external)
+    ;
+
+naf_formula
+    :   ^(NAF formula)
     ;
 
 atomic
