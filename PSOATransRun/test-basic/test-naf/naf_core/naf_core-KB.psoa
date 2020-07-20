@@ -15,81 +15,83 @@ RuleML (
     o4#f2( +[dt2] ds2+>dv2 -[it2] is2->iv3333 is2->iv2 )
 
     % Queries:
-    % o1#f1(-[it1] +[dt1] is1->iv1 ds1+>dv1)
-    % o3#f1(-[it1] +[dt1] is1->iv1 ds1+>dv1)
-       
+    % o1#f1(-[it1] +[dt1] is1->iv1 ds1+>dv1)  % Yes
+    % o3#f1(-[it1] +[dt1] is1->iv1 ds1+>dv1)  % No
+
+
     % Embedded atoms
     Theodore#Teacher(dept+>semfe#ntua(town->Zografou))
     Theodore#Student(dept+>ece#ntua(town->Zografou))
-    
+
     % Queries:
-    % Naf(Mark#Teacher(dept+>semfe#ntua(town->Zografou)))
-    % Naf(Theodore#Teacher(dept+>semfe#unb(town->Fredericton)))
+    % Naf(Mark#Teacher(dept+>semfe#ntua(town->Zografou)))        % Yes
+    % Naf(Theodore#Teacher(dept+>semfe#unb(town->Fredericton)))  % Yes
     % And(?t#Student(dept+>ece#ntua(town->?pl)) Naf(?t#Teacher(dept+>semfe#unb(town->Fredericton))) )
     % And(?t#Student(dept+>ece#ntua(town->?pl)) Naf(?t#Teacher(dept+>semfe#unb(town->?pl2))) )
-	% Naf(And(Theodore#Teacher(dept+>semfe#ntua(town->Zografou)) Theodore#Student(dept+>ece#ntua(town->Zografou))))
-	% Naf(Or(Theodore#Teacher(dept+>semfe#ntua(town->Zografou)) Theodore#Student(dept+>ece#ntua(town->Zografou))))
-     
+    % Naf(And(Theodore#Teacher(dept+>semfe#ntua(town->Zografou)) Theodore#Student(dept+>ece#ntua(town->Zografou))))
+    % Naf(Or(Theodore#Teacher(dept+>semfe#ntua(town->Zografou)) Theodore#Student(dept+>ece#ntua(town->Zografou))))
+
+
     % The classic bird example
-    
+
     bird(penguin)
-	bird(eagle)
-	bird(ostrich)
-	bird(crow)
-	bird(sparrow)
-	bird(pigeon)
-	
-	flightless_bird(penguin)
-	flightless_bird(ostrich)
-	
-	Forall ?X (
-		can_fly(?X) :-
-			And(
-				bird(?X)
-				Naf(flightless_bird(?X))
-			)
-	)
-	
-	% Queries:
-	% can_fly(?X)
-	% And( bird(?X) Naf(can_fly(?X)) )
-	
-	
+    bird(eagle)
+    bird(ostrich)
+    bird(crow)
+    bird(sparrow)
+    bird(pigeon)
+
+    flightless_bird(penguin)
+    flightless_bird(ostrich)
+
+    Forall ?X (
+        can_fly(?X) :-
+            And(
+                bird(?X)
+                Naf(flightless_bird(?X))
+            )
+    )
+
+    % Queries:
+    % can_fly(?X)
+    % And( bird(?X) Naf(can_fly(?X)) )  % ?X=_ostrich; ?X=_penguin
+
+
     % The classic bird example, variation
-    
+
     sandy#ostrich
     tux#penguin
     baldie#eagle
-    
+
     ostrich##bird
     eagle##bird
     penguin##bird
-    
+
     ostrich##flightlessbird
     penguin##flightlessbird
     flightlessbird##bird
-    
-    Forall ?x (
-    	?x#flying_birds :- 
-    	    And( ?x#bird Naf(?x#flightlessbird))
-    )
-    
-    % Queries:
-    % ?x#flying_birds
-	% Naf(Theodore#flying_birds)
-	% Naf(And(Theodore#bird Theodore#flying_birds))
-	% Naf(Or(Theodore#bird Theodore#flying_birds))
-    
-	
-	% Queries combining the bird and Teacher predicates:
-	% Naf(And(Theodore#bird Theodore#Teacher(dept+>semfe#ntua(town->Zografou))))
-	% Naf(Or(Theodore#bird Theodore#Teacher(dept+>semfe#ntua(town->Zografou))))
 
+    Forall ?x (
+        ?x#flying_birds :- 
+            And( ?x#bird Naf(?x#flightlessbird))
+    )
+
+    % Queries:
+    % Naf(baldie#flying_birds)  % No
+    % Naf(Theodore#flying_birds)
+    % Naf(And(Theodore#bird Theodore#flying_birds))
+    % Naf(Or(Theodore#bird Theodore#flying_birds))
     
+    
+    % Queries combining the bird and Teacher predicates:
+    % Naf(And(Theodore#bird Theodore#Teacher(dept+>semfe#ntua(town->Zografou))))  % Yes
+    % Naf(Or(Theodore#bird Theodore#Teacher(dept+>semfe#ntua(town->Zografou))))   % No
+
+
     % Blockchain
-    
+
     % Facts
-    
+
     Block(GridBlock1)
     Block(GridBlock2)
     Block(GridBlock3)
@@ -104,7 +106,7 @@ RuleML (
     Block(GridBlock3b)
     Block(GridBlock4b)
     Block(GridBlock5b)
-    
+
     oid(Gridcoin GridLink1)#Link(GridBlock1 GridBlock2)
     oid(Gridcoin GridLink2)#Link(GridBlock2 GridBlock3)
     oid(Gridcoin GridLink3)#Link(GridBlock3 GridBlock4)
@@ -115,19 +117,19 @@ RuleML (
     oid(Gridcoin GridLink8)#Link(GridBlock8 GridBlock9)
     oid(Gridcoin GridLink9)#Link(GridBlock9 GridBlock10)
     oid(Gridcoin GridLink10)#Link(GridBlock10 GridBlock11)
-    
+
     % Some orphan blocks
     oid(Gridcoin GridLink2b)#Link(GridBlock2 GridBlock3b)
     oid(Gridcoin GridLink3b)#Link(GridBlock3b GridBlock4b)
     oid(Gridcoin GridLink4b)#Link(GridBlock4b GridBlock5b)   
-    
+
     % Rules
-    
+
     Forall ?W ?L ?X ?Y (
       oid(?W ?L)#Chain(?X ?Y len+>2) :-
         oid(?W ?L)#Link(?X ?Y)
     )
-    
+
     Forall ?W ?L ?M ?X ?Y ?Z ?J ?I(
       oid(?W path(?L ?M))#Chain(?X ?Z len+>?J) :-
         And( oid(?W ?L)#Link(?X ?Y)
@@ -145,7 +147,7 @@ RuleML (
                 )
             )
     )
-    
+
     Forall ?X ?Y (
         EndBlock(?X) :- 
             And(
@@ -156,7 +158,7 @@ RuleML (
                 )
             )
     ) 
-    
+
     Forall ?X ?Y ?J ?Y2 ?J1 (
       MainChain(?X ?Y length->?J) :- 
         And (GenesisBlock(?X)
@@ -168,7 +170,7 @@ RuleML (
              Naf(External(isopl:greater_than(?J1 ?J)))
         )
     )
-    
+
     Forall ?X ?Y ?J ?Y2 ?J1 (
       MainChain2(?X ?Y length->?J) :- 
         And (GenesisBlock(?X)
@@ -176,10 +178,10 @@ RuleML (
              Chain(?X ?Y  len+>?J)
              Naf(
                And(
-		         EndBlock(?Y2)
-		         Chain(?X ?Y2 len+>?J1)
-		         External(isopl:greater_than(?J1 ?J))
-		       )
+                 EndBlock(?Y2)
+                 Chain(?X ?Y2 len+>?J1)
+                 External(isopl:greater_than(?J1 ?J))
+               )
              )
         )
     )
@@ -191,19 +193,19 @@ RuleML (
           Chain(?X ?Y len+>?J)
           Naf(
             And(
-		      Chain(?X ?Y2 len+>?J1)
-		      External(isopl:greater_than(?J1 ?J))
-		    )
+              Chain(?X ?Y2 len+>?J1)
+              External(isopl:greater_than(?J1 ?J))
+            )
           )
         )
     )
-    
+
     % Queries:
-    % GenesisBlock(?X)
-    % EndBlock(?X)
+    % GenesisBlock(?X)  % ?X=_GridBlock1
+    % EndBlock(?X)      % ?X=_GridBlock5b; ?X=_GridBlock11
     % MainChain(?X ?Y length->?J)
     % MainChain2(?X ?Y length->?J)
-    % MainChain3(?X ?Y length->?J)
+    % MainChain3(?X ?Y length->?J)  % ?X=_GridBlock1 ?Y=_GridBlock11 ?J=11
 
   )
 )
