@@ -1,0 +1,97 @@
+<!--
+
+Screen Actors Guild - American Federation of Television and Radio
+Artists (SAG-AFTRA) is a labor union representing media performers and
+related professionals in television, radio, and film, among other
+mediums.
+
+This is a vastly simplified object-relational KB describing a tiny
+part of SAG-AFTRA's union and the logic of one of its membership
+rules. Specifically, it demonstrates an application of the
+Negation-as-Failure/Naf construct in checking that the rule applies in
+a given case.
+
+-->
+
+RuleML(
+  Assert(
+
+    tom_cruise#SAG_AFTRA_Member
+
+    tom_cruise#Actor(jack_reacher)
+    tom_cruise#Actor(the_mummy)
+    tom_cruise#Actor(top_gun)
+    tom_cruise#Actor(mission_impossible)
+
+    mindy_marin#SAG_AFTRA_Member
+
+    mindy_marin#Actor(15_minutes)
+    mindy_marin#CastingDirector(15_minutes)
+
+    mindy_marin#CastingDirector(jack_reacher)
+    mindy_marin#CastingDirector(thank_you_for_smoking)
+    mindy_marin#CastingDirector(juno)
+
+
+<!--
+
+    SAG-AFTRA membership rule 14 (2015) states that a SAG-AFTRA union
+    member cannot serve as both actor and casting director in the same
+    movie/production
+    (https://www.sagaftra.org/files/2015_0110_sag-aftra_membership_rules.pdf).
+
+    sag_aftra_rule_14 fails iff rule 14 has been violated for the
+    production ?Movie with respect to the SAG-AFTRA/production member
+    ?ProductionMember.
+
+    These are the results from XSB (version 3.8.0):
+
+    > sag_aftra_rule_14(?Movie ?ProductionMember)
+    Answer(s):
+    ?Movie=_juno ?ProductionMember=_mindy_marin ;
+    ?Movie=_thank_you_for_smoking ?ProductionMember=_mindy_marin    ;
+    ?Movie=_jack_reacher ?ProductionMember=_mindy_marin     ;
+    No
+
+    What about tom_cruise?
+
+-->
+
+    Forall ?Movie ?ProductionMember (
+      sag_aftra_rule_14(?Movie ?ProductionMember) :-
+        Or(Naf(?ProductionMember#SAG_AFTRA_Member)
+           And(?ProductionMember#CastingDirector(?Movie)
+               Naf(?ProductionMember#Actor(?Movie)))
+           And(Naf(?ProductionMember#CastingDirector(?Movie))  % Uninstantiated variables inside Naf
+                   ?ProductionMember#Actor(?Movie)))
+    )
+
+
+<!--
+
+    > sag_aftra_rule_14_non_floundering(?Movie ?ProductionMember)
+    Answer(s):
+    ?Movie=_juno ?ProductionMember=_mindy_marin ;
+    ?Movie=_thank_you_for_smoking ?ProductionMember=_mindy_marin    ;
+    ?Movie=_jack_reacher ?ProductionMember=_mindy_marin     ;
+    ?Movie=_mission_impossible ?ProductionMember=_tom_cruise    ;
+    ?Movie=_top_gun ?ProductionMember=_tom_cruise   ;
+    ?Movie=_the_mummy ?ProductionMember=_tom_cruise     ;
+    ?Movie=_jack_reacher ?ProductionMember=_tom_cruise      ;
+    No
+
+    Much better!
+
+-->
+
+    Forall ?Movie ?ProductionMember (
+        sag_aftra_rule_14_non_floundering(?Movie ?ProductionMember) :-
+            Or(Naf(?ProductionMember#SAG_AFTRA_Member)
+               And(?ProductionMember#CastingDirector(?Movie)
+                   Naf(?ProductionMember#Actor(?Movie)))
+               And(?ProductionMember#Actor(?Movie)  % Note swapped order
+                   Naf(?ProductionMember#CastingDirector(?Movie))))
+    )
+
+  )  
+)

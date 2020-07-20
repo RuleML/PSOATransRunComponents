@@ -72,15 +72,15 @@ RuleML (
     flightlessbird##bird
 
     Forall ?x (
-        ?x#flying_birds :- 
+        ?x#flying_bird :- 
             And( ?x#bird Naf(?x#flightlessbird))
     )
 
     % Queries:
-    % Naf(baldie#flying_birds)  % No
-    % Naf(Theodore#flying_birds)
-    % Naf(And(Theodore#bird Theodore#flying_birds))
-    % Naf(Or(Theodore#bird Theodore#flying_birds))
+    % Naf(baldie#flying_bird)  % No
+    % Naf(Theodore#flying_bird)
+    % Naf(And(Theodore#bird Theodore#flying_bird))
+    % Naf(Or(Theodore#bird Theodore#flying_bird))
     
     
     % Queries combining the bird and Teacher predicates:

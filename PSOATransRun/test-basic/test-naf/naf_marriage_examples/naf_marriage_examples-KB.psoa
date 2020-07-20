@@ -1,0 +1,51 @@
+RuleML(
+
+    Assert(
+
+        male(Joe)
+        male(Rick)
+        male(Frank)
+        male(Bob)
+        male(Paul)
+        male(Stephen)
+        male(Terence)
+        male(John)
+        male(Simon)
+
+        female(Sue)
+        female(Mary)
+        female(Gertrude)
+        female(Maja)
+        female(Florence)
+        female(Jean)
+        female(Violet)
+
+        Forall ?X (
+          person(?X) :- Or(male(?X) female(?X))
+        )
+
+        married(Joe Sue)
+        married(Rick Mary)
+        married(Paul Gertrude)
+        married(Stephen Maja)
+        married(Terence Florence)
+        married(John Jean)
+        married(Simon Violet)
+
+        Forall ?X ?Y (
+          not_married(?X ?Y) :-
+             And(person(?X)
+                 person(?Y)
+                 Naf(married(?X ?Y))
+                 Naf(married(?Y ?X)))
+        )
+
+        % Queries:
+        % not_married(?X ?Y)
+        % not_married(Rick ?Y)
+        % married(John Jean)
+        % married(?X Florence)
+        % Naf(not_married(?X ?Y))
+
+    )
+)
