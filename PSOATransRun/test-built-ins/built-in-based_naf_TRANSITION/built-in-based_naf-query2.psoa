@@ -1,0 +1,2 @@
+% And( bird(?X) not:Naf(can_fly(?X)) )  % >= 1.4.5: Remove the "not:" prefix as follows:
+And( bird(?X) Naf(can_fly(?X)) )
