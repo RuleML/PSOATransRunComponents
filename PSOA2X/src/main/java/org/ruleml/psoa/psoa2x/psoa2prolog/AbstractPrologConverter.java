@@ -71,9 +71,6 @@ public abstract class AbstractPrologConverter extends PrologTermLangConverter {
 		
 		// Generic inequality
 		s_builtInMap.put("https://www.iso.org/standard/21413.html#generic_not_eq", "\'\\\\=\'");
-
-		// Built-in-based Naf (intended for one argument that is a relational atom)
-		s_builtInMap.put("not#Naf", "\\+ ");
 		
 		// Taken from XSB Prolog standard module
 		s_builtInMap.put("http://xsb.sourceforge.net/manual1/manual1.pdf#datime", "datime");              // XSB's datime and local_datime predicates

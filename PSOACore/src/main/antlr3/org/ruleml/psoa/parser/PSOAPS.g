@@ -207,9 +207,14 @@ formula returns [boolean isValidHead, boolean isAtomic]
         -> FALSITY
     |   EXISTS variable+ LPAR f=formula RPAR { } // $isValidHead = $f.isAtomic; }
         -> ^(EXISTS["EXISTS"] variable+ $f)
+    |   naf_formula
     |   atomic { $isAtomic = true; } -> atomic
     |   (external_term { $isValidHead = false; } -> external_term)
         (psoa_rest { $isAtomic = true; } -> ^(PSOA $formula psoa_rest))?
+    ;
+
+naf_formula
+    :   NAF LPAR formula RPAR-> ^(NAF["NAF"] formula)
     ;
 
 atomic
@@ -446,6 +451,7 @@ FORALL : 'Forall' ;
 EXISTS : 'Exists' ;
 AND : 'And' ;
 OR : 'Or' ;
+NAF : 'Naf';
 EXTERNAL : 'External';
 TOP : 'Top';
 

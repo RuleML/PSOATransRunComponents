@@ -1,0 +1,48 @@
+<!--
+
+This file contains "trivial"/folklore examples of Negation-as-failure (NAF)
+drawn from the Prolog programming language. For example, double NAF
+is often used in Prolog programs to prove that two terms are unifiable
+without unifying them.
+
+-->
+
+RuleML(
+
+  Prefix(pred: <http://www.w3.org/2007/rif-builtin-predicate#>)
+
+  Assert(
+
+    Forall ?X ?Y (
+      greater-than-or-equal(?X ?Y) :-
+        Naf(pred:numeric-less-than(?X ?Y))
+    )
+
+    Forall ?X (
+      unifies(?X ?X)
+    )
+
+    Forall ?X ?Y (
+      not-unifiable(?X ?Y) :-
+        Naf(unifies(?X ?Y))
+    )
+
+    Forall ?X ?Y (
+      unifiable(?X ?Y) :-
+        Naf(not-unifiable(?X ?Y))
+    )
+
+    % Succeeds with distinct variables ?X and ?Y remaining distinct.
+    Forall ?X ?Y (
+      check_unifiability_without_unifying(?X ?Y) :-
+        Naf(Naf(unifies(?X ?Y)))
+    )
+
+    % Queries:
+    % check_unifiability_without_unifying(?X ?Y)
+    % unifiable(p(?) q(?))
+    % Naf(unifiable(p(?) q(?)))
+    % greater-than-or-equal(2 1)
+
+  )
+)

@@ -1,0 +1,50 @@
+<!--
+
+This Negation-as-failure example is transcribed from
+http://www.learnprolognow.org/lpnpage.php?pagetype=html&pageid=lpn-htmlse45
+
+-->
+
+RuleML(
+
+  Assert(
+
+    % doesn't report solutions:
+    Forall ?X (
+      enjoys(vincent ?X) :-
+        And(Naf(big_kahuna_burger(?X))
+            burger(?X))
+    )
+
+    % does report solutions:
+    Forall ?X (
+      enjoys_2(vincent ?X) :-
+        And(burger(?X)
+            Naf(big_kahuna_burger(?X)))
+    )
+
+    Forall ?X (
+      burger(?X) :- big_mac(?X)
+    )
+    Forall ?X (
+      burger(?X) :- big_kahuna_burger(?X)
+    )
+    Forall ?X (
+      burger(?X) :- whopper(?X)
+    )
+
+    big_mac(big_mac)
+
+    big_kahuna_burger(big_kahuna_burger)
+
+    whopper(whopper)
+
+    % Queries:
+    % burger(?X)
+    % enjoys(vincent ?X)
+    % enjoys_2(vincent ?X)
+    % enjoys_2(?X ?Y)
+    % enjoys_2(vincent big_kahuna_burger(?))
+
+  )
+)

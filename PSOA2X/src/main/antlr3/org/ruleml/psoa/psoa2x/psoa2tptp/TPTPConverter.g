@@ -178,8 +178,14 @@ formula
       if (isQuery)
         existVars.clear();
     }
+    |   naf_formula
     |   atomic
     |   external
+    ;
+
+naf_formula
+    :   ^(NAF formula)
+        { throw new TranslatorException("Negation as failure (Naf) not supported by PSOA2TPTP"); }
     ;
 
 atomic
@@ -216,7 +222,7 @@ term returns [boolean isTop]
     
 external
 	:   ^(EXTERNAL psoa)
-    { throw new TranslatorException("External is not supported by PSOA2TPTP"); }
+    { throw new TranslatorException("External wrappers (built-ins) not supported by PSOA2TPTP"); }
     ;
 
 psoa
