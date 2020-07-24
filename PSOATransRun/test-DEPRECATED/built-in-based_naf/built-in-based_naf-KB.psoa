@@ -1,26 +1,26 @@
 RuleML (
   % Translation requires absence of option -s
-  
+
   Prefix(not: <http://psoa.ruleml.org/lib/not#>)
   Import(<http://psoa.ruleml.org/lib/not.psoa>)
   Assert (
     bird(penguin)
-	bird(eagle)
-	bird(ostrich)
-	bird(crow)
-	bird(sparrow)
-	bird(pigeon)
-	
-	flightless_bird(penguin)
-	flightless_bird(ostrich)
-	
-	Forall ?X (
-		can_fly(?X) :-
-			And(
-				bird(?X)
-				not:Naf(flightless_bird(?X))
-			)
-	)
-			
+    bird(eagle)
+    bird(ostrich)
+    bird(crow)
+    bird(sparrow)
+    bird(pigeon)
+
+    flightless_bird(penguin)
+    flightless_bird(ostrich)
+
+    Forall ?X (
+      can_fly(?X) :-
+        And(
+            bird(?X)
+            not:Naf(flightless_bird(?X))
+        )
+    )
+
   ) 
 )

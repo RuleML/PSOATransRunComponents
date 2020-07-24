@@ -107,7 +107,7 @@ public class PSOATransRun {
 		{
 			systemInstantiation = "[PSOA2TPTP,VampirePrime]";
 		}
-		return "PSOATransRun" + "1.4.4" + systemInstantiation;
+		return "PSOATransRun" + "1.4.5" + systemInstantiation;
 	}
 	
 	/***

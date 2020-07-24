@@ -1,37 +1,37 @@
-% This KB is updated for transitioning to the new (= 1.4.5) ANTLR-based Naf and serves as a blueprint for
+% This KB is annotated for transitioning to the new (>= 1.4.5) ANTLR-based Naf and serves as a blueprint for
 % updating KBs that use the built-in based Naf to the new (>= 1.4.5) Naf implementation.
-% Old KB: @@@
-% New KB: @@@
+% Old (non-annotated) KB: https://github.com/RuleML/PSOATransRunComponents/blob/master/PSOATransRun/test-DEPRECATED/built-in-based_naf/built-in-based_naf-KB.psoa
+% New (non-annotated) KB: https://github.com/RuleML/PSOATransRunComponents/blob/92e211e2ce16711d3b1f4e51b6d1e3682928b012/PSOATransRun/test-basic/test-naf/naf_core/naf_core-KB.psoa#L35
 
 RuleML (
 
   % Translation requires absence of option -s  % >= 1.4.5: No longer applicable
-  
+
   % >= 1.4.5: Remove the following Prefix:
   % Prefix(not: <http://psoa.ruleml.org/lib/not#>)
-  
+
   % >= 1.4.5: Remove the following Import:
   % Import(<http://psoa.ruleml.org/lib/not.psoa>)
   
   Assert (
     bird(penguin)
-	bird(eagle)
-	bird(ostrich)
-	bird(crow)
-	bird(sparrow)
-	bird(pigeon)
-	
-	flightless_bird(penguin)
-	flightless_bird(ostrich)
-	
-	Forall ?X (
-		can_fly(?X) :-
-			And(
-				bird(?X)
-				% not:Naf(flightless_bird(?X))  % >= 1.4.5: Remove the "not:" prefix as follows:
-				Naf(flightless_bird(?X))
-			)
-	)
-			
+    bird(eagle)
+    bird(ostrich)
+    bird(crow)
+    bird(sparrow)
+    bird(pigeon)
+
+    flightless_bird(penguin)
+    flightless_bird(ostrich)
+
+    Forall ?X (
+      can_fly(?X) :-
+        And(
+            bird(?X)
+            % not:Naf(flightless_bird(?X))  % >= 1.4.5: Remove the "not:" prefix as follows:
+            Naf(flightless_bird(?X))
+        )
+    )
+
   ) 
 )
