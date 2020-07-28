@@ -41,6 +41,11 @@ tokens
 
 @lexer::header {
     package org.ruleml.psoa.parser;
+    import static org.ruleml.psoa.utils.IOUtil.*;
+}
+
+@lexer::members {
+    private boolean printDeprecatedCommentWarning = true;
 }
 
 @members
@@ -445,7 +450,15 @@ curie returns [String fullIRI]
 // Comments and whitespace:
 WHITESPACE  :  (' '|'\t'|'\r'|'\n')+ { $channel = HIDDEN; } ;
 COMMENT : '%' ~('\n')* { $channel = HIDDEN; } ;
-MULTI_LINE_COMMENT :  '<!--' (options {greedy=false;} : .* ) '-->' { $channel=HIDDEN; } ;
+MULTI_LINE_COMMENT :  '<!--' (options {greedy=false;} : .* ) '-->' 
+                      { $channel=HIDDEN; }
+                      { 
+                        if (printDeprecatedCommentWarning) {
+                           printErrln("Warning: XML-style comment blocks (delimited by '<!--'/'-->') are now deprecated and will be removed in a future release.");
+                           printDeprecatedCommentWarning = false;
+                        }                         
+                      }
+                   |  '/*' (options {greedy=false;} : .*) '*/' { $channel=HIDDEN; }	;
 
 // Keywords:
 DOCUMENT : 'Document' | 'RuleML' ;
