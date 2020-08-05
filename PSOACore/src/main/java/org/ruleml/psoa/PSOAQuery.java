@@ -110,6 +110,11 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 	 * */
 	@Override
 	public PSOAQuery FOLnormalize(RelationalTransformerConfig config) {
+		if (m_printAfterTransformation)
+		{
+			m_printStream.println("After parsing:");
+			printTree();
+		}
 		return unnest().
 			   objectify(config.differentiateObj, config.dynamicObj).
 			   describute(config.omitMemtermInNegativeAtoms);
