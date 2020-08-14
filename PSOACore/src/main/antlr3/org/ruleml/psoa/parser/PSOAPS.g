@@ -43,10 +43,6 @@ tokens
     package org.ruleml.psoa.parser;
 }
 
-@lexer::members {
-    private boolean printDeprecatedCommentWarning = true;
-}
-
 @members
 {
 	private List<String[]> m_imports = new ArrayList<String[]>();
@@ -134,6 +130,12 @@ tokens
     public void checkPrecedingWhitespace() {
     	if (input.get(input.index() - 1).getType() != WHITESPACE) {
     		throw new PSOARuntimeException("Whitespace is expected before " + input.get(input.index()).getText());
+    	}
+    }
+    
+    public void checkNoPrecedingWhitespace() {
+    	if (input.get(input.index() - 1).getType() == WHITESPACE) {
+    		throw new PSOARuntimeException("There must be no whitespace before " + input.get(input.index()).getText());
     	}
     }
 }
@@ -283,7 +285,7 @@ scope
 {
     $inLTNF = $psoa_rest::tsInLTNF;
 }
-    :   INSTANCE simple_term (LPAR (ts=tuples_and_slots { $psoa_rest::tsInLTNF &= $ts.inLTNF; })? RPAR)?
+    :   INSTANCE { checkNoPrecedingWhitespace(); } simple_term (LPAR (ts=tuples_and_slots { $psoa_rest::tsInLTNF &= $ts.inLTNF; })? RPAR)?
     -> ^(INSTANCE simple_term) tuples_and_slots?
     ;
 
@@ -443,15 +445,7 @@ curie returns [String fullIRI]
 // Comments and whitespace:
 WHITESPACE  :  (' '|'\t'|'\r'|'\n')+ { $channel = HIDDEN; } ;
 COMMENT : '%' ~('\n')* { $channel = HIDDEN; } ;
-MULTI_LINE_COMMENT :  '<!--' (options {greedy=false;} : .* ) '-->' 
-                      { $channel=HIDDEN; }
-                      { 
-                        if (printDeprecatedCommentWarning) {
-                           System.out.println("Warning: XML-style comment blocks (delimited by '<!--'/'-->') are now deprecated and will be removed in a future release.");
-                           printDeprecatedCommentWarning = false;
-                        }                         
-                      }
-                   |  '/*' (options {greedy=false;} : .*) '*/' { $channel=HIDDEN; }	;
+MULTI_LINE_COMMENT :  '<!--' (options {greedy=false;} : .* ) '-->' { $channel=HIDDEN; } ;
 
 // Keywords:
 DOCUMENT : 'Document' | 'RuleML' ;
