@@ -35,8 +35,7 @@ options
 {
     private boolean m_isRuleBody = false;
     private boolean m_isQuery = false;
-    private boolean m_isGroundFactOrConclusion = false;
-    private int m_ruleNum = 0;
+    private boolean m_isGroundFact = false;
 
     private Set<String> m_localConsts;
     private Set<String> m_clauseVars = new HashSet<String>();
@@ -44,16 +43,9 @@ options
     private Map<String, CommonTree> m_newPositiveExistsVarNodes = new LinkedHashMap<String, CommonTree>();
     private Map<String, CommonTree> m_newNegativeExistsVarNodes = new LinkedHashMap<String, CommonTree>();
 
-    private KBInfoCollector m_KBInfo = null;
-
     public void setExcludedLocalConstNames(Set<String> excludedConstNames)
     {
         m_localConsts = excludedConstNames;
-    }
-
-    public void setKBInfo(KBInfoCollector info)
-    {
-        m_KBInfo = info;
     }
 
     private CommonTree newVarNode()
@@ -123,12 +115,6 @@ options
         existVarNodes.clear();
         return root;
     }
-
-    private boolean isGroundFactOrConclusion()
-    {
-        Vector nonGroundRuleHeads = m_KBInfo.getNonGroundRuleHeads();
-        return Collections.binarySearch(nonGroundRuleHeads, m_ruleNum) < 0;
-    }
 }
 
 document
@@ -181,7 +167,6 @@ rule
 @after
 {
    checkNewExistVars();
-   m_ruleNum++;
    m_clauseVars.clear();
 }
     :  ^(FORALL (VAR_ID {  m_clauseVars.add($VAR_ID.text); })+ clause)
@@ -190,24 +175,24 @@ rule
 
 clause
     :   ^(IMPLICATION
-          { m_isGroundFactOrConclusion = isGroundFactOrConclusion(); }
+          { m_isGroundFact = false; }
           head
           { m_isRuleBody = true; }
           formula
           { m_isRuleBody = false; })
-        -> { (m_newPositiveExistsVarNodes.isEmpty() || m_isGroundFactOrConclusion)
+        -> { (m_newPositiveExistsVarNodes.isEmpty())
            && m_newNegativeExistsVarNodes.isEmpty() }?
            ^(IMPLICATION head formula)
-        -> { m_newPositiveExistsVarNodes.isEmpty() || m_isGroundFactOrConclusion }?
+        -> { m_newPositiveExistsVarNodes.isEmpty() }?
            ^(IMPLICATION head ^(EXISTS { newExistsVarsTree(m_newNegativeExistsVarNodes) } formula))
         -> { m_newNegativeExistsVarNodes.isEmpty() }?
            ^(IMPLICATION ^(EXISTS { newExistsVarsTree(m_newPositiveExistsVarNodes) } head) formula)
         -> ^(IMPLICATION
              ^(EXISTS { newExistsVarsTree(m_newPositiveExistsVarNodes) } head)
              ^(EXISTS { newExistsVarsTree(m_newNegativeExistsVarNodes) } formula))
-    |   { m_isGroundFactOrConclusion = isGroundFactOrConclusion(); }
+    |   { m_isGroundFact = m_clauseVars.isEmpty(); }
         head
-        -> { !m_isGroundFactOrConclusion && !m_newPositiveExistsVarNodes.isEmpty() }?
+        -> { !m_isGroundFact && !m_newPositiveExistsVarNodes.isEmpty() }?
            ^(EXISTS { newExistsVarsTree(m_newPositiveExistsVarNodes) } head)
         -> head
     ;
@@ -267,7 +252,7 @@ external
 psoa
     :   ^(PSOA term? ^(INSTANCE term) tuple* slot*)
     |   ^(OIDLESSEMBATOM ^(INSTANCE term) tuple* slot*)
-    ->  { m_isRuleBody || m_isQuery || !m_isGroundFactOrConclusion }?
+    ->  { m_isRuleBody || m_isQuery || !m_isGroundFact }?
         // here we need to gather introduced variables into an Exists clause.
         ^(PSOA { newVarNode() } ^(INSTANCE term) tuple* slot*)
     ->  ^(PSOA ^(SHORTCONST LOCAL[freshConstName(m_localConsts)]) ^(INSTANCE term) tuple* slot*)

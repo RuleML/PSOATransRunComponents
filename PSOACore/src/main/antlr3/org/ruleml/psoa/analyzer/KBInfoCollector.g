@@ -20,22 +20,17 @@ options
     import java.util.Set;
     import java.util.HashSet;
     import java.util.Map;
-    import java.util.LinkedHashMap;
+    import java.util.HashMap;
     import java.util.Collection;
-    import java.util.Vector;
 }
 
 @members
 {
     // private KBInfo m_KBInfo = new KBInfo();
 
-    private Map<String, PredicateInfo> m_predicates = new LinkedHashMap<String, PredicateInfo>();
+    private Map<String, PredicateInfo> m_predicates = new HashMap<String, PredicateInfo>();
     private List<String> m_importedKBs = new ArrayList<String>();
     private boolean m_hasHeadOnlyVariables = false;
-    private boolean m_hasHeadVariables = true;
-    private int m_ruleNum = 0;
-    private Vector m_nonGroundRuleHeads = new Vector();
-
 
     public PredicateInfo getPredInfo(String predicate)
     {
@@ -103,16 +98,6 @@ options
     {
         return m_hasHeadOnlyVariables;
     }
-
-    private void addPredWithNonGroundHead()
-    {
-        m_nonGroundRuleHeads.add(m_ruleNum);
-    }
-
-    public Vector getNonGroundRuleHeads()
-    {
-        return m_nonGroundRuleHeads;
-    }
 }
 
 document
@@ -156,8 +141,6 @@ scope
     $rule::headOnlyVars = new HashSet<String>();
     $rule::existVars = new HashSet<String>();
     $rule::isRuleBody = false;
-
-    m_hasHeadVariables = false;
 }
 @after
 {
@@ -167,20 +150,12 @@ scope
     }
 
     $rule::existVars.clear();
-    ++m_ruleNum;
 }
     :  ^(FORALL VAR_ID+ clause)
     |   clause
     ;
 
 clause
-@after
-{
-    if (m_hasHeadVariables)
-    {
-        addPredWithNonGroundHead();
-    }
-}
     :   ^(IMPLICATION head { $rule::isRuleBody = true; } formula { $rule::isRuleBody = false; })
     |   head
     ;
@@ -237,8 +212,6 @@ term
           if (!$rule::existVars.contains(varName)) {
              $rule::headOnlyVars.add(varName);
           }
-
-          m_hasHeadVariables = true;
        }
        else
           $rule::headOnlyVars.remove(varName);
