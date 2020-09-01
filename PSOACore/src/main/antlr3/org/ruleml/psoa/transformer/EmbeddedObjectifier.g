@@ -1,7 +1,5 @@
 /**
- * This grammar file is the template for all transformers. The grammar rules corresponds
- * to PSOA's EBNF grammar.
- *
+ *  This grammar file is used to generate a transformer for embedded objectification.
  **/
 
 tree grammar EmbeddedObjectifier;
@@ -33,16 +31,19 @@ options
 
 @members
 {
+    // :BEGIN: these five fields are from Objectifier.g
     private boolean m_isRuleBody = false;
     private boolean m_isQuery = false;
     private boolean m_isGroundFact = false;
 
     private Set<String> m_localConsts;
     private Set<String> m_clauseVars = new HashSet<String>();
+    // :END:
 
     private Map<String, CommonTree> m_newPositiveExistsVarNodes = new LinkedHashMap<String, CommonTree>();
     private Map<String, CommonTree> m_newNegativeExistsVarNodes = new LinkedHashMap<String, CommonTree>();
 
+    // :BEGIN: the next three methods are adapted from Objectifier.g
     public void setExcludedLocalConstNames(Set<String> excludedConstNames)
     {
         m_localConsts = excludedConstNames;
@@ -115,6 +116,7 @@ options
         existVarNodes.clear();
         return root;
     }
+    // :END:
 }
 
 document
@@ -252,10 +254,10 @@ external
 psoa
     :   ^(PSOA term? ^(INSTANCE term) tuple* slot*)
     |   ^(OIDLESSEMBATOM ^(INSTANCE term) tuple* slot*)
-    ->  { m_isRuleBody || m_isQuery || !m_isGroundFact }?
-        // here we need to gather introduced variables into an Exists clause.
+    ->  { m_isGroundFact }?
+    	^(PSOA ^(SHORTCONST LOCAL[freshConstName(m_localConsts)]) ^(INSTANCE term) tuple* slot*)
+    ->  // here we need to gather introduced variables into an Exists clause.
         ^(PSOA { newVarNode() } ^(INSTANCE term) tuple* slot*)
-    ->  ^(PSOA ^(SHORTCONST LOCAL[freshConstName(m_localConsts)]) ^(INSTANCE term) tuple* slot*)
     ;
 
 tuple

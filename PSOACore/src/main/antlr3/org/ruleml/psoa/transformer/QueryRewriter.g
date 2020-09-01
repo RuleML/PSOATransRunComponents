@@ -297,7 +297,8 @@ psoa[boolean isAtomicFormula]
     PredicateInfo pi = null;
     CommonTree oidTree = null;
 }
-    :   ^(PSOA (oid=term { oidTree = $oid.tree; })?
+    :   ^(OIDLESSEMBATOM ^(INSTANCE term) tuple* slot*)
+    |   ^(PSOA (oid=term { oidTree = $oid.tree; })?
             ^(INSTANCE type=term
             	{
             	  /*
@@ -324,7 +325,7 @@ psoa[boolean isAtomicFormula]
          || $type.tree.getType() == VAR_ID      // Predicate variable
        }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
     -> {   pi == null ||         // Predicate does not exist in KB
-          (oid != null && !oid.isVariable) ||    // Psoa term with a non-variable OID
+          (oid != null && !($oid.isVariable)) ||    // Psoa term with a non-variable OID
           (pi.isRelational() && hasIndepTuple($tuples)) ||  // Relational predicate having independent tuple
           $slots != null         // Psoa term with slots
        }? FALSITY

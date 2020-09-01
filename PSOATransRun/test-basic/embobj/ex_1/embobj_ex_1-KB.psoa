@@ -1,0 +1,62 @@
+RuleML(
+  Assert(
+
+    % This oidful atom contains both oidful and oidless embedded atoms:
+    % o#c is oidful-embedded in the OID position
+    % #f(a) is oidless-embedded in the first argument position of the top-level tuple
+    % #h(-[a b]) is oidless-embedded in the second argument position of the top-level tuple
+    % oid#g(a b) is oidful-embedded in the third argument position of the top-level tuple
+    % The oidless-embedded atoms will be embeddedly objectified.
+    % Then all embedded atoms will be oidful and unnested.
+
+    o#c#d(#f(a) #h(-[a b]) oid#g(a b))
+
+    /* OID-embedded atoms like o#c of oidful top-level atoms like o#c#d(...)
+    of this form are unnested in the host KB as follows:
+
+    o#c
+    o#d(#f(a) #h(-[a b]) oid#g(a b))
+
+    */
+
+    % This oidless atom just omits the o of the above atom:
+    % #c is oidless-embedded in the OID position
+    % This oidless-embedded atoms will also be embeddedly objectified.
+    % The rest is as above.
+
+    #c#d(#f(a) #h(-[a b]) oid#g(a b))
+
+    #p(f1(#p1(#p2(a u->v)))
+       s->g1(#q1(g2(#q2(g3(b c))))))
+
+    % Use a single level of objectification, initially.
+    #d(#f(a) #h(-[a b]) oid2#g(a b))
+
+    % two levels of embedded objectification.
+    #d2(#f(a #i(a b)) #h(-[a b]) oid3#g(a b))
+
+    % three levels of embedded objectification.
+    #d3(#f(a #i(a b #j(c))) #h(-[a b]) oid4#g(a b #k(m n)))
+
+    #purchase(John #store(possession->asset(Mary) location->place(TimesSquare NYC)) Fido)
+
+    % embedded atom in condition.
+    f(oid5#g(a b))
+    f(b) :- f(#g(a b))
+
+    % embedded atom in conclusion.
+    g(#g(a b)) :- f(b)
+
+    % embedded atoms in both conclusion and condition.
+    #d4(#f(a) #h(-[a b]) oid5#g(a b)) :-
+      d4(#f(a #i(a b #j(c))) #h(-[a b]) oid6#g(a b #k(m n)))
+
+    /*
+
+    > o#d(?o1#f(a) ?o2#h(-[a b]) #g(a b))
+    ?o1=_1 ?o2=_2
+
+    */
+
+  )
+)

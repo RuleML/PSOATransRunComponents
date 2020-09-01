@@ -224,7 +224,8 @@ external
     ;
     
 psoa[boolean isAtomicFormula]
-    :   ^(PSOA oid=term? ^(INSTANCE op=term) tuples+=tuple* slots+=slot*)
+    :   ^(OIDLESSEMBATOM ^(INSTANCE term) tuple* slot*)
+    |   ^(PSOA oid=term? ^(INSTANCE op=term) tuples+=tuple* slots+=slot*)
     -> { !isAtomicFormula || oid == null }? ^(PSOA $oid? ^(INSTANCE $op) tuple* slot*)
 	-> { getDescributorTree($oid.tree, $op.tree, $tuples, $slots) }
 	

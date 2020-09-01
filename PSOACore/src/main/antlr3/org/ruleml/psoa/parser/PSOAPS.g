@@ -233,17 +233,18 @@ naf_formula
     :   NAF LPAR formula RPAR-> ^(NAF["NAF"] formula)
     ;
 
-atomic
+atomic options {backtrack = true; memoize = true;}
 @after
 {
     if ($tree.getChildCount() == 1 && $left_term.isSimple)
         throw new PSOARuntimeException("Simple term cannot be an atomic formula:" + $left_term.text);
 }
-    :   left_term=internal_term ((EQUAL | SUBCLASS)^ term)?
+    :   left_term=internal_term[false] ((EQUAL | SUBCLASS)^ term[false])
+    |   left_term=internal_term[true]
     ;
 
-term
-    :   internal_term
+term[boolean isAtomic]
+    :   internal_term[isAtomic]
     |   external_term
     ;
 
@@ -253,12 +254,11 @@ simple_term
     ;
 
 external_term
-    :   EXTERNAL LPAR simple_term LPAR (term ({ checkPrecedingWhitespace(); } term)*)? RPAR RPAR
+    :   EXTERNAL LPAR simple_term LPAR (term[false] ({ checkPrecedingWhitespace(); } term[false])*)? RPAR RPAR
     -> ^(EXTERNAL ^(PSOA ^(INSTANCE simple_term) ^(TUPLE DEPSIGN["+"] term*)))
     ;
 
-
-internal_term returns [boolean isSimple]
+internal_term[boolean isAtomic] returns [boolean isSimple]
 scope
 {
     boolean inLTNF;
@@ -282,16 +282,35 @@ scope
          -> ^(PSOA ^(INSTANCE $internal_term) tuples_and_slots?))?
         ({ !hasPrecedingWhitespace() }? psoa_rest { $isSimple = false; $internal_term::inLTNF &= $psoa_rest.inLTNF; }
          -> ^(PSOA $internal_term psoa_rest))*   
-    |   emb_atom_chain { $isSimple = false; $internal_term::inLTNF &= $emb_atom_chain.inLTNF; }         
-    ;   
+    |   emb_atom_chain[isAtomic] { $isSimple = false; $internal_term::inLTNF &= $emb_atom_chain.inLTNF; }         
+    ;
 
 emb_atom_chain_rest
     :   { !hasPrecedingWhitespace() }? psoa_rest
-    ; 
+    ;
 
-emb_atom_chain returns [boolean inLTNF]
-    :   (psoa_rest {$emb_atom_chain.inLTNF = $psoa_rest.inLTNF; } -> ^(OIDLESSEMBATOM psoa_rest))
-        (emb_atom_chain_rest -> ^(PSOA $emb_atom_chain emb_atom_chain_rest))*
+/* 
+ * What in the following we will call "the chain o#a#b" of a top-level atom
+ * o#a#b(...) is its "initial part parsed as an OID-embedded atom o#a
+ * followed by the predicate b" of the corresponding oidless atom b(...).
+ */
+emb_atom_chain[boolean isAtomic] returns [boolean inLTNF]
+scope
+{
+    boolean firstLinkInChain;
+}
+@init
+{
+    $emb_atom_chain::firstLinkInChain = true;
+}
+    :   (head_link=psoa_rest {$emb_atom_chain.inLTNF = $psoa_rest.inLTNF; } 
+         -> { isAtomic }? ^(PSOA psoa_rest)
+         -> ^(OIDLESSEMBATOM psoa_rest))
+        ((emb_atom_chain_rest
+          -> { $emb_atom_chain::firstLinkInChain && $isAtomic }? //TODO:@@@
+             ^(PSOA ^(OIDLESSEMBATOM $head_link) emb_atom_chain_rest)
+          -> ^(PSOA $emb_atom_chain emb_atom_chain_rest))
+         { $emb_atom_chain::firstLinkInChain = false; })*
     ;
 
 psoa_rest returns [boolean inLTNF]
@@ -344,42 +363,48 @@ scope  // Track the indexes of the earliest slot and latest tuple after it
 {
     int firstSlotIndex;
     int lastTupleIndex;
+    int line;
+    boolean hasSlot;
+    boolean hasExplTuple;
+    boolean preSlotArrowTuple;
 }
 @init  // Set initial values satisfying lastTupleIndex < firstSlotIndex (last tuple is before first slot)
 {
     $inLTNF = true;
     $tuples_and_slots::firstSlotIndex = Integer.MAX_VALUE;
     $tuples_and_slots::lastTupleIndex = 0;
+    $tuples_and_slots::hasSlot = false;
+    $tuples_and_slots::hasExplTuple = false;
+    $tuples_and_slots::preSlotArrowTuple = false;
+    $tuples_and_slots::line = input.LT(1).getLine();
 }
 @after // The sequence is in LTNF iff the first slot has lexical index greater than or equal to the last tuple index
 {
     $inLTNF = $tuples_and_slots::firstSlotIndex >= $tuples_and_slots::lastTupleIndex;
 }
-    :   { boolean hasSlot = false; boolean hasExplTuple = false; boolean preSlotArrowTuple = false;
-          int line = input.LT(1).getLine();}
-        ((terms += term {preSlotArrowTuple = false; }) | (tuple {preSlotArrowTuple = true; hasExplTuple = true; }))
+    :   ((terms += term[false] {$tuples_and_slots::preSlotArrowTuple = false; }) | (tuple {$tuples_and_slots::preSlotArrowTuple = true; $tuples_and_slots::hasExplTuple = true; }))
          // If "terms" is non-empty, its contents belong to a single
          // implicit tuple, except for the last term, which is the slot name.
          ({ checkPrecedingWhitespace(); }
-         ((terms += term {preSlotArrowTuple = false; }) | (tuple {preSlotArrowTuple = true; hasExplTuple = true; })))*
-         ( SLOT_ARROW first_slot_value=term { $tuples_and_slots::firstSlotIndex = input.index(); hasSlot = true; } (slot | (tuple {$tuples_and_slots::lastTupleIndex = input.index(); hasExplTuple = true; }))* )?
+         ((terms += term[false] {$tuples_and_slots::preSlotArrowTuple = false; }) | (tuple {$tuples_and_slots::preSlotArrowTuple = true; $tuples_and_slots::hasExplTuple = true; })))*
+         ( SLOT_ARROW first_slot_value=term[false] { $tuples_and_slots::firstSlotIndex = input.index(); $tuples_and_slots::hasSlot = true; } (slot | (tuple {$tuples_and_slots::lastTupleIndex = input.index(); $tuples_and_slots::hasExplTuple = true; }))* )?
          {
-            if (hasSlot && preSlotArrowTuple)
+            if ($tuples_and_slots::hasSlot && $tuples_and_slots::preSlotArrowTuple)
             {
-                throw new PSOARuntimeException("Explicit tuple as slot name at line " + line);
+                throw new PSOARuntimeException("Explicit tuple as slot name at line " + $tuples_and_slots::line);
             }
-            else if (hasExplTuple && hasSlot && $terms == null)
+            else if ($tuples_and_slots::hasExplTuple && $tuples_and_slots::hasSlot && $terms == null)
             {
-                throw new PSOARuntimeException("Missing valid slot name at line " + line);
+                throw new PSOARuntimeException("Missing valid slot name at line " + $tuples_and_slots::line);
             }
-            else if (hasExplTuple && ((!hasSlot && $terms != null) || (hasSlot && $terms.size() > 1)))
+            else if ($tuples_and_slots::hasExplTuple && ((!$tuples_and_slots::hasSlot && $terms != null) || ($tuples_and_slots::hasSlot && $terms.size() > 1)))
             {
-                throw new PSOARuntimeException("Implicit tuple in atom with one or more explicit tuples at line " + line);
+                throw new PSOARuntimeException("Implicit tuple in atom with one or more explicit tuples at line " + $tuples_and_slots::line);
             }
         }
-    ->  {!hasSlot && hasExplTuple}?  // explicit tuples, no implicit tuple
+    ->  {!$tuples_and_slots::hasSlot && $tuples_and_slots::hasExplTuple}?  // explicit tuples, no implicit tuple
         tuple+
-    ->  {!hasSlot}?  // single implicit tuple
+    ->  {!$tuples_and_slots::hasSlot}?  // single implicit tuple
         ^(TUPLE DEPSIGN["+"] {getTupleTree($terms, $terms.size()) } )
     ->  {$terms.size() == 1}?  // no implicit tuple, leading slot
         // normalize to right-slot normal form
@@ -391,13 +416,13 @@ scope  // Track the indexes of the earliest slot and latest tuple after it
     ;
 
 tuple
-    :   DEPSIGN LSQBR (term ({ checkPrecedingWhitespace(); } term)*)? RSQBR -> ^(TUPLE DEPSIGN term*)
-    |   LSQBR (term ({ checkPrecedingWhitespace(); } term)*)? RSQBR -> ^(TUPLE DEPSIGN["+"] term*)    // Tuples with no dependency signs are treated as dependent, may be DEPRECATED in the future
+    :   DEPSIGN LSQBR (term[false] ({ checkPrecedingWhitespace(); } term[false])*)? RSQBR -> ^(TUPLE DEPSIGN term*)
+    |   LSQBR (term[false] ({ checkPrecedingWhitespace(); } term[false])*)? RSQBR -> ^(TUPLE DEPSIGN["+"] term*)    // Tuples with no dependency signs are treated as dependent, may be DEPRECATED in the future
     ;
 
 slot
     :
-        name=term SLOT_ARROW value=term -> ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] $name $value)
+        name=term[false] SLOT_ARROW value=term[false] -> ^(SLOT DEPSIGN[$SLOT_ARROW.text.substring(0, 1)] $name $value)
     ;
 
 /*
@@ -407,10 +432,13 @@ slot
 */
 
 constant
+@init {
+    String localConstName = new String();
+}
     :	iri   -> ^(SHORTCONST iri)
     |   const_string -> const_string
     |   NUMBER  -> ^(SHORTCONST NUMBER)
-    |   { String localConstName; }
+    |   //{ String localConstName; }
 		PN_LOCAL {
     		if ($PN_LOCAL.text.startsWith("_"))
 				localConstName = $PN_LOCAL.text.substring(1);
@@ -449,7 +477,7 @@ variable
 answer
     : 'yes'
     | 'no'
-    | (term EQUAL term)+
+    | (term[false] EQUAL term[false])+
     ;
 
 iri returns [String fullIRI]
@@ -570,3 +598,4 @@ VAR_ID : '?' PN_LOCAL?;
 fragment ECHAR : '\\' ('t' | 'b' | 'n' | 'r' | 'f' | '\\' | '"' | '\'');
 
 fragment EOL : '\n' | '\r';
+

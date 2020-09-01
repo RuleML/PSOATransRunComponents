@@ -1,0 +1,44 @@
+RuleML(
+  Assert(
+
+    p2(#g(b a))
+
+    p3(#f(a)) :- p2(#g(b a))
+
+    Forall ?A (
+      p4(#f(a)) :- p2(#g(b ?A))
+    )
+
+    Forall ?Var (
+      p5(#f(a) ?Var) :- p2(#g(b a))
+    )
+
+    transaction200#purchase(
+      buyer->John
+      seller->#store(possession->asset(Mary) location->place(TimesSquare NYC))
+      item->Fido)
+
+
+    Forall ?b ?s ?i ?t (
+      #responsiPred(?t)#liability(bearer->?b item->?i) :-
+          ?t#purchase(buyer->?b seller->?s item->?i)
+    )
+
+    /*
+
+    > p3(?o#f(a))
+    ?o=_skolem1(_3)
+
+    > p3(?o#f(?a))
+    ?o=_skolem1(_3) ?a=_a
+
+    > transaction200#purchase(seller->?o#?s)
+    ?o=_2 ?s=_store
+
+    > ?o#responsiPred(?t)
+    ?o=_skolem7(_John _2 _Fido _transaction200) ?t=_transaction200
+
+    */
+
+  )
+)
