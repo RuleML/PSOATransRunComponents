@@ -342,6 +342,11 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 	 * */
 	@Override
 	public PSOAKB FOLnormalize(RelationalTransformerConfig config) {
+		if (m_printAfterTransformation)
+		{
+			m_printStream.println("After parsing:");
+			printTree();
+		}
 		return schemalessChecking(config.forallWrap).
 			   unnest().
 			   rewriteSubclass().
