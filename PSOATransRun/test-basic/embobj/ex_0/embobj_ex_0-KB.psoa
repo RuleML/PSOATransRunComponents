@@ -1,0 +1,85 @@
+RuleML (
+   Assert (
+
+     /*
+     Embedded oidful atoms are paired with (otherwise identical) embedded oidless atoms undergoing embobj,
+    showing that subsequent unnest etc. creates equivalent (identical up to renamed local constants) results
+     */
+
+
+     p1(o1#q())
+
+     p2(#q())
+
+     /*
+     > p1(?o#q())
+     Answer(s):
+     ?o=_o1
+
+     > p2(?o#q())
+     Answer(s):
+     ?o=_1
+     */
+
+
+     p3(-[o2#q() o3#r()])
+
+     p4(-[#q() #r()])
+
+     /*
+     > p3(-[?o2#q() ?o3#r()])
+     Answer(s):
+     ?o2=_o2 ?o3=_o3
+
+     > p4(-[?o2#q() ?o3#r()])
+     Answer(s):
+     ?o2=_2 ?o3=_3
+     */
+
+
+     p5(o4#s->filler)
+
+     p6(#s->filler)
+
+     /*
+     > p5(?o4#s->filler)
+     Answer(s):
+     ?o4=_o4
+
+     > p6(?o4#s->filler)
+     Answer(s):
+     ?o4=_4
+     */
+
+
+     p7(slot->o5#f)
+
+     p8(slot->#f)
+
+     /*
+     > p7(slot->?o5#f)
+     Answer(s):
+     ?o5=_o5
+
+     > p8(slot->?o5#f)
+     Answer(s):
+     ?o5=_5
+     */
+
+
+     o6#q()#p9()
+
+     #q()#p10()
+
+     /*
+     > ?o6#q()#p9()
+     Answer(s):
+     ?o6=_o6
+
+     > ?o6#q()#p10()
+     Answer(s):
+     ?o6=_6
+     */
+
+   )
+)
