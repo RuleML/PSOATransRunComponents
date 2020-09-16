@@ -71,7 +71,7 @@ tokens
     }
 
     /**
-     * Get the full IRI form of an IRI prefix
+     * Get full IRI of an IRI prefix
     */
     protected String getNamespace(String prefix)
     {
@@ -94,7 +94,7 @@ tokens
 	}
 
 	/**
-     * Get full IRI from a namespace-prefixed IRI
+     * Get full IRI from a namespace-prefixed IRI, by concatenating namespace with localName
     */
 	protected String getFullIRI(String ns, String localName)
 	{
@@ -233,14 +233,47 @@ naf_formula
     :   NAF LPAR formula RPAR-> ^(NAF["NAF"] formula)
     ;
 
+/*
+ * ANTLR rule for parsing atomic formulas
+ *
+ * atomic matches atomic formulas at the KB top-level. It divides two categories
+ * of atomic formulas across its two alternatives in this order:
+ *
+ * (1) Equality ("=") and subclass ("##") relations
+ * (2) Other formulas represented by the match result of internal_term 
+ *
+ * internal_term has a boolean argument called isAtomic:
+ *
+ * If true, its match result is an atomic formula
+ *  
+ * If false, it is a subterm of an atomic formula, 
+ * which is not at the KB top-level and therefore not an atomic formula
+ *
+ * atomic provisionally assumes it is matching an equality or subclass relation by
+ * invoking its first alternative. If it fails, it backtracks to the second alternative. 
+ * Backtracking is not a default behavior of ANTLR rules and must be enabled (at the
+ * granularity of an individual rule) via ANTLR's {backtrack = true;} option.
+ *
+ * Similarly, memoization is enabled via ANTLR's {memoize = true;} option. It saves the partial 
+ * successes of failed matches for later use in backtracked alternatives. In particular,
+ * if left_term is matched in the first alternative but is not followed by either
+ * an EQUAL or SUBCLASS token, its memoized match result is re-used upon backtracking to 
+ * the second alternative where its isAtomic argument becomes true. 
+ *
+ * Since ANTLR parses all text in a single left-to-right pass and the correct value of 
+ * left_term's isAtomic argument is known only after left_term is matched, backtracking is 
+ * necessary here.
+ */
+
 atomic options {backtrack = true; memoize = true;}
 @after
 {
     if ($tree.getChildCount() == 1 && $left_term.isSimple)
         throw new PSOARuntimeException("Simple term cannot be an atomic formula:" + $left_term.text);
 }
-    :   left_term=internal_term[false] ((EQUAL | SUBCLASS)^ term[false])
-    |   left_term=internal_term[true]
+    :   left_term=internal_term[false] ((EQUAL | SUBCLASS)^ term[false])  // Check for "=" or "##" tokens/operators
+    |   left_term=internal_term[true]  // Otherwise, backtrack here and                                        
+                                       // set left_term.isAtomic = true (i.e., toggle left_term as a top-level atomic formula)
     ;
 
 term[boolean isAtomic]
@@ -289,11 +322,17 @@ emb_atom_chain_rest
     :   { !hasPrecedingWhitespace() }? psoa_rest
     ;
 
-/* 
- * What in the following we will call "the chain o#a#b" of a top-level atom
+/*
+ * In the following, "OID-embedded" means "embedded in the OID position".
+ * What we will call "the chain o#a#b" of a top-level atom
  * o#a#b(...) is its "initial part parsed as an OID-embedded atom o#a
  * followed by the predicate b" of the corresponding oidless atom b(...).
  */
+
+/*
+ * ANTLR rule for parsing embedded oidless atoms
+ */
+
 emb_atom_chain[boolean isAtomic] returns [boolean inLTNF]
 scope
 {
@@ -303,14 +342,15 @@ scope
 {
     $emb_atom_chain::firstLinkInChain = true;
 }
-    :   (head_link=psoa_rest {$emb_atom_chain.inLTNF = $psoa_rest.inLTNF; } 
-         -> { isAtomic }? ^(PSOA psoa_rest)
-         -> ^(OIDLESSEMBATOM psoa_rest))
-        ((emb_atom_chain_rest
-          -> { $emb_atom_chain::firstLinkInChain && $isAtomic }? //TODO:@@@
-             ^(PSOA ^(OIDLESSEMBATOM $head_link) emb_atom_chain_rest)
-          -> ^(PSOA $emb_atom_chain emb_atom_chain_rest))
-         { $emb_atom_chain::firstLinkInChain = false; })*
+    :   (head_link=psoa_rest {$emb_atom_chain.inLTNF = $psoa_rest.inLTNF; }  // Match "#a" of "#a#b"
+         -> { isAtomic }? ^(PSOA psoa_rest)  // Designate a top-level oidless atom as a PSOA atom
+         -> ^(OIDLESSEMBATOM psoa_rest))     // Otherwise, designate an embedded oidless atom as an OIDLESSEMBATOM atom
+        ((emb_atom_chain_rest  // Match "#b" of "#a#b"
+          -> { $emb_atom_chain::firstLinkInChain && $isAtomic }?       // Test if matched "#a" and on KB top-level
+             ^(PSOA ^(OIDLESSEMBATOM $head_link) emb_atom_chain_rest)  // Wrap "#a" as the OID-embedded atom of "#a#b"
+          -> ^(PSOA $emb_atom_chain emb_atom_chain_rest))  // Otherwise, wrap "#a#b" as the OID-embedded atom of emb_atom_chain_rest
+         { $emb_atom_chain::firstLinkInChain = false; }  // emb_atom_chain_rest has succeeded at least once
+         )*
     ;
 
 psoa_rest returns [boolean inLTNF]
@@ -334,10 +374,10 @@ scope
  *  tuples_and_slots parses a sequence of tuples and slots inside a PSOA atom.
  *
  *  The analysis considers two cases, distinguished by the presence (absence)
- *  of an implicit tuple, a sequence of terms unenclosed by square brackets.
+ *  of an implicit tuple, a sequence of terms not enclosed by square brackets.
  *
  *  An implicit tuple:
- *    * cannot be written in an atom containing conventional ("explicit") tuples,
+ *    * cannot be written in an atom containing explicit tuples,
  *    * requires its surrounding atom to be written in left tuple normal form.
  *
  *  An atom without an implicit tuple allows explicit tuples and slots to be
@@ -495,13 +535,13 @@ curie returns [String fullIRI]
 // Comments and whitespace:
 WHITESPACE  :  (' '|'\t'|'\r'|'\n')+ { $channel = HIDDEN; } ;
 COMMENT : '%' ~('\n')* { $channel = HIDDEN; } ;
-MULTI_LINE_COMMENT :  '<!--' (options {greedy=false;} : .* ) '-->' 
+MULTI_LINE_COMMENT :  '<!--' (options {greedy=false;} : .* ) '-->'
                       { $channel=HIDDEN; }
-                      { 
+                      {
                         if (printDeprecatedCommentWarning) {
                            printErrln("Warning: XML-style comment blocks (delimited by '<!--'/'-->') are now deprecated and will be removed in a future release.");
                            printDeprecatedCommentWarning = false;
-                        }                         
+                        }
                       }
                    |  '/*' (options {greedy=false;} : .*) '*/' { $channel=HIDDEN; }	;
 
@@ -598,4 +638,3 @@ VAR_ID : '?' PN_LOCAL?;
 fragment ECHAR : '\\' ('t' | 'b' | 'n' | 'r' | 'f' | '\\' | '"' | '\'');
 
 fragment EOL : '\n' | '\r';
-
