@@ -208,7 +208,8 @@ external
     ;
     
 psoa
-    :   ^(PSOA term? ^(INSTANCE term) tuple* (slots+=slot)*)          
+    :   ^(OIDLESSEMBATOM ^(INSTANCE term) tuple* slot*)
+    |   ^(PSOA term? ^(INSTANCE term) tuple* (slots+=slot)*)        
     ;
 
 tuple

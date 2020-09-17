@@ -1,0 +1,82 @@
+RuleML(
+  Assert(
+
+/*
+Atom as a user-specified (but itself oidless) OID of an atom 'refining' it
+==========================================================================
+
+Consider the atom
+
+transaction200#purchase(
+  buyer->John
+  seller->#store(possession->asset(Mary)
+                 location->place(TimesSquare NYC))
+  item->Fido)
+
+"store" is embedded into the purchase predicate and is preceded by a
+hash prefix operator.
+
+Behind the scenes, an object is created as a member
+of the "store" predicate, with the listed slot-filler pairs.
+
+The object becomes itself the filler of transaction200's "seller"
+slot.
+
+By nesting atoms -- even allowing embedded OID atoms -- it is possible
+to specify multiple memberships pertaining to the same anonymous
+object.
+
+Suppose the store in Times Square belonged to the Macy's department
+store chain/franchise. This could be written as
+
+#store(possession->asset(Mary)
+       location->place(TimesSquare NYC))#franchise(Macy_s)
+
+and situated in the transaction like so:
+*/
+
+transaction200#purchase(
+  buyer->John
+  seller->#store(possession->asset(Mary)
+                 location->place(TimesSquare NYC))#franchise(Macy_s)
+  item->Fido)
+
+/*
+~~embobj~~>
+transaction200#purchase(
+  buyer->John
+  seller->_1#store(possession->asset(Mary)
+                   location->place(TimesSquare NYC))#franchise(Macy_s)
+  item->Fido)
+~~unnest~~>
+And(_1#store(possession->asset(Mary)
+             location->place(TimesSquare NYC))#franchise(Macy_s)
+    transaction200#purchase(
+      buyer->John
+      seller->_1
+      item->Fido)
+   )
+~~unnest~~>
+And(_1#store(possession->asset(Mary)
+             location->place(TimesSquare NYC))
+    _1#franchise(Macy_s)
+    transaction200#purchase(
+      buyer->John
+      seller->_1
+      item->Fido)
+   )
+
+Some sample queries:
+
+> transaction200#purchase(seller->?s)
+Answer(s):
+?s=_1
+
+> And(transaction200#purchase(seller->?s) ?s#store ?s#franchise(?F))
+Answer(s):
+?s=_1 ?F=_Macy_s
+
+*/
+
+  )
+)

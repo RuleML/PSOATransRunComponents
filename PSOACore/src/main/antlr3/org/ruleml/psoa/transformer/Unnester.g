@@ -259,7 +259,8 @@ psoa[boolean isTopLevel]
         $atomic::atoms.add(trim);
     }
 }
-    :   ^(PSOA oid=term? ^(INSTANCE type=term) tuples+=tuple* slots+=slot*)
+    :   ^(OIDLESSEMBATOM ^(INSTANCE term) tuple* slot*)
+    |   ^(PSOA oid=term? ^(INSTANCE type=term) tuples+=tuple* slots+=slot*)
     // Keep the psoa term unchanged if it is oidless or on the top level 
     -> { oid == null || isTopLevel }? ^(PSOA $oid? ^(INSTANCE $type) tuple* slot*)
     // Leave behind the OID otherwise

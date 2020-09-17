@@ -230,7 +230,8 @@ psoa[boolean isAtomic]
    CommonTree varNode;
    boolean hasSlot = false;
 }
-    :   ^(PSOA oid=term?
+    :   ^(OIDLESSEMBATOM ^(INSTANCE term) tuple* slot*)
+    |   ^(PSOA oid=term?
             ^(INSTANCE type=term) tuple* (slot { hasSlot = true; })*
             	{
             		// If predicate variable of atom can be bound to a relational predicate, static/dynamic may be incomplete

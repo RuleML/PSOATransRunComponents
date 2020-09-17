@@ -237,6 +237,14 @@ psoa[boolean isAtomicFormula]
         if (isAtomicFormula)
             addPsoaTermInfo($pred.tree.toStringTree(), arities, oid != null, hasIndepTuple, hasMultiTuple, hasSlot);
     }
+    |   ^(OIDLESSEMBATOM ^(INSTANCE term)
+            ((t=tuple { arities.add($t.length); hasIndepTuple = !$t.dep; })
+             (t=tuple { arities.add($t.length); if (!$t.dep) hasIndepTuple = true; hasMultiTuple = true; } )*)?
+            (slot { hasSlot = true; })*)
+    {
+        if (isAtomicFormula)
+            addPsoaTermInfo($pred.tree.toStringTree(), arities, false, hasIndepTuple, hasMultiTuple, hasSlot);
+    }
     ;
 
 tuple returns [int length, boolean dep]

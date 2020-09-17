@@ -1,0 +1,108 @@
+RuleML(
+  Assert(
+
+    /*
+    Descriptor-embedded atoms
+    */
+
+    p1(#name->a) % slot name
+    p2(name->#filler) % slot filler
+    p3(+[#dep_tup_term]) % dependent tuple term
+    p4(-[#indep_tup_term]) % independent tuple term
+    p5(#imp_tup_term) % implicit dependent tuple term
+
+    p1_p2(#name->a name->#filler) % mix of p1, p2
+    p1_p3(#name->a +[#dep_tup_term]) % mix of p1, p3
+    p1_p4(#name->a -[#indep_tup_term]) % mix of p1, p4
+    p1_p5(#imp_tup_term #name->a) % mix of p1, p5
+
+    p1_p2_p3(#name->a name->#filler +[#dep_tup_term])
+    p1_p2_p4(#name->a name->#filler -[#indep_dup_term])
+    p1_p2_p5(#imp_tup_term #name->a name->#filler)
+    p2_p3_p4(#name->a name->#filler -[#indep_dup_term])
+    p2_p3_p5(#imp_tup_term name->#filler)
+    p3_p4_p5(+[#imp_tup_term #dep_tup_term] -[#indep_tup_term])
+
+    % with vars, other attached data.
+    Forall ?C (
+      v1(#atom(a b ?C))
+    )
+    Forall ?A ?C (
+      v2(#atom(?A b ?C)->filler)
+    )
+    Forall ?C (
+      v3(name->#atom(a b ?C name->filler))
+    )
+    Forall ?C (
+      v4(+[#dep_tup_term(?C)])
+    )
+
+
+    /*
+    OID-embedded atom
+    */
+
+    #p()#q() % empty bags of descriptors
+
+    /*
+    OID-embedded atoms with descriptor-embedded atoms
+    */
+
+    #p1(#name->a)#q() % slot name
+    #p2(name->#filler)#q() % slot filler
+    #p3(+[#dep_tup_term])#q() % dependent tuple term
+    #p4(-[#indep_tup_term])#q() % independent tuple term
+    #p5(#imp_tup_term)#q() % implicit dependent tuple term
+
+    #p1_p2(#name->a name->#filler)#q() % mix of p1, p2
+    #p1_p3(#name->a +[#dep_tup_term])#q() % mix of p1, p3
+    #p1_p4(#name->a -[#indep_tup_term])#q() % mix of p1, p4
+    #p1_p5(#imp_tup_term #name->a)#q() % mix of p1, p5
+
+    #p1_p2_p3(#name->a name->#filler +[#dep_tup_term])#q()
+    #p1_p2_p4(#name->a name->#filler -[#indep_dup_term])#q()
+    #p1_p2_p5(#imp_tup_term #name->a name->#filler)#q()
+    #p2_p3_p4(#name->a name->#filler -[#indep_dup_term])#q()
+    #p2_p3_p5(#imp_tup_term name->#filler)#q()
+    #p3_p4_p5(+[#imp_tup_term #dep_tup_term] -[#indep_tup_term])#q()
+
+    /*
+
+    > ?o#p1(#name->a)#q(#name->a)
+    ?o=_33
+
+    > ?o#p2
+    ?o=_35
+    ?o=_78
+
+    > ?o#p2(name->?f)
+    ?o=_35 ?f=_34
+    ?o=_78 ?f=_2
+
+    > ?o#p2(name->?o2#filler)
+    ?o2=_34 ?o=_35
+    ?o2=_2 ?o=_78
+
+    > v1(?o#atom(a b ?C))
+    ?o=_skolem1(Var1) ?C=Var1
+
+    > v2(?Atom#atom(a b c)->filler)
+    ?Atom=_skolem3(_a _c)
+
+    > v2(?Atom#atom(a ?B c)->filler)
+    ?Atom=_skolem3(_a _c) ?B=_b
+
+    > v2(?Atom#atom(?A b ?C)->filler)
+    ?Atom=_skolem3(Var2 Var3) ?A=Var2 ?C=Var3
+
+    > v3(name->?filler#atom)
+    ?filler=_skolem5(Var0)
+
+    > p1_p2_p5(?o1#imp_tup_term ?o2#name->a name->?o3#filler)
+    ?o1=_20 ?o2=_21 ?o3=_22
+    ?o1=_62 ?o2=_63 ?o3=_64
+
+    */
+
+  )
+)

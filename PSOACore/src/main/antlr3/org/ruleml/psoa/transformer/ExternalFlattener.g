@@ -222,7 +222,8 @@ external
     ;
     
 psoa
-    :   ^(PSOA term[false]? ^(INSTANCE term[false]) tuple* slot*)
+    :   ^(OIDLESSEMBATOM ^(INSTANCE term[false]) tuple* slot*)
+    |   ^(PSOA term[false]? ^(INSTANCE term[false]) tuple* slot*)
     ;
 
 tuple

@@ -13,10 +13,10 @@ import org.ruleml.psoa.transformer.*;
 import org.ruleml.psoa.utils.ANTLRTreeStreamConsumer;
 import org.ruleml.psoa.x2psoa.*;
 
-/** 
+/**
  * Class for storing PSOA KB information and performing KB transformations
  * using ANTLR tree walkers.
- * 
+ *
  * */
 public class PSOAKB extends PSOAInput<PSOAKB>
 {
@@ -251,6 +251,15 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 		});
 	}
 	
+	public PSOAKB embeddedObjectify()
+    {
+        return transform("embedded objectification", stream -> {
+            EmbeddedObjectifier objectifier = new EmbeddedObjectifier(stream);
+            objectifier.setExcludedLocalConstNames(m_localConsts);
+
+            return objectifier.document();
+        });
+    }
 	
 	public PSOAKB rewriteSubclass()
 	{
@@ -347,7 +356,9 @@ public class PSOAKB extends PSOAInput<PSOAKB>
 			m_printStream.println("After parsing:");
 			printTree();
 		}
+		
 		return schemalessChecking(config.forallWrap).
+               embeddedObjectify().
 			   unnest().
 			   rewriteSubclass().
 			   objectify(config.differentiateObj, config.dynamicObj).

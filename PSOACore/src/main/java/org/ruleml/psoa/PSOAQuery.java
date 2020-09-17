@@ -4,6 +4,8 @@
  * */
 
 package org.ruleml.psoa;
+import java.util.Set;
+
 import org.antlr.runtime.ParserRuleReturnScope;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
@@ -15,6 +17,11 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 {
 	private PSOAKB m_kb;
 	
+	/**
+     * the set of local constants
+     * */
+    private Set<String> m_localConsts;
+	
 //	public PSOAQuery() {
 //		m_kb = null;
 //	}
@@ -25,7 +32,9 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 	
 	@Override
 	protected ParserRuleReturnScope parse(PSOAPSParser parser) throws RecognitionException {
-		return parser.query(m_kb.getNamespaceTable());
+	    ParserRuleReturnScope ret = parser.query(m_kb.getNamespaceTable());
+	    m_localConsts = parser.getLocalConsts();
+		return ret;
 	}
 	
 	public PSOAQuery rename()
@@ -37,6 +46,15 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 	{
 		return transform("unnesting", stream -> (new Unnester(stream)).query());
 	}
+	
+	public PSOAQuery embeddedObjectify()
+    {
+        return transform("embedded objectification", stream -> {                        
+            EmbeddedObjectifier objectifier = new EmbeddedObjectifier(stream);            
+            objectifier.setExcludedLocalConstNames(m_localConsts);
+            return objectifier.query();
+        });
+    }
 	
 	public PSOAQuery objectify(boolean differentiated, boolean dynamic)
 	{
@@ -115,7 +133,8 @@ public class PSOAQuery extends PSOAInput<PSOAQuery>
 			m_printStream.println("After parsing:");
 			printTree();
 		}
-		return unnest().
+		return embeddedObjectify().
+		       unnest().
 			   objectify(config.differentiateObj, config.dynamicObj).
 			   describute(config.omitMemtermInNegativeAtoms);
 	}
