@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>org.ruleml.psoa</groupId>
 			<artifactId>PSOATransRun</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 		</dependency>
 	</dependencies>
 	<repositories>

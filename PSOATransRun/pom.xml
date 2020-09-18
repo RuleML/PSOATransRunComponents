@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ruleml.psoa</groupId>
 	<artifactId>PSOATransRun</artifactId>
-	<version>1.4</version>  <!-- Retain also for 1.4.1 etc. -->
+	<version>1.5</version>  <!-- Retain also for 3rd-digit updates, e.g. 1.5.1 -->
 	<name>PSOATransRun</name>
 	
 	<properties>
@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>org.ruleml.psoa</groupId>
 			<artifactId>PSOA2X</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>gnu.getopt</groupId>

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ruleml.psoa</groupId>
 	<artifactId>PSOA2X</artifactId>
-	<version>1.4</version>
+	<version>1.5</version>
 	<name>PSOA2X</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -84,7 +84,7 @@
 		<dependency>
 			<groupId>org.ruleml.psoa</groupId>
 			<artifactId>PSOACore</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 		</dependency>
 	</dependencies>
 </project>
