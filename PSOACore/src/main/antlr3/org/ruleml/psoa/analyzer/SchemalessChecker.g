@@ -41,7 +41,10 @@ options
     private boolean m_forallWrap;
     
     private Set<String> m_freeVars = new HashSet<String>();
-    private Set<String> m_quantifiedVars = new HashSet<String>();  
+    private Set<String> m_quantifiedVars = new HashSet<String>();
+    private Set<String> m_nonNafVars = new HashSet<String>();
+    
+    private int m_nafLevels = 0;
         
     private void recordExistentialVar(Set<String> existVars, String v) {
         if (!m_quantifiedVars.contains(v)) {
@@ -105,6 +108,7 @@ rule
 {
     m_hasForall = false;
     
+    m_nonNafVars.clear();
     m_quantifiedVars.clear();
     m_freeVars.clear();
 }
@@ -175,6 +179,25 @@ scope {
     ;
     
 naf_formula
+scope
+{
+   Set<String> nafVars;
+}
+@init 
+{
+    ++m_nafLevels;
+    $naf_formula::nafVars = new HashSet<String>();
+}
+@after
+{
+    --m_nafLevels;
+    
+    $naf_formula::nafVars.removeAll(m_nonNafVars);
+    
+    if (!$naf_formula::nafVars.isEmpty()) {
+       printErrln("Warning: Variable(s): ?" + String.join(", ?", $naf_formula::nafVars) + " may not be bound in a conjunct preceding the Naf: \n" + $naf_formula.text + "\n");       
+    }
+}
     :   ^(NAF formula)
     ;
 
@@ -198,7 +221,15 @@ subclass
     
 term
     :   constant
-    |   VAR_ID { if (!$VAR_ID.text.isEmpty() && !m_quantifiedVars.contains($VAR_ID.text)) m_freeVars.add($VAR_ID.text); }
+    |   VAR_ID 
+        { if (!$VAR_ID.text.isEmpty() && !m_quantifiedVars.contains($VAR_ID.text)) 
+             m_freeVars.add($VAR_ID.text);
+             
+          if (m_nafLevels > 0)
+             $naf_formula::nafVars.add($VAR_ID.text);
+          else if (m_isRuleBody) // never deem variables in rule conclusions as non-NAF variables.
+             m_nonNafVars.add($VAR_ID.text);
+        }
     |   psoa
     |   external
     ;
