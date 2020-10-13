@@ -43,6 +43,7 @@ options
     private Set<String> m_freeVars = new HashSet<String>();
     private Set<String> m_quantifiedVars = new HashSet<String>();
     private Set<String> m_nonNafVars = new HashSet<String>();
+    private Set<String> m_headVars = new HashSet<String>();
     
     private int m_nafLevels = 0;
         
@@ -111,6 +112,7 @@ rule
     m_nonNafVars.clear();
     m_quantifiedVars.clear();
     m_freeVars.clear();
+    m_headVars.clear();
 }
 @after 
 {
@@ -193,6 +195,11 @@ scope
     --m_nafLevels;
     
     $naf_formula::nafVars.removeAll(m_nonNafVars);
+    $naf_formula::nafVars.removeAll(m_headVars);
+    
+    if (!m_nonNafVars.containsAll(m_headVars)) {
+       printErrln("Warning: Conclusion variable(s): ?" + String.join(", ?", m_headVars) + " do(es) not appear in a conjunct preceding the Naf: \n" + $naf_formula.text + "\n");
+    }
     
     if (!$naf_formula::nafVars.isEmpty()) {
        printErrln("Warning: Variable(s): ?" + String.join(", ?", $naf_formula::nafVars) + " may not be bound in a conjunct preceding the Naf: \n" + $naf_formula.text + "\n");       
@@ -224,11 +231,13 @@ term
     |   VAR_ID 
         { if (!$VAR_ID.text.isEmpty() && !m_quantifiedVars.contains($VAR_ID.text)) 
              m_freeVars.add($VAR_ID.text);
-             
+          
           if (m_nafLevels > 0)
              $naf_formula::nafVars.add($VAR_ID.text);
           else if (m_isRuleBody) // never deem variables in rule conclusions as non-NAF variables.
              m_nonNafVars.add($VAR_ID.text);
+          else
+             m_headVars.add($VAR_ID.text);
         }
     |   psoa
     |   external
