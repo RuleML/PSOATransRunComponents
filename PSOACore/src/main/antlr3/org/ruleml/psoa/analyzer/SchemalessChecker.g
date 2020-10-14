@@ -194,15 +194,19 @@ scope
 {
     --m_nafLevels;
     
+    HashSet<String> headNafVars = new HashSet(m_headVars);
+    headNafVars.retainAll($naf_formula::nafVars);
+    
+    if (!m_nonNafVars.containsAll(headNafVars)) {
+       headNafVars.removeAll(m_nonNafVars);
+       printErrln("Warning: Conclusion variable(s): ?" + String.join(", ?", headNafVars) + " do(es) not appear in a conjunct preceding the Naf: \n" + $naf_formula.text + "\n");
+    }
+    
     $naf_formula::nafVars.removeAll(m_nonNafVars);
     $naf_formula::nafVars.removeAll(m_headVars);
     
-    if (!m_nonNafVars.containsAll(m_headVars)) {
-       printErrln("Warning: Conclusion variable(s): ?" + String.join(", ?", m_headVars) + " do(es) not appear in a conjunct preceding the Naf: \n" + $naf_formula.text + "\n");
-    }
-    
     if (!$naf_formula::nafVars.isEmpty()) {
-       printErrln("Warning: Variable(s): ?" + String.join(", ?", $naf_formula::nafVars) + " may not be bound in a conjunct preceding the Naf: \n" + $naf_formula.text + "\n");       
+       printErrln("Warning: Variable(s): ?" + String.join(", ?", $naf_formula::nafVars) + " is not bound in a conjunct preceding the Naf: \n" + $naf_formula.text + "\n");       
     }
 }
     :   ^(NAF formula)
