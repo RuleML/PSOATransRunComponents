@@ -199,14 +199,19 @@ scope
     
     if (!m_nonNafVars.containsAll(headNafVars)) {
        headNafVars.removeAll(m_nonNafVars);
-       printErrln("Warning: Conclusion variable(s): ?" + String.join(", ?", headNafVars) + " do(es) not appear in a conjunct preceding the Naf: \n" + $naf_formula.text + "\n");
+       printErrln("Warning: Conclusion variable(s): ?" + String.join(", ?", headNafVars) + "\n" + 
+                  "do(es) not occur in a conjunct preceding the Naf, which should be instantiated " + 
+                  "to prevent floundering: \n" + $naf_formula.text + "\n");
     }
     
     $naf_formula::nafVars.removeAll(m_nonNafVars);
     $naf_formula::nafVars.removeAll(m_headVars);
     
     if (!$naf_formula::nafVars.isEmpty()) {
-       printErrln("Warning: Variable(s): ?" + String.join(", ?", $naf_formula::nafVars) + " is not bound in a conjunct preceding the Naf: \n" + $naf_formula.text + "\n");       
+       
+       printErrln("Warning: Variable(s): ?" + String.join(", ?", $naf_formula::nafVars) + "\n" +
+                  "do(es) not occur in a conjunct preceding the Naf, which should be instantiated " +
+                  "to prevent floundering: \n" + $naf_formula.text + "\n");       
     }
 }
     :   ^(NAF formula)
