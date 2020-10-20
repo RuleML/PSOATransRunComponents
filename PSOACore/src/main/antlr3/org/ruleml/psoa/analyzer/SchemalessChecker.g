@@ -105,8 +105,13 @@ query
     ;
     
 rule
+scope
+{
+    String text;
+}
 @init 
 {
+    $rule::text = $rule.text;
     m_hasForall = false;
     
     m_nonNafVars.clear();
@@ -184,11 +189,13 @@ naf_formula
 scope
 {
    Set<String> nafVars;
+   boolean containsAnonymousVariables;
 }
 @init 
 {
     ++m_nafLevels;
     $naf_formula::nafVars = new HashSet<String>();
+    $naf_formula::containsAnonymousVariables = false;
 }
 @after
 {
@@ -201,17 +208,20 @@ scope
        headNafVars.removeAll(m_nonNafVars);
        printErrln("Warning: Conclusion variable(s): ?" + String.join(", ?", headNafVars) + "\n" + 
                   "do(es) not occur in a conjunct preceding the Naf, which should be instantiated " + 
-                  "to prevent floundering: \n" + $naf_formula.text + "\n");
+                  "to prevent floundering: \n" + $rule::text + "\n");
     }
     
     $naf_formula::nafVars.removeAll(m_nonNafVars);
     $naf_formula::nafVars.removeAll(m_headVars);
     
     if (!$naf_formula::nafVars.isEmpty()) {
-       
-       printErrln("Warning: Variable(s): ?" + String.join(", ?", $naf_formula::nafVars) + "\n" +
-                  "do(es) not occur in a conjunct preceding the Naf, which should be instantiated " +
-                  "to prevent floundering: \n" + $naf_formula.text + "\n");       
+       printErrln("Finding: Variable(s): ?" + String.join(", ?", $naf_formula::nafVars) + "\n" +
+                  "do(es) not occur in a conjunct preceding the Naf: \n" + $rule::text + "\n");       
+    }
+    
+    if ($naf_formula::containsAnonymousVariables) {
+       printErrln("Finding: A Naf in the rule: \n" + $rule::text + "\n" +
+                  "contains an anonymous variable.\n");
     }
 }
     :   ^(NAF formula)
@@ -240,10 +250,13 @@ term
     |   VAR_ID 
         { if (!$VAR_ID.text.isEmpty() && !m_quantifiedVars.contains($VAR_ID.text)) 
              m_freeVars.add($VAR_ID.text);
-          
+     
           if (m_nafLevels > 0)
-             $naf_formula::nafVars.add($VAR_ID.text);
-          else if (m_isRuleBody) // never deem variables in rule conclusions as non-NAF variables.
+             if ($VAR_ID.text.isEmpty())
+                $naf_formula::containsAnonymousVariables = true; 
+             else
+                $naf_formula::nafVars.add($VAR_ID.text);
+          else if (m_isRuleBody) // Non-empty difference of Naf variables with union of head and pre-Naf-condition variables
              m_nonNafVars.add($VAR_ID.text);
           else
              m_headVars.add($VAR_ID.text);
