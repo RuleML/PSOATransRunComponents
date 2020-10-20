@@ -1,0 +1,99 @@
+RuleML(
+    Assert(
+
+        q1(a b)
+        q1(c d)
+
+        Forall ?v1 ?v2 (
+            p1(a b c) :- Naf(q1(?v1 ?v2))
+        )
+
+        % Queries:
+        % p1(a b c) % No
+
+        r2(a b)
+
+        q2(a b)
+        q2(a c)
+
+        Forall ?v1 ?v2 (
+            p2(a b c) :- And(r2(?v2 ?v1) Naf(q2(?v1 ?v2)))
+        )
+
+        % Queries:
+        % p2(?v1 ?v2 ?v3) % Yes
+        % p2(a ?v c) % Yes
+        % p2(a ?v b) % No
+
+        r3(a)
+        q3(a b)
+
+        Forall ?v1 ?v2 (
+           p3(a b c) :- And(r3(?v2) Naf(q3(?v1 ?v2)))
+        )
+
+        % Queries:
+        % p3(a b c) % Yes
+
+        r4(a)
+        r4(b)
+
+        Forall ?v1 ?v2 (
+           % This case isn't covered by the naf heuristic.
+           p4(a ?v2 c) :- Or(r4(?v2) Naf(q3(?v1 ?v2)))
+        )
+
+        % Queries:
+        % p4(a b c) % Yes
+        % p4(a a c) % Yes
+        % p4(a c c) % Yes
+
+        Forall ?v1 ?v2 ?v3 (
+            p6(+[?v1 ?v2 ?v3]) :- And(?v1=a1 ?v2=b1 ?v3=c1
+                                  Naf(p5(+[?v1 ?v2 ?v3])))
+        )
+
+        p5(+[a1 b1 c1])
+
+        % Queries:
+        % p5(+[a1 b1 b1]) % No
+        % p6(+[a1 b1 b1]) % No
+        % p6(+[a1 b1 c1]) % No
+
+        Forall ?v1 ?v2 (
+            p7(?v1 ?v2) :- And(?v2=a Naf(p5(+[?v2 ?v1 c])))
+        )
+
+        % Queries:
+        % And(?v1=b p7(?v1 ?v2)) % Yes
+        % p7(c b) % No
+        % p7(a b) % No
+        % p7(b a) % Yes
+        % p7(a a) % Yes
+
+        Forall ?v1 ?v2 (
+            p8(?v1 ?v2) :- And(Naf(p5(+[?v2 ?v1 c])) ?v2=a)
+        )
+
+        % Queries:
+        % And(p8(?v1 ?v2) ?v1=a) % Yes
+        % And(p8(?v1 ?v2) ?v2=a ?v1=b) % Yes
+        % And(p8(?v1 ?v2) ?v2=b) % No
+        % And(?v1=a p8(?v1 ?v2)) % Yes
+        % And(?v2=a ?v1=b p8(?v1 ?v2)) % Yes
+        % And(?v2=b p8(?v1 ?v2)) % No
+
+	Forall ?v1 ?v2 (
+	    p9(?v1 ?v2) :- And(q2(?v1 ?v2) Naf(r2(?v1 ?v2)))
+	)
+
+	Forall ?v1 ?v2 (
+	    p10(?v1) :- And(?v1=?v2 Naf(?v1=a))
+	)
+
+	Forall ?v1 ?v2 (
+	    p11(?v1) :- And(?v1=?v2 Naf(Or(?v1=a ?v1=b)) ?v2=d)
+	)
+
+  )
+)

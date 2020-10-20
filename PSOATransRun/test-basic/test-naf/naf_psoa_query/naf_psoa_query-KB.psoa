@@ -1,0 +1,513 @@
+RuleML (
+    Assert (
+
+        % Testing the Naf_Psoa_Query Systematics
+
+        %% TODO:
+
+        % 1. Write commit message for first disjunct (TL).
+
+        /* 1.
+
+        add instructive examples of top-level Naf queries, including several
+        entailing unexpected/undesired behavior
+
+        */
+
+        % 2. Farm out several of these queries to queryN/answerN pairs. (DONE)
+        % 3. Move this file into the test suite as a -KB file,
+        %    under a folder designated as applying to the first disjunct. (DONE)
+
+
+        /*
+        Independent Atoms
+        */
+
+        % Shelfships
+        q_ss(-[sr1 tr1])
+
+        Forall ?x (
+            p_ss(-[tr1 ?x]) :- q_ss(-[?x tr1])
+        )
+
+        p1_ss(-[s1 t1] -[s2 t2 u2])
+        p2_ss(-[s1 t1 u1])
+        p3_ss(-[#p4_ss(-[s]) #p5_ss(-[t])])
+
+        Forall ?x ?y (
+          p4_ss(-[?x s1] -[t2 ?y u2]) :- p5_ss(-[s1 ?x] -[?y t2 u2])
+        )
+
+        p5_ss(-[s1 t1] -[s2 t2 u2])
+
+        Forall ?v1 ?v2 ?v3 (
+            p6_ss(-[?v1 ?v2 ?v3]) :- p7_ss(-[?v1 ?v2 ?v3])
+        )
+
+        p7_ss(-[a1 b1 c1])
+
+        % Queries:
+        % Naf(q_ss(-[sr1 tr1]))  % No
+        % Naf(q_ss(-[sr1 tr2]))  % Yes
+        % Naf(p_ss(-[tr1 sr1]))  % No
+        % Naf(p_ss(-[tr1 sr2]))  % Yes
+        % Naf(p3_ss(-[a1 b1 b1])) % Yes
+        % Naf(p3_ss(-[a1 b1 c1])) % Yes
+        % Naf( p4_ss(-[t1 s1] -[t2 s2 u2]) ) % No
+        % Naf( p4_ss(-[t1 s1] -[t2 s2 u3]) ) % Yes
+        % Naf( p4_ss(-[t1 s1] -[t2 s3 u2]) ) % Yes
+        % Naf( p6_ss(-[a1 b1 c1]) ) % No
+        % Naf( p1_ss(-[s1 t1] -[s2 t2 u2]) )  % No
+        % Naf( p1_ss(-[s1 t1] -[s2 ?t2 u3]) ) % Yes, ?t2 free
+        % Naf( p1_ss(-[s1 t1] -[s2 ?t2 u2]) ) % No
+        % Naf( p1_ss(-[s1 t1] -[s2 t2 u2]) ) % No
+        % Naf( p1_ss(-[s1 t1] -[s2 ?t2 u3]) ) % Yes, ?t2 free
+        % Naf( Naf( p1_ss(-[?s1 t1] -[s2 ?t2 u2]) ) ) % Yes, ?s1, ?t2 free
+        % Naf( Exists ?s ( p2_ss(-[?s t1 u1]) ) ) % No
+        % Naf( Exists ?s ( p2_ss(-[?s t1 u2]) ) ) % Yes
+        % Exists ?s ( Naf( p2_ss(-[?s t1]) ) ) % Yes
+        % Naf( p2_ss(-[s1 t1 u1]) )  % No
+        % Naf( p2_ss(-[s1 t1 u2] ) )  % Yes
+        % Naf( p3_ss(-[#p4_ss(-[s]) #p5_ss(-[t])]) ) % No
+        % Naf( p3_ss(-[#p4_ss(-[s]) #p5_ss(-[t]) #p6_ss()]) )  % Yes
+        % Naf( And(p3_ss(-[#p4_ss(-[s])]) p3_ss(-[#p6_ss()])) ) % Yes
+        % Naf( Or(p3_ss(-[#p4_ss(-[s])]) p3_ss(-[#p6_ss()])) )  % Yes
+
+
+        % Shelfpoints
+        o_sp#q_sp(-[srp1 trp1])
+
+        Forall ?o ?x (
+            ?o#p_sp(-[trp1 ?x]) :- ?o#q_sp(-[?x trp1])
+        )
+
+        o1_sp#p1_sp(-[s1 t1] -[s2 t2 u2])
+
+        Forall ?o1 ?o2 ?s1 ?t1 (
+          ?o1#p1_sp(-[?s1 ?t1 u1]) :-
+            And( ?o1#p1_fs(s1->f1 -[?s1 ?t1])
+                 p2_fs(s1->#p3_fs() ?o2->f2) )
+        )
+
+        % Queries:
+        % Naf(o_sp#q_sp(-[srp1 trp1]))  % No
+        % Naf(o_sp#q_sp(-[srp1 trp3]))  % Yes
+        % Naf(o_sp#p_sp(-[trp1 srp1]))  % No
+        % Naf(o_sp#p_sp(-[trp1 srp2]))  % Yes
+        % Naf(?o1#p1_sp) % No
+
+        % And(?o1#p1_sp ?o1#Top(-[?s1 ?t1 ?]) Naf(?o1#p1_sp(-[?s1 ?t1 u1]))) % Yes
+
+        % Naf( o1_sp#p1_sp(-[s1 t1]) ) % No
+        % Naf( o1_sp#p1_sp(-[s1 t1] -[s2 t2 u2]) ) % No
+        % Naf( #p1_sp(-[s1 t1]) ) % No
+        % Naf( #p1_sp(-[t1 u1]) ) % Yes
+        % Naf( #p1_sp(-[s1 t2]) ) % Yes
+        % Naf( ?o#p1_sp ) % No
+        % Naf( o1_sp#p1_sp) % No
+        % Naf( o1_sp#p1_sp(-[s1 t1]) ) % No
+        % Naf( o2_sp#p1_sp(-[s1 t1]) ) % Yes
+
+
+        % Frameships
+        q_fs(sps1->tps1)
+
+        Forall ?x (
+            p_fs(tps1->?x) :- q_fs(?x->tps1)
+        )
+
+        p1_fs(s1->f1 s2->f2)
+        p2_fs(s1->f1)
+        p3_fs(s1->#p4_fs() #p5_fs->f2)
+
+        p1_fs(s1->f1 s2->f2) :- p2_fs(s1->f1)
+        p2_fs(s1->#p3_fs() #p4_fs->f2)
+
+        % Queries:
+        % Naf(p_fs(tps1->sps1))  % No
+        % Naf(p_fs(tps1->sps2))  % Yes
+        % Naf(q_fs(sps1->tps1))  % No
+        % Naf(q_fs(sps1->tps2))  % Yes
+        % Naf( p2_fs(s1->#p3_fs() #p4_fs->f2) ) % No
+        % Naf( p2_fs(s1->o#p3_fs() #p4_fs->f2) ) % Yes
+        % Naf( p2_fs(s1->#p3_fs() #p4_fs->f3) ) % Yes
+        % Naf( p1_fs(s1->f1) ) % No
+        % Naf( p1_fs(s2->f2) ) % No
+        % Naf( And(p1_fs(s2->f2) p1_fs(s1->f1)) ) % No
+        % Naf( And(p1_fs(s2->f2) p1_fs(s1->f2)) ) % No
+        % Naf( Or(p1_fs(s2->f2) p1_fs(s1->f1)) ) % No
+        % Naf( Or(p1_fs(s2->f2) p1_fs(s1->f2)) ) % No
+        % Naf( Exists ?1 ( p1_fs(s1->?1 s2->f2) ) ) % No
+        % Naf( Exists ?1 ( p1_fs(s1->?1 s1->f2) ) ) % No
+        % Naf( Naf( Exists ?1 ( p1_fs(s1->?1 s2->f2) ) ) ) % Yes
+        % Naf( Naf( Exists ?1 ( p1_fs(s1->?1 s2->f3) ) ) ) % Yes
+        % Naf( p1_fs(s1->f1 s2->f2) ) % No
+        % Naf( p1_fs(s1->?f1 s2->f2) ) % No
+        % Naf( p1_fs(s1->f1 s3->f2) ) % No
+        % Naf( p1_fs(s1->?f1 ?s2->f2) ) % No
+        % Naf( p1_fs(s1->f1) ) % No
+        % Naf( p3_fs(s1->#p4_fs()) ) % No
+        % Naf( p3_fs(s1->#p5_fs()) ) % No
+        % Naf( p3_fs(#p4_fs()->f2) ) % Yes
+        % Naf( p3_fs(#p5_fs()->f2) ) % No
+        % Naf( And(p3_fs(s1->#p4_fs()) p3_fs(#p5_fs->f3)) ) % Yes
+        % Naf( Or(p3_fs(s1->#p4_fs()) p3_fs(s2->#p5_fs())) ) % No
+        % Naf( Or(p3_fs(s1->#p3_fs()) p3_fs(s2->#p2_fs())) ) % No
+        % Naf( Exists ?1 (p3_fs(s1->?1#p3_fs)) ) % No
+        % Naf( Exists ?1 (p3_fs(s1->?1#p4_fs)) ) % No
+
+
+        % Framepoints
+        Forall ?o1 ?o2 ?s1 ?f1 (
+          ?o1#p1_fp(?s1->?f1) :-
+            And(Or(?o1#p1_fs(s1->f1)
+                   p2_fs(?s1->#p3_fs())))
+        )
+
+        o_fp#q_fp(sp1->tp1)
+
+        Forall ?o ?x (
+            ?o#p_fp(tp1->?x) :- ?o#q_fp(?x->tp1)
+        )
+
+        % Queries:
+        % Naf(o_fp#p_fp(tp1->sp1))  % No
+        % Naf(o_fp#p_fp(tp1->sp2))  % Yes
+        % Naf(o_fp#q_fp(sp1->tp1))  % No
+        % Naf(o_fp#q_fp(sp1->tp2))  % Yes
+        % Naf(?#p1_fp) % No
+        % Naf(?o1#p1_fp(?s1->?f1)) % No
+        % Naf(Naf(?o1#p1_fp)) % Yes, ?o1 free
+        % Naf(Naf(?o1#p1_fp)) % Yes, ?o1 free
+        % And(?o1#p1_fp(?s1->?f1) Naf(Naf(?o1#p1_fp))) % Yes
+
+        % Shelframeships
+        p1_sfs(-[t1 u1] s1->f1 -[t2 u2 v2] s2->f2)
+        Forall ?o1_sfs (
+          ?o1_sfs#p2_sfs(s1->f1 -[s1 t1]) :- ?o1_sfs#p3_sfs
+        )
+
+        o1_sfs#p3_sfs
+        q_sfs(-[srps1 trps1] slrps1->vlrps1)
+
+        Forall ?x ?v (
+            p_sfs(-[trps1 ?x] slrps1->?v) :- q_sfs(-[?x trps1] slrps1->?v)
+        )
+
+        % Queries:
+        % Naf(q_sfs(-[srps1 trps1] slrps1->vlrps1))  % No
+        % Naf(q_sfs(-[srps1 trps2] slrps1->vlrps1))  % Yes
+        % Naf(q_sfs(-[srps1 trps1] slrps1->vlrps2))  % Yes
+        % Naf(p_sfs(-[trps1 srps1] slrps1->vlrps1))  % No
+        % Naf(p_sfs(-[trps1 srps2] slrps1->vlrps1))  % Yes
+        % Naf(p_sfs(-[trps1 srps1] slrps1->vlrps2))  % Yes
+        % Naf(?o#p1_sfs) % No
+        % Naf(?o#p1_sfs(s1->f1)) % No
+        % Naf(?o#p2_sfs) % No
+        % Naf(o#p2_sfs) % Yes
+        % Naf(?o#p2_sfs(-[s1 t1])) % No
+        % And(?o#p2_sfs Naf(?o#p2_sfs(-[s1 t2]))) % Yes
+
+        % Naf(o1_sfs#p2_sfs(-[s1 t1])) % No
+        % Naf(o2_sfs#p2_sfs(-[s1 t1])) % Yes
+        % Naf( And(p1_sfs(-[t1 u1]) p1_sfs(s1->f1)) ) % No
+        % Naf( And(p1_sfs(-[t1 u1]) p1_sfs(s2->f1)) ) % Yes
+        % Naf( And(p1_sfs(-[t1 u1]) p1_sfs(s1->f2)) ) % No
+        % Naf( Or(p1_sfs(-[t2 u2 v2]) p1_sfs(-[t1 u1])) ) % No
+        % Naf( Or(p1_sfs(-[t2 u2 v3]) p1_sfs(-[t1 u1])) ) % No
+        % Naf( Or(p1_sfs(-[t2 u2 v3]) p1_sfs(-[t1 u2])) ) % Yes
+        % Naf( Or(p1_sfs(-[t2 u2 v2]) p1_sfs(-[t1 u1] s2->f2)) ) % No
+        % Naf( Or(p1_sfs(-[t2 u2 v2]) p1_sfs(-[t1 u1] s3->f2)) ) % No
+        % Naf( And(p1_sfs(-[t2 u2 v2]) p1_sfs(-[t1 u1] s3->f2)) ) % Yes
+
+
+        % Shelframepoints
+        o1_sfp#p1_sfp(-[t1 u1] s1->f1 -[t2 u2 v2] s2->f2)
+
+        Forall ?o1 ?s1 ?u2 (
+          ?o1#p1_sfp(-[t1 u1] ?s1->f1 -[t2 ?u2 v2] s2->f2) :-
+            And(?o1#p1_sfp(?s1->f1)
+                ?o1#p1_sp(-[?s1 t1 u1]))
+        )
+
+        o_sfp#q_sfp(-[srpp1 trpp1] slrpp1->vlrpp1)
+
+        Forall ?o ?x ?v (
+            ?o#p_sfp(-[trpp1 ?x] slrpp1->?v) :- ?o#q_sfp(-[?x trpp1] slrpp1->?v)
+        )
+
+        % Queries:
+        % Naf(o_sfp#q_sfp(-[srpp1 trpp1] slrpp1->vlrpp1))  % No
+        % Naf(o_sfp#q_sfp(-[srpp1 trpp2] slrpp1->vlrpp1))  % Yes
+        % Naf(o_sfp#q_sfp(-[srpp1 trpp1] slrpp1->vlrpp2))  % Yes
+        % Naf(Naf(o_sfp#p_sfp(-[trpp1 srpp1] slrpp1->vlrpp1)))  % Yes
+        % Naf(?o1#p1_sfp) % No
+        % Naf(?o1#p1_sfp(-[t1 u1])) % No
+        % Naf(?o1#p1_sfp(?s1->f1)) % No
+        % Naf(?o1#p1_sfp(?s1->?f1 -[t1 u1])) % No
+        % Naf(?o1#p1_sfp(-[t1 u1] ?s1->?f1 -[t2 ?u2 v2])) % No
+        % Naf( o1_sfp#p1_sfp(-[t1 u1] s1->f1) ) % No
+        % Naf( o1_sfp#p1_sfp(s1->f1 -[t1 u1]) ) % No
+        % Naf( #p1_sfp(s1->f1 -[t1 u1]) ) % No
+        % Naf( #p1_sfp(s1->f2 -[t1 u1]) ) % No
+        % Naf( #p1_sfp(s1->f1 -[t1 u2]) ) % Yes
+        % Naf( #p1_sfp(s1->f1 -[t2 u2 v2]) ) % No
+        % Naf( #p1_sfp(s1->f2 -[t2 u2 v2]) ) % No
+        % Naf( #p1_sfp(s1->f1 -[t2 u2 v3]) ) % Yes
+        % Naf( And( #p1_sfp(s1->f1) ?o#p1_sfp(-[t2 u2 v2]) ) ) % No
+        % Naf( And( #p1_sfp(s1->f2) ?o#p1_sfp(-[t2 u2 v2]) ) ) % No
+        % And( ?o#p1_sfp Naf( And( #p1_sfp(s1->f1) ?o#p1_sfp(-[t2 u2 v3]) ) ) ) % Yes
+
+        % Naf( Or( #p1_sfp(s1->f1) ?o#p1_sfp(-[t2 u2 v2]) ) ) % No
+        % Naf( Or( #p1_sfp(s1->f2) ?o#p1_sfp(-[t2 u2 v2]) ) ) % No
+        % Naf( Or( #p1_sfp(s1->f1) ?o#p1_sfp(-[t2 u2 v3]) ) ) % No
+        % And( ?o#p1_sfp Naf( Or( #p1_sfp(s2->f1) ?o#p1_sfp(-[t2 u2 v3]) ) ) ) % Yes
+
+            /*
+            Dependent Atoms
+            */
+
+        % Relationships
+        q_rs(+[sr1 tr1])
+
+        Forall ?x (
+            p_rs(+[tr1 ?x]) :- q_rs(+[?x tr1])
+        )
+
+        p1_rs(+[s1 t1])
+        p1_rs(+[s2 t2 u2])
+        p2_rs(+[s1 t1 u1])
+        p3_rs(+[#p4_rs(+[s]) #p5_rs(+[t])])
+
+        Forall ?x ?y (
+          p4_rs(+[?x s1]) :- And(p5_rs(+[s1 ?x]) p5_rs(+[?y t2 u2]))
+        )
+
+        Forall ?x ?y (
+          p4_rs(+[t2 ?y u2]) :- And(p5_rs(+[s1 ?x]) p5_rs(+[?y t2 u2]))
+        )
+
+        p5_rs(+[s1 t1])
+        p5_rs(+[s2 t2 u2])
+
+        Forall ?v1 ?v2 ?v3 (
+            p6_rs(+[?v1 ?v2 ?v3]) :- p7_rs(+[?v1 ?v2 ?v3])
+        )
+
+        p7_rs(+[a1 b1 c1])
+
+        % Queries:
+        % Naf(q_rs(+[sr1 tr1]))  % No
+        % Naf(q_rs(+[sr1 tr2]))  % Yes
+        % Naf(p_rs(+[tr1 sr1]))  % No
+        % Naf(p_rs(+[tr1 sr2]))  % Yes
+        % Naf(p3_rs(+[a1 b1 b1])) % Yes
+        % Naf(p3_rs(+[a1 b1 c1])) % Yes
+        % Naf( And(p4_rs(+[t1 s1]) p4_rs(+[t2 s2 u2])) ) % No
+        % Naf( And(p4_rs(+[t1 s1]) p4_rs(+[t2 s2 u3])) ) % Yes
+        % Naf( And(p4_rs(+[t1 s1]) p4_rs(+[t2 s3 u2])) ) % Yes
+        % Naf( p6_rs(+[a1 b1 c1]) ) % No
+        % Naf( And(p1_rs(+[s1 t1]) p1_rs(+[s2 t2 u2])) )  % No
+        % And( p1_rs(+[s2 ?t2 u2]) Naf( And(p1_rs(+[s1 t1]) p1_rs(+[s2 ?t2 u3]) ) ) ) % Yes
+        % Naf( And(p1_rs(+[s1 t1]) p1_rs(+[s2 ?t2 u2])) ) % No
+        % Naf( And(p1_rs(+[s1 t1]) p1_rs(+[s2 t2 u2])) ) % No
+        % And( p1_rs(+[?s1 t1]) ?t2=t2 Naf( Naf( p1_rs(+[s2 ?t2 u2]) ) ) ) % Yes
+        % Naf( Exists ?s ( p2_rs(+[?s t1 u1]) ) ) % No
+        % Naf( Exists ?s ( p2_rs(+[?s t1 u2]) ) ) % Yes
+        % Exists ?s ( Naf( p2_rs(+[?s t1]) ) ) % Yes
+        % Naf( p2_rs(+[s1 t1 u1]) )  % No
+        % Naf( p2_rs(+[s1 t1 u2] ) )  % Yes
+        % Naf( p3_rs(+[#p4_rs(+[s]) #p5_rs(+[t])]) ) % No
+        % Naf( p3_rs(+[#p4_rs(+[s]) #p5_rs(+[t]) #p6_rs()]) )  % Yes
+        % Naf( And(p3_rs(+[#p4_rs(+[s])]) p3_rs(+[#p6_rs()])) ) % Yes
+        % Naf( Or(p3_rs(+[#p4_rs(+[s])]) p3_rs(+[#p6_rs()])) )  % Yes
+
+
+        % Relationpoints
+        o_rrp#q_rrp(+[srp1 trp1])
+
+        Forall ?o ?x (
+            ?o#p_rrp(+[trp1 ?x]) :- ?o#q_rrp(+[?x trp1])
+        )
+
+        o1_rrp#p1_rrp(+[s1 t1] +[s2 t2 u2])
+
+        Forall ?o1 ?o2 ?s1 ?t1 (
+          ?o1#p1_rrp(+[?s1 ?t1 u1]) :-
+            And( ?o1#p1_fs(s1+>f1 +[?s1 ?t1])
+                 p2_fs(s1+>#p3_fs() ?o2+>f2) )
+        )
+
+        % Queries:
+        % Naf(o_rrp#q_rrp(+[srp1 trp1]))  % No
+        % Naf(o_rrp#q_rrp(+[srp1 trp3]))  % Yes
+        % Naf(o_rrp#p_rrp(+[trp1 srp1]))  % No
+        % Naf(o_rrp#p_rrp(+[trp1 srp2]))  % Yes
+        % Naf(?o1#p1_rrp) % No
+        % And(?o1#p1_rrp ?s1=s2 ?t1=t2 Naf(?o1#p1_rrp(+[?s1 ?t1 u1]))) % Yes
+        % Naf(?o1#p1_rrp) % No
+        % Naf( o1_rrp#p1_rrp(+[s1 t1]) ) % No
+        % Naf( o1_rrp#p1_rrp(+[s1 t1] +[s2 t2 u2]) ) % No
+        % Naf( #p1_rrp(+[s1 t1]) ) % No
+        % Naf( #p1_rrp(+[t1 u1]) ) % Yes
+        % Naf( #p1_rrp(+[s1 t2]) ) % Yes
+        % Naf( ?o#p1_rrp ) % No
+        % Naf( o1_rrp#p1_rrp) % No
+        % Naf( o1_rrp#p1_rrp(+[s1 t1]) ) % No
+        % Naf( o2_rrp#p1_rrp(+[s1 t1]) ) % Yes
+
+
+        % Pairships
+        q_ps(sps1+>tps1)
+
+        Forall ?x (
+            p_ps(tps1+>?x) :- q_ps(?x+>tps1)
+        )
+
+        p1_ps(s1+>f1 s2+>f2)
+        p2_ps(s1+>f1)
+        p3_ps(s1+>#p4_ps() #p5_ps+>f2)
+
+        p1_ps(s1+>f1 s2+>f2) :- p2_ps(s1+>f1)
+        p2_ps(s1+>#p3_ps() #p4_ps+>f2)
+
+        % Queries:
+        % Naf(p_ps(tps1+>sps1))  % No
+        % Naf(p_ps(tps1+>sps2))  % Yes
+        % Naf(q_ps(sps1+>tps1))  % No
+        % Naf(q_ps(sps1+>tps2))  % Yes
+        % Naf( p2_ps(s1+>#p3_ps() #p4_ps+>f2) ) % No
+        % Naf( p2_ps(s1+>o#p3_ps() #p4_ps+>f2) ) % Yes
+        % Naf( p2_ps(s1+>#p3_ps() #p4_ps+>f3) ) % Yes
+        % Naf( p1_ps(s1+>f1) ) % No
+        % Naf( p1_ps(s2+>f2) ) % No
+        % Naf( And(p1_ps(s2+>f2) p1_ps(s1+>f1)) ) % No
+        % Naf( And(p1_ps(s2+>f2) p1_ps(s1+>f2)) ) % Yes
+        % Naf( Or(p1_ps(s2+>f2) p1_ps(s1+>f1)) ) % No
+        % Naf( Or(p1_ps(s2+>f2) p1_ps(s1+>f2)) ) % No
+        % Naf( Exists ?1 ( p1_ps(s1+>?1 s2+>f2) ) ) % No
+        % Naf( Exists ?1 ( p1_ps(s1+>?1 s1+>f2) ) ) % Yes
+        % Naf( Naf( Exists ?1 ( p1_ps(s1+>?1 s2+>f2) ) ) ) % Yes
+        % Naf( Naf( Exists ?1 ( p1_ps(s1+>?1 s2+>f3) ) ) ) % No
+        % Naf( p1_ps(s1+>f1 s2+>f2) ) % No
+        % Naf( p1_ps(s1+>?f1 s2+>f2) ) % No
+        % Naf( p1_ps(s1+>f1 s3+>f2) ) % Yes
+        % Naf( p1_ps(s1+>?f1 ?s2+>f2) ) % No
+        % Naf( p1_ps(s1+>f1) ) % No
+        % Naf( p3_ps(s1+>#p4_ps()) ) % No
+        % Naf( p3_ps(s1+>#p5_ps()) ) % Yes
+        % Naf( p3_ps(#p4_ps()+>f2) ) % Yes
+        % Naf( p3_ps(#p5_ps()+>f2) ) % No
+        % Naf( And(p3_ps(s1+>#p4_ps()) p3_ps(#p5_ps+>f3)) ) % Yes
+        % Naf( Or(p3_ps(s1+>#p4_ps()) p3_ps(s2+>#p5_ps())) ) % No
+        % Naf( Or(p3_ps(s1+>#p3_ps()) p3_ps(s2+>#p2_ps())) ) % Yes
+        % Naf( Exists ?1 (p3_ps(s1+>?1#p3_ps)) ) % Yes
+        % Naf( Exists ?1 (p3_ps(s1+>?1#p4_ps)) ) % No
+
+
+        % Pairpoints
+        Forall ?o1 ?o2 ?s1 ?f1 (
+          ?o1#p1_pp(?s1+>?f1) :-
+            And(Or(?o1#p_pp(?s1+>?f1)
+                   p2_pp(?s1+>#p3_pp())))
+        )
+
+        o_pp#q_pp(sp1+>tp1)
+
+        Forall ?o ?x (
+            ?o#p_pp(tp1+>?x) :- ?o#q_pp(?x+>tp1)
+        )
+
+        % Queries:
+        % Naf(o_pp#p_pp(tp1+>sp1))  % No
+        % Naf(o_pp#p_pp(tp1+>sp2))  % Yes
+        % Naf(o_pp#q_pp(sp1+>tp1))  % No
+        % Naf(o_pp#q_pp(sp1+>tp2))  % Yes
+        % Naf(?#p1_pp) % No
+        % And(?o1#p1_pp ?s1=tp1 ?f1=sp1 Naf(?o1#p1_pp(?s1+>?f1))) % No
+        % And(?o1=o_pp Naf(Naf(?o1#p1_pp))) % Yes
+        % And(?o1=o_pp ?s1=tp1 ?f1=sp1 Naf(Naf(?o1#p1_pp(?s1+>?f1)))) % Yes
+
+
+        % Relpairships
+        p1_rps(+[t1 u1] s1+>f1 +[t2 u2 v2] s2+>f2)
+        Forall ?o1_rps (
+          ?o1_rps#p2_rps(s1+>f1 +[s1 t1]) :- ?o1_rps#p3_rps
+        )
+
+        o1_rps#p3_rps
+        q_rps(+[srps1 trps1] slrps1+>vlrps1)
+
+        Forall ?x ?v (
+            p_rps(+[trps1 ?x] slrps1+>?v) :- q_rps(+[?x trps1] slrps1+>?v)
+        )
+
+        % Queries:
+        % Naf(q_rps(+[srps1 trps1] slrps1+>vlrps1))  % No
+        % Naf(q_rps(+[srps1 trps2] slrps1+>vlrps1))  % Yes
+        % Naf(q_rps(+[srps1 trps1] slrps1+>vlrps2))  % Yes
+        % Naf(p_rps(+[trps1 srps1] slrps1+>vlrps1))  % No
+        % Naf(p_rps(+[trps1 srps2] slrps1+>vlrps1))  % Yes
+        % Naf(p_rps(+[trps1 srps1] slrps1+>vlrps2))  % Yes
+        % Naf(?o#p1_rps) % No
+        % Naf(?o#p1_rps(s1+>f1)) % No
+        % Naf(?o#p2_rps) % No
+        % Naf(o#p2_rps) % No
+        % Naf(?o#p2_rps(+[s1 t1])) % No
+        % Naf(?o#p2_rps(+[s1 t2])) % Yes, ?o free
+        % Naf(o1_rps#p2_rps(+[s1 t1])) % No
+        % Naf(o2_rps#p2_rps(+[s1 t1])) % Yes
+        % Naf( And(p1_rps(+[t1 u1]) p1_rps(s1+>f1)) ) % No
+        % Naf( And(p1_rps(+[t1 u1]) p1_rps(s2+>f1)) ) % Yes
+        % Naf( And(p1_rps(+[t1 u1]) p1_rps(s1+>f2)) ) % Yes
+        % Naf( Or(p1_rps(+[t2 u2 v2]) p1_rps(+[t1 u1])) ) % No
+        % Naf( Or(p1_rps(+[t2 u2 v3]) p1_rps(+[t1 u1])) ) % No
+        % Naf( Or(p1_rps(+[t2 u2 v3]) p1_rps(+[t1 u2])) ) % Yes
+        % Naf( Or(p1_rps(+[t2 u2 v2]) p1_rps(+[t1 u1] s2+>f2)) ) % No
+        % Naf( Or(p1_rps(+[t2 u2 v2]) p1_rps(+[t1 u1] s3+>f2)) ) % No
+        % Naf( And(p1_rps(+[t2 u2 v2]) p1_rps(+[t1 u1] s3+>f2)) ) % Yes
+
+
+        % Relpairpoints
+        o1_rpps#p1_rpps(+[t1 u1] s1+>f1 +[t2 u2 v2] s2+>f2)
+
+        Forall ?o1 ?s1 ?u2 (
+          ?o1#p1_rpps(+[t1 u1] ?s1+>f1 +[t2 ?u2 v2] s2+>f2) :-
+            And(?o1#p1_rpps(?s1+>f1)
+                ?o1#p1_sp(+[?s1 t1 u1]))
+        )
+
+        o_rpps#q_rpps(+[srpp1 trpp1] slrpp1+>vlrpp1)
+
+        Forall ?o ?x ?v (
+            ?o#p_rpps(+[trpp1 ?x] slrpp1+>?v) :- ?o#q_rpps(+[?x trpp1] slrpp1+>?v)
+        )
+
+        % Queries:
+        % Naf(o_rpps#q_rpps(+[srpp1 trpp1] slrpp1+>vlrpp1))  % No
+        % Naf(o_rpps#q_rpps(+[srpp1 trpp2] slrpp1+>vlrpp1))  % Yes
+        % Naf(o_rpps#q_rpps(+[srpp1 trpp1] slrpp1+>vlrpp2))  % Yes
+        % Naf(Naf(o_rpps#p_rpps(+[trpp1 srpp1] slrpp1+>vlrpp1)))  % Yes
+        % Naf(?o1#p1_rpps) % No
+        % Naf(?o1#p1_rpps(+[t1 u1])) % No
+        % Naf(?o1#p1_rpps(?s1+>f1)) % No
+        % Naf(?o1#p1_rpps(?s1+>?f1 +[t1 u1])) % No
+        % Naf(?o1#p1_rpps(+[t1 u1] ?s1+>?f1 +[t2 ?u2 v2])) % No
+        % Naf( o1_rpps#p1_rpps(+[t1 u1] s1+>f1) ) % No
+        % Naf( o1_rpps#p1_rpps(s1+>f1 +[t1 u1]) ) % No
+        % Naf( #p1_rpps(s1+>f1 +[t1 u1]) ) % No
+        % Naf( #p1_rpps(s1+>f2 +[t1 u1]) ) % Yes
+        % Naf( #p1_rpps(s1+>f1 +[t1 u2]) ) % Yes
+        % Naf( #p1_rpps(s1+>f1 +[t2 u2 v2]) ) % No
+        % Naf( #p1_rpps(s1+>f2 +[t2 u2 v2]) ) % Yes
+        % Naf( #p1_rpps(s1+>f1 +[t2 u2 v3]) ) % Yes
+        % Naf( And( #p1_rpps(s1+>f1) ?o#p1_rpps(+[t2 u2 v2]) ) ) % No
+        % And( ?o#p1_rpps(+[t2 u2 v2]) Naf( And( #p1_rpps(s1+>f2) ?o#p1_rpps(+[t2 u2 v2]) ) ) ) % Yes
+        % And( ?o#p1_rpps Naf( And( #p1_rpps(s1+>f1) ?o#p1_rpps(+[t2 u2 v3]) ) ) ) % Yes
+        % Naf( Or( #p1_rpps(s1+>f1) ?o#p1_rpps(+[t2 u2 v2]) ) ) % No
+        % Naf( Or( #p1_rpps(s1+>f2) ?o#p1_rpps(+[t2 u2 v2]) ) ) % No
+        % Naf( Or( #p1_rpps(s1+>f1) ?o#p1_rpps(+[t2 u2 v3]) ) ) % No
+        % And( ?o#p1_rpps Naf(#p1_rpps(s2+>f1)) Naf(?o#p1_rpps(+[t2 u2 v3])) ) % Yes
+
+ )
+)

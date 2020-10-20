@@ -1,0 +1,314 @@
+RuleML(
+    Assert(
+
+        /*
+        Selection of Explored Psoa Atoms in (Rule) Premises Already in PSOATransRun 1.5.1
+        */
+
+        % Shelfships
+        q_ss(-[sr1 tr1])
+        q_ss(-[sr2 tr1])
+
+        Forall ?x (
+            p_ss(-[tr1 ?x]) :- And(?x=sr1 Naf(q_ss(-[?x tr1])))
+        )
+
+        p1_ss(-[s1 t1] -[s2 t2 u2])
+        p2_ss(-[s1 t1 u1])
+        p3_ss(-[#p4_ss(-[s]) #p5_ss(-[t])])
+
+        p5_ss(-[s1 t1] -[s2 t2 u2])
+
+        Forall ?x (
+          p4_ss(-[?x s1] -[t2 ?x u2]) :- Or(And(p5_ss(-[s1 ?x]) Naf(p5_ss(-[?x t2 u2])))
+                                            And(p5_ss(-[?x t2 u2]) Naf(p5_ss(-[s1 ?x]))))
+        )
+
+        % Queries:
+        % p_ss(-[tr1 ?x]) % No
+        % p_ss(-[tr1 sr2]) % No
+        % p4_ss(-[?x s1] -[t2 ?y u2]) % Yes
+        % p4_ss(-[?x s1] -[t2 ?x u2]) % Yes
+        % p4_ss(-[?x s1]) % Yes
+        % p4_ss(-[t2 ?x u2]) % Yes
+        % p4_ss(-[t3 ?x u2]) % No
+        % p4_ss(-[s2 s1]) % Yes
+
+
+        % Shelfpoints
+        o_sp#q_sp(-[s1 t1])
+
+        Forall ?o ?x (
+            ?o#p_sp(-[t1 ?x]) :- ?o#q_sp(-[?x t1])
+        )
+
+        Forall ?t2 (
+          o_sp#p1_sp(-[s1 ?t2])
+        )
+
+        o_sp#p1_sp(-[s1 t2])
+        o_sp#p1_sp(-[t2 s1])
+        o_sp#p1_sp(-[s1 t1] -[s2 t2 u2])
+
+        Forall ?o1 ?s1 ?t1 (
+          ?o1#p1_sp(-[?s1 ?t1 u1]) :-
+            And(?o1#p_sp(-[?s1 ?t1])
+                Naf(?o1#p1_sp(-[?t1 ?s1])))
+        )
+
+        % Queries:
+        % ?o1#p1_sp(-[?s1 ?t1]) % Yes
+        % ?o1#p1_sp(-[?s1 ?t1 u1]) % No
+        % ?o1#p1_sp(-[?s1 ?t1 u3]) % No
+        % o_sp#p1_sp % Yes
+        % o_sp1#p1_sp % No
+
+
+        % Frameships
+        q_fs(sps1->tps1)
+
+        Forall ?x (
+            p_fs(tps1->?x) :- q_fs(?x->tps1)
+        )
+
+        p2_fs(s1->f1)
+        p2_fs(s1->#p4_fs())
+        p2_fs(s1->#p5_fs())
+
+        Forall ?s1 ?f1 ?o (
+            p1_fs(?s1->f1 s2->f2 s3->?o) :-
+                And(p2_fs(?s1->?o)
+                    Naf(p_fs(?s1->f1)))
+        )
+
+        % Queries:
+        % p1_fs(?s1->f1) % Yes
+        % p1_fs(s1->f1) % Yes
+        % p1_fs(s2->f1) % No
+        % p1_fs(s1->?f1) % Yes
+        % p1_fs(s3->f1) % Yes
+        % p1_fs(s3->?o) % Yes
+        % p1_fs(s1->?f1 s3->?f1) % Yes
+        % p1_fs(s1->?f1 s4->?f1) % No
+
+
+        % Framepoints
+        o_fp#q_fp(sp1->tp1)
+
+        Forall ?o ?x (
+            ?o#p_fp(tp1->?x) :- ?o#q_fp(?x->tp1)
+        )
+
+        Forall ?o1 ?o2 ?s1 ?f1 (
+          ?o1#p1_fp(?s1->?f1) :-
+            And(?o1#p2_fs(?s1->?f1)
+                Naf(?o1#p_fp(?s1->#p3_fs())))
+        )
+
+        % Queries:
+        % ?o1#p1_fp % Yes
+        % ?o1#p1_fp(?s1->?f1) % Yes
+        % ?o1#p1_fp(?s1->f2) % No
+        % ?o1#p1_fp(s3->?f3) % No
+
+
+        % Shelframeships
+        p1_sfs(-[t1 u1] s1->f1 -[t2 u2 v2] s2->f2)
+
+        Forall ?o1_sfs (
+          ?o1_sfs#p2_sfs(s1->f1 -[s1 t1]) :- ?o1_sfs#p3_sfs
+        )
+
+        o1_sfs#p3_sfs
+        q_sfs(-[s1 t1] s1->f1)
+
+        Forall ?x ?v (
+            p_sfs(-[t1 ?x] s1->?v) :-
+                And(p1_sfs(-[?x u1] s2->?v)
+                    Naf(q_sfs(-[?x t1] s1->?v)))
+        )
+
+        % Queries:
+        % p_sfs(-[t1 ?x] s1->?v) % Yes
+        % p_sfs(-[t2 ?x] s1->?v) % No
+
+
+        % Shelframepoints
+        o1_sfp#p1_sfp(-[t1 u1] -[t1 s1] s1->f1 -[t2 u2 v2] s2->f2)
+        o1_sfp#p1_sfp(-[t1 s1] -[t1 u1] s1->f1)
+
+        Forall ?o1 ?s1 ?u2 (
+          ?o1#p1_sfp(-[t1 u1] ?s1->f1 -[t2 ?u2 v2] s2->f2) :-
+            And(?o1#p1_sfp(?s1->f1)
+                ?o1#p1_sp(-[?s1 t1 u1]))
+        )
+
+        o_sfp#q_sfp(-[s1 t1] s1->f1)
+
+        Forall ?o ?x ?v (
+            ?o#p_sfp(-[t1 ?x] s1->?v) :-
+              And(?o#q_sfp(-[?x t1] s1->?v)
+                  Naf(o1_sfp#p1_sfp(-[t1 ?x] s1->?v)))
+        )
+
+        % Queries:
+        % ?o#p_sfp(-[t1 ?x] s1->?v) % No
+        % ?o#q_sfp(-[?x t1] s1->?v) % Yes
+        % And(o1_sfp#p1_sfp(-[t1 ?x] -[t1 u1] s1->?v) ?o#p_sfp(-[t1 ?x] s1->?v)) % No
+        % And(?o#q_sfp(-[?x t1] s1->?v) ?o#p_sfp(-[t1 ?x] s1->?v)) % No
+
+
+        % Relationships
+        q_rs(+[sr1 tr1])
+        q_rs(+[sr2 tr1])
+
+        Forall ?x (
+            p_rs(+[tr1 ?x]) :- And(?x=sr1 Naf(q_rs(+[?x tr1])))
+        )
+
+        p1_rs(+[s1 t1] +[s2 t2 u2])
+        p2_rs(+[s1 t1 u1])
+        p3_rs(+[#p4_rs(+[s]) #p5_rs(+[t])])
+
+        p5_rs(+[s1 t1] +[s2 t2 u2])
+
+        Forall ?x (
+          p4_rs(+[?x s1] +[t2 ?x u2]) :- Or(And(p5_rs(+[s1 ?x]) Naf(p5_rs(+[?x t2 u2])))
+                                            And(p5_rs(+[?x t2 u2]) Naf(p5_rs(+[s1 ?x]))))
+        )
+
+        % Queries:
+        % p_rs(+[tr1 ?x]) % No
+        % p_rs(+[tr1 sr2]) % No
+        % p4_rs(+[?x s1] +[t2 ?y u2]) % Yes
+        % p4_rs(+[?x s1] +[t2 ?x u2]) % Yes
+        % p4_rs(+[?x s1]) % Yes
+        % p4_rs(+[t2 ?x u2]) % Yes
+        % p4_rs(+[t3 ?x u2]) % No
+        % p4_rs(+[s2 s1]) % Yes
+
+
+        % Relationpoints
+        o_rrp#q_rrp(+[s1 t1])
+
+        Forall ?o ?x (
+            ?o#p_rrp(+[t1 ?x]) :- ?o#q_rrp(+[?x t1])
+        )
+
+        Forall ?t2 (
+          o_rrp#p1_rrp(+[s1 ?t2])
+        )
+
+        o_rrp#p1_rrp(+[s1 t2])
+        o_rrp#p1_rrp(+[t2 s1])
+        o_rrp#p1_rrp(+[s1 t1] +[s2 t2 u2])
+
+        Forall ?o1 ?s1 ?t1 (
+          ?o1#p1_rrp(+[?s1 ?t1 u1]) :-
+            And(?o1#p_rrp(+[?s1 ?t1])
+                Naf(?o1#p1_rrp(+[?t1 ?s1])))
+        )
+
+        % Queries:
+        % ?o1#p1_rrp(+[?s1 ?t1]) % Yes
+        % ?o1#p1_rrp(+[?s1 ?t1 u1]) % No
+        % ?o1#p1_rrp(+[?s1 ?t1 u3]) % No
+        % o_rrp#p1_rrp % Yes
+        % o_rrp1#p1_rrp % No
+
+
+        % Pairships
+        q_ps(sps1+>tps1)
+
+        Forall ?x (
+            p_ps(tps1+>?x) :- q_ps(?x+>tps1)
+        )
+
+        p2_ps(s1+>f1)
+        p2_ps(s1+>#p4_ps())
+        p2_ps(s1+>#p5_ps())
+
+        Forall ?s1 ?f1 ?o (
+            p1_ps(?s1+>f1 s2+>f2 s3+>?o) :-
+                And(p2_ps(?s1+>?o)
+                    Naf(p_ps(?s1+>f1)))
+        )
+
+        % Queries:
+        % p1_ps(?s1+>f1) % Yes
+        % p1_ps(s1+>f1) % Yes
+        % p1_ps(s2+>f1) % No
+        % p1_ps(s1+>?f1) % Yes
+        % p1_ps(s3+>f1) % Yes
+        % p1_ps(s3+>?o) % Yes
+        % p1_ps(s1+>?f1 s3+>?f1) % Yes
+        % p1_ps(s1+>?f1 s4+>?f1) % No
+
+
+        % Pairpoints
+        o_pp#q_pp(sp1+>tp1)
+
+        Forall ?o ?x (
+            ?o#p_pp(tp1+>?x) :- ?o#q_pp(?x+>tp1)
+        )
+
+        Forall ?o1 ?o2 ?s1 ?f1 (
+          ?o1#p1_pp(?s1+>?f1) :-
+            And(?o1#p2_ps(?s1+>?f1)
+                Naf(?o1#p_pp(?s1+>#p3_fs())))
+        )
+
+        % Queries:
+        % ?o1#p1_pp % Yes
+        % ?o1#p1_pp(?s1+>?f1) % Yes
+        % ?o1#p1_pp(?s1+>f2) % No
+        % ?o1#p1_pp(s3+>?f3) % No
+
+
+        % Relpairships
+        p1_rps(+[t1 u1] s1+>f1 +[t2 u2 v2] s2+>f2)
+
+        Forall ?o1_rps (
+          ?o1_rps#p2_rps(s1+>f1 +[s1 t1]) :- ?o1_rps#p3_rps
+        )
+
+        o1_rps#p3_rps
+        q_rps(+[s1 t1] s1+>f1)
+
+        Forall ?x ?v (
+            p_rps(+[t1 ?x] s1+>?v) :-
+                And(p1_rps(+[?x u1] s2+>?v)
+                    Naf(q_rps(+[?x t1] s1+>?v)))
+        )
+
+        % Queries:
+        % p_rps(+[t1 ?x] s1+>?v) % Yes
+        % p_rps(+[t2 ?x] s1+>?v) % No
+
+
+        % Relpairpoints
+        o1_rpps#p1_rpps(+[t1 u1] +[t1 s1] s1+>f1 +[t2 u2 v2] s2+>f2)
+        o1_rpps#p1_rpps(+[t1 s1] +[t1 u1] s1+>f1)
+
+        Forall ?o1 ?s1 ?u2 (
+          ?o1#p1_rpps(+[t1 u1] ?s1+>f1 +[t2 ?u2 v2] s2+>f2) :-
+            And(?o1#p1_rpps(?s1+>f1)
+                ?o1#p1_rrp(+[?s1 t1 u1]))
+        )
+
+        o_rpps#q_rpps(+[s1 t1] s1+>f1)
+
+        Forall ?o ?x ?v (
+            ?o#p_rpps(+[t1 ?x] s1+>?v) :-
+              And(?o#q_rpps(+[?x t1] s1+>?v)
+                  Naf(o1_rpps#p1_rpps(+[t1 ?x] s1+>?v)))
+        )
+
+        % Queries:
+        % ?o#p_rpps(+[t1 ?x] s1+>?v) % No
+        % ?o#q_rpps(+[?x t1] s1+>?v) % Yes
+        % And(o1_rpps#p1_rpps(+[t1 ?x] +[t1 u1] s1+>?v) ?o#p_rpps(+[t1 ?x] s1+>?v)) % No
+        % And(?o#q_rpps(+[?x t1] s1+>?v) ?o#p_rpps(+[t1 ?x] s1+>?v)) % No
+
+    )
+)
