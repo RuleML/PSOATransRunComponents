@@ -1,4 +1,7 @@
 % Two queries of two query files merged into one conjunction of one query file 
 % to avoid possible order dependency w.r.t. answers 
 % containing free variables coded as Var0, Var1, ... values
+
+% This query does not work as expected under SWI Prolog version 7.6.4, although
+% it does work correctly on version 7.7.15.
 And(unifiable(?X1 ?Y1) check_unifiability_without_unifying(?X2 ?Y2))

@@ -15,7 +15,7 @@ RuleML(
 
     Forall ?X ?Y (
       greater-than-or-equal(?X ?Y) :-
-        Naf(pred:numeric-less-than(?X ?Y))
+        Naf(External(pred:numeric-less-than(?X ?Y)))
     )
 
     Forall ?X (
