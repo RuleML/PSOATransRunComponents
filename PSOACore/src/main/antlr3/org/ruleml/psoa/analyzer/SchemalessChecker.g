@@ -41,7 +41,11 @@ options
     private boolean m_forallWrap;
     
     private Set<String> m_freeVars = new HashSet<String>();
-    private Set<String> m_quantifiedVars = new HashSet<String>();  
+    private Set<String> m_quantifiedVars = new HashSet<String>();
+    private Set<String> m_nonNafVars = new HashSet<String>();
+    private Set<String> m_headVars = new HashSet<String>();
+    
+    private int m_nafLevels = 0;
         
     private void recordExistentialVar(Set<String> existVars, String v) {
         if (!m_quantifiedVars.contains(v)) {
@@ -101,12 +105,19 @@ query
     ;
     
 rule
+scope
+{
+    String text;
+}
 @init 
 {
+    $rule::text = $rule.text;
     m_hasForall = false;
     
+    m_nonNafVars.clear();
     m_quantifiedVars.clear();
     m_freeVars.clear();
+    m_headVars.clear();
 }
 @after 
 {
@@ -175,6 +186,44 @@ scope {
     ;
     
 naf_formula
+scope
+{
+   Set<String> nafVars;
+   boolean containsAnonymousVariables;
+}
+@init 
+{
+    ++m_nafLevels;
+    $naf_formula::nafVars = new HashSet<String>();
+    $naf_formula::containsAnonymousVariables = false;
+}
+@after
+{
+    --m_nafLevels;
+    
+    HashSet<String> headNafVars = new HashSet(m_headVars);
+    headNafVars.retainAll($naf_formula::nafVars);
+    
+    if (!m_nonNafVars.containsAll(headNafVars)) {
+       headNafVars.removeAll(m_nonNafVars);
+       printErrln("Warning: Conclusion variable(s): ?" + String.join(", ?", headNafVars) + "\n" + 
+                  "do(es) not occur in a conjunct preceding the Naf, which should be instantiated " + 
+                  "to prevent floundering: \n" + $rule::text + "\n");
+    }
+    
+    $naf_formula::nafVars.removeAll(m_nonNafVars);
+    $naf_formula::nafVars.removeAll(m_headVars);
+    
+    if (!$naf_formula::nafVars.isEmpty()) {
+       printErrln("Finding: Variable(s): ?" + String.join(", ?", $naf_formula::nafVars) + "\n" +
+                  "do(es) not occur in a conjunct preceding the Naf: \n" + $rule::text + "\n");       
+    }
+    
+    if ($naf_formula::containsAnonymousVariables) {
+       printErrln("Finding: A Naf in the rule: \n" + $rule::text + "\n" +
+                  "contains an anonymous variable.\n");
+    }
+}
     :   ^(NAF formula)
     ;
 
@@ -198,7 +247,20 @@ subclass
     
 term
     :   constant
-    |   VAR_ID { if (!$VAR_ID.text.isEmpty() && !m_quantifiedVars.contains($VAR_ID.text)) m_freeVars.add($VAR_ID.text); }
+    |   VAR_ID 
+        { if (!$VAR_ID.text.isEmpty() && !m_quantifiedVars.contains($VAR_ID.text)) 
+             m_freeVars.add($VAR_ID.text);
+     
+          if (m_nafLevels > 0)
+             if ($VAR_ID.text.isEmpty())
+                $naf_formula::containsAnonymousVariables = true; 
+             else
+                $naf_formula::nafVars.add($VAR_ID.text);
+          else if (m_isRuleBody) // Non-empty difference of Naf variables with union of head and pre-Naf-condition variables
+             m_nonNafVars.add($VAR_ID.text);
+          else
+             m_headVars.add($VAR_ID.text);
+        }
     |   psoa
     |   external
     ;
