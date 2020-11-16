@@ -19,7 +19,7 @@ Document(
     
     <!--
         Express a signature declaration of class :swan -- all swans can inhabit in water.
-        ¡°inhabits¡± is a multi-valued slot name pointing to places that an animal can inhabit.
+        "inhabits" is a multi-valued slot name pointing to places that an animal can inhabit.
         DL form: \exists inhabits.{water} \sqsuperset swan
         Flora-2 form: swan[|inhabits->water|].
     -->

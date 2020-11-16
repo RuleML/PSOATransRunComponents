@@ -9,7 +9,7 @@ Document (
     )
     _Tom#_person(_male _child->_Amy _job->_professor)
     _Eva#_person(_female _child->_Amy)
-    _Amy#_person([_female] [_bcs _mcs _phd] _child->_Fred)
+    _Amy#_person(+[_female] +[_bcs _mcs _phd] _child->_Fred)
     _Fred#_person(_school->_UNB)
   )
 )
